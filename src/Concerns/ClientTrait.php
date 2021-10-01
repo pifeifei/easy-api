@@ -15,10 +15,9 @@ use Psr\Http\Message\ResponseInterface;
 
 trait ClientTrait
 {
-
     protected $methods = [
-        API::METHOD_JSON => 'POST',
         API::METHOD_GET => 'GET',
+        API::METHOD_JSON => 'POST',
         API::METHOD_POST => 'POST',
         API::METHOD_XML => 'POST',
     ];
@@ -27,27 +26,38 @@ trait ClientTrait
      */
     protected $method;
 
-    /* @var SignatureInterface */
+    /**
+     * @var SignatureInterface
+     */
     protected $signature;
 
+    /**
+     * @var bool
+     */
     protected $isTokenClient = false;
 
     /**
-     * @param Client $client
+     * @param Client|null $client
      *
      * @return GuzzleClient
      */
     public function createClient(Client $client = null)
     {
-//        if (API::hasMock()) {
-//            $stack = HandlerStack::create(API::getMock());
-//        } else {
+        if (self::hasMock()) {
+//            echo __METHOD__ . ':' . __LINE__ . PHP_EOL;
+            $stack = HandlerStack::create(self::getMock());
+        } else {
             $stack = HandlerStack::create();
-//        }
+        }
 
-//        if (API::isRememberHistory()) {
-//            $stack->push(Middleware::history(API::referenceHistory()));
-//        }
+        if ($this->isRememberHistory()) {
+            $stack->push(Middleware::history($this->histories));
+        }
+
+
+        if ($this->shouldRetryMiddleware()) {
+            $this->pushRetryMiddleware($stack);
+        }
 
 //        if (API::getLogger()) {
 //            $stack->push(Middleware::log(
@@ -85,7 +95,7 @@ trait ClientTrait
     /**
      * @return string
      */
-    protected function requestMethod()
+    public function requestMethod()
     {
         return Arr::get($this->methods, $this->method(), 'POST');
     }

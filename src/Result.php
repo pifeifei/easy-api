@@ -39,7 +39,8 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
             $response->getProtocolVersion(),
             $response->getReasonPhrase()
         );
-
+        // echo __METHOD__;
+//dump($response->getBody()->__toString());
         $this->request = $request;
 
         $this->resolveData();
@@ -47,7 +48,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
 
     private function resolveData()
     {
-        $content = $this->getBody()->getContents();
+        $content = $this->getBody()->__toString();
 
         switch ($this->getRequestFormat()) {
             case API::RESPONSE_FORMAT_RAW:
@@ -81,14 +82,14 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     }
 
     /**
-     * @param string $response
+     * @param string $jsonString
      *
      * @return array
      */
-    private function jsonToArray($response)
+    private function jsonToArray($jsonString)
     {
         try {
-            return Utils::jsonDecode($response, true);
+            return Utils::jsonDecode($jsonString, true);
         } catch (InvalidArgumentException $exception) {
             return [];
         }

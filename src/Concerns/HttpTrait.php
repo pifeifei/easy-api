@@ -196,4 +196,12 @@ trait HttpTrait
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
 }

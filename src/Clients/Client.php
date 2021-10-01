@@ -7,6 +7,9 @@ use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\RequestOptions;
 use Pff\EasyApi\API;
 use Pff\EasyApi\Concerns\CacheTrait;
+use Pff\EasyApi\Concerns\Client\HistoryTrait;
+use Pff\EasyApi\Concerns\Client\MockTrait;
+use Pff\EasyApi\Concerns\Client\RetryTrait;
 use Pff\EasyApi\Concerns\ClientTrait;
 use Pff\EasyApi\Concerns\HttpTrait;
 use Pff\EasyApi\Concerns\UriTrait;
@@ -24,10 +27,17 @@ use Pff\EasyApi\Result;
 
 class Client
 {
-    use CacheTrait;
-    use ClientTrait;
-    use HttpTrait;
-    use UriTrait;
+    use CacheTrait, ClientTrait, HttpTrait, HistoryTrait, MockTrait, RetryTrait, UriTrait;
+
+    /**
+     * Request Connect Timeout
+     */
+    const CONNECT_TIMEOUT = 5;
+
+    /**
+     * Request Timeout
+     */
+    const TIMEOUT = 10;
 
     /**
      * @var ConfigInterface
@@ -59,6 +69,10 @@ class Client
     public function __construct($config)
     {
         $this->config = Config::create($config);
+        $this->options[RequestOptions::HTTP_ERRORS]     = false;
+        $this->options[RequestOptions::CONNECT_TIMEOUT] = self::CONNECT_TIMEOUT;
+        $this->options[RequestOptions::TIMEOUT]         = self::TIMEOUT;
+
         $this->init();
     }
 
@@ -122,6 +136,7 @@ class Client
      */
     public function clear()
     {
+        $this->method = $this->config()->request('method', API::METHOD_POST);
         $this->query->replace([]);
         $this->data->replace([]);
         $this->headers->replace([]);
@@ -177,7 +192,7 @@ class Client
 //        }
 
         if (!$result->isSuccess()) {
-            throw new ServerException($result);
+            throw new ServerException($result, API::ERROR_SERVER_UNKNOWN);
         }
 
         return $result;
@@ -203,7 +218,7 @@ class Client
 //            }
             throw new ClientException(
                 $exception->getMessage(),
-                1,
+                API::ERROR_CLIENT_UNKNOWN,
                 $exception
             );
         }

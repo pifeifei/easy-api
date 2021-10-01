@@ -49,6 +49,10 @@ class UserAgent
                 $newUserAgent[] = $key;
                 continue;
             }
+            if (is_numeric($key)) {
+                $newUserAgent[] = $value;
+                continue;
+            }
             $newUserAgent[] = "$key/$value";
         }
 
@@ -102,11 +106,8 @@ class UserAgent
      *
      * @ throws ClientException
      */
-    public static function append($name, $value)
+    public static function append($name, $value = null)
     {
-//        Filter::name($name);
-//        Filter::value($value);
-
         self::defaultFields();
 
         if (!self::isGuarded($name)) {

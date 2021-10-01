@@ -32,31 +32,6 @@ class Headers implements IteratorAggregate, Countable
     }
 
     /**
-     * Returns the headers as a string.
-     *
-     * @return string The headers
-     * @deprecated   应该不需要这个
-     */
-    public function __toString()
-    {
-        if (!$headers = $this->all()) {
-            return '';
-        }
-
-        ksort($headers);
-        $max = max(array_map('strlen', array_keys($headers))) + 1;
-        $content = '';
-        foreach ($headers as $name => $values) {
-            $name = ucwords($name, '-');
-            foreach ($values as $value) {
-                $content .= sprintf("%-{$max}s %s\r\n", $name.':', $value);
-            }
-        }
-
-        return $content;
-    }
-
-    /**
      * Returns the headers.
      *
      * @param string|null $key The name of the headers to return or null to get them all
@@ -287,5 +262,4 @@ class Headers implements IteratorAggregate, Countable
 
         return HeaderUtils::combine($parts);
     }
-
 }

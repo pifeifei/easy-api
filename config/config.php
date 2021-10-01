@@ -8,8 +8,8 @@ return [
     'clients' => [
         'wechat1' => [
             'config' => [
-                'appid' => 'wx19b0da5c7edf2b22',
-                'appsecret' => '1c1972c00626709d5b99d8c642f1affa',
+                'app_id' => 'wx19b0da5c7edf2b22',
+                'app_secret' => '1c1972c00626709d5b99d8c642f1affa',
                 'token' => 'b3o3R0Y400H752hiI2weD4W2fH0REehO',
             ],
             'request' => 'wechat',

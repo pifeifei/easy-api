@@ -23,7 +23,7 @@ class ConfigTest extends TestCase
         $this->assertInstanceOf(ConfigInterface::class, $config->remove('test'));
         $this->assertNull($config->get('test'));
         $this->assertEquals($configure, $config->all());
-        $config->set('a.b.c', ['d'=>1234]);
+        $config->set('a.b.c', ['d' => 1234]);
         $this->assertEquals(1234, $config->get('a.b.c.d'));
     }
 }

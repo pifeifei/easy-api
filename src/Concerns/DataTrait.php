@@ -9,20 +9,9 @@ use Illuminate\Support\Collection;
 trait DataTrait
 {
     /**
-     * @var Collection
+     * @var array
      */
     protected $collection;
-
-    /**
-     * @param mixed $value
-     *
-     * @return mixed|null
-     */
-    public function search($value)
-    {
-//        return JmesPath::search($expression, $this->collection->all());
-        return $this->collection->search($value);
-    }
 
     /**
      * Delete the contents of a given key or keys
@@ -31,6 +20,10 @@ trait DataTrait
      */
     public function clear($keys = null)
     {
+        if (is_null($keys)) {
+            $this->collection = [];
+            return;
+        }
         $this->delete($keys);
     }
 
@@ -74,18 +67,18 @@ trait DataTrait
      */
     public function get($key = null, $default = null)
     {
-        return Arr::get($this->collection->all(), $key, $default);
+        return Arr::get($this->collection, $key, $default);
     }
 
     /**
      * Set a given key / value pair or pairs
      *
-     * @param array|int|string $keys
+     * @param int|string $key  支持批量设置
      * @param mixed            $value
      */
-    public function set($keys, $value = null)
+    public function set($key, $value = null)
     {
-        $this->collection->put($keys, $value);
+        Arr::set($this->collection, $key, $value);
     }
 
     /**
@@ -95,7 +88,7 @@ trait DataTrait
      */
     public function isEmpty()
     {
-        return $this->collection->isEmpty();
+        return empty($this->collection);
     }
 
     /**
@@ -107,7 +100,7 @@ trait DataTrait
      */
     public function toJson($options = 0)
     {
-        return $this->collection->toJson($options);
+        return json_encode($this->collection, $options);
     }
 
     /**
@@ -115,7 +108,7 @@ trait DataTrait
      */
     public function toArray()
     {
-        return $this->collection->all();
+        return $this->collection;
     }
 
     /**
@@ -127,7 +120,7 @@ trait DataTrait
      */
     public function offsetExists($key)
     {
-        return $this->collection->has($key);
+        return Arr::has($this->collection, $key);
     }
 
     /**
@@ -139,7 +132,7 @@ trait DataTrait
      */
     public function offsetGet($key)
     {
-        return $this->collection->offsetGet($key);
+        return Arr::get($this->collection, $key);
     }
 
     /**
@@ -150,7 +143,7 @@ trait DataTrait
      */
     public function offsetSet($key, $value)
     {
-        $this->collection->offsetSet($key, $value);
+        $this->set($key, $value);
     }
 
     /**
@@ -170,7 +163,7 @@ trait DataTrait
      */
     public function delete($keys)
     {
-        $this->collection->forget($keys);
+        Arr::forget($this->collection, $keys);
     }
 
     /*
@@ -186,7 +179,7 @@ trait DataTrait
      */
     public function count()
     {
-        return $this->collection->count();
+        return count($this->collection);
     }
 
     /**
@@ -196,7 +189,7 @@ trait DataTrait
      */
     public function getIterator()
     {
-        return $this->collection->getIterator();
+        return new ArrayIterator($this->collection);
     }
 
     /**
@@ -206,7 +199,7 @@ trait DataTrait
      */
     public function jsonSerialize()
     {
-        return $this->collection->jsonSerialize();
+        return $this->collection;
     }
 
     /**
@@ -216,12 +209,7 @@ trait DataTrait
      */
     public function __get($name)
     {
-        return $this->collection->get($name);
-//        if (!isset($this->all()[$name])) {
-//            return null;
-//        }
-//
-//        return \json_decode(\json_encode($this->all()))->$name;
+        return $this->get($name);
     }
 
     /*
@@ -237,7 +225,7 @@ trait DataTrait
      */
     public function all()
     {
-        return $this->collection->all();
+        return $this->collection;
     }
 
     /**
@@ -259,11 +247,14 @@ trait DataTrait
     public function add($keys, $value = null)
     {
         if (is_array($keys)) {
-            $this->collection = $this->collection->merge($this->collection);
+            $arr = $this->flatten('.', $keys);
+            foreach ($arr as $key => $item) {
+                $this->set($key, $item);
+            }
         }
 
         if (! is_null($value)) {
-            $this->collection->put($keys, $value);
+            Arr::set($this->collection, $keys, $value);
         }
     }
 
@@ -293,7 +284,7 @@ trait DataTrait
      */
     public function has($keys)
     {
-        return $this->collection->has($keys);
+        return Arr::has($this->collection, $keys);
     }
 
     /**
@@ -308,6 +299,6 @@ trait DataTrait
 
     protected function collection($data = [])
     {
-        $this->collection = new Collection($data);
+        $this->collection = $data;
     }
 }

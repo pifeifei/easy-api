@@ -39,6 +39,6 @@ class ShaHmac256Signature implements SignatureInterface
      */
     public function sign($string, $secretString)
     {
-        return base64_encode(hash_hmac('sha256', $string, $secretString, true));
+        return hash_hmac('sha256', $string, $secretString, false);
     }
 }

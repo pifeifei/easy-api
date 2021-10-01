@@ -5,23 +5,11 @@ namespace Pff\EasyApi\Format;
 use GuzzleHttp\RequestOptions;
 use Pff\EasyApi\API;
 use Pff\EasyApi\Clients\Client;
-use Pff\EasyApi\Contracts\FormatterInterface;
 use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Exception\ServerException;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
-class Formatter implements FormatterInterface
+class Formatter extends AbstractTokenFormatter
 {
-    /**
-     * @var Client
-     */
-    protected $client;
-
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
-
     /**
      * @inheritDoc
      */
@@ -35,7 +23,11 @@ class Formatter implements FormatterInterface
         $this->body();
     }
 
-    protected function body()
+    /**
+     *
+     * @return array
+     */
+    protected function getData()
     {
         $data = $this->client->data();
         $data->add([
@@ -45,62 +37,20 @@ class Formatter implements FormatterInterface
         ]);
         $data = $data->all();
         ksort($data);
-
-        $method = $this->client->method();
-        switch ($method) {
-            case API::METHOD_POST:
-                $this->client->options([RequestOptions::FORM_PARAMS => $data]);
-                return;
-
-            case API::METHOD_XML:
-                $this->client->options([RequestOptions::BODY => $this->bodyXML()]);
-                return;
-
-            case API::METHOD_JSON:
-                $this->client->options([RequestOptions::JSON => $data]);
-                return;
-            case API::METHOD_GET:
-                return;
-        };
-
-        throw new ClientException('不支持的请求类型：' . $method);
+        return $data;
     }
 
     /**
-     * @inheritDoc
+     * @return array|false
      */
-    protected function query()
+    protected function getQuery()
     {
         if ($queries = $this->client->query()->all()) {
             ksort($queries);
-            $this->client->options([RequestOptions::QUERY => $queries]);
+            return $queries;
         }
-    }
 
-    /**
-     * 加签名
-     * @throws ClientException
-     */
-    protected function sign()
-    {
-        $signPosition = $this->client->config()->request('sign.position');
-        switch ($signPosition) {
-            case API::SIGN_POSITION_HEAD:
-                $this->signHead();
-                return;
-
-            case API::SIGN_POSITION_GET:
-                $this->signGet();
-                return;
-
-            case API::SIGN_POSITION_POST:
-                $this->signPost();
-                return;
-            Case API::SIGN_POSITION_NONE:
-                return;
-        };
-
-        throw new ClientException('不支持的加签方式');
+        return false;
     }
 
     /**
@@ -167,7 +117,7 @@ class Formatter implements FormatterInterface
             ->request();
 
         if (0 !== $response->get('err_no')) {
-            throw new ServerException($response->get('message'));
+            throw new ServerException($response->get('message'), $response->getStatusCode());
         }
 
         $tokenInfo = [
@@ -181,22 +131,6 @@ class Formatter implements FormatterInterface
     }
 
     /**
-     * @return Client
-     */
-    protected function getAuthClient()
-    {
-        $class = get_class($this->client);
-//        if ($this->client instanceof Client) {
-            $client = new $class($this->client->config()->all());
-            $client->tokenClient(true);
-
-            return $client;
-//        }
-//
-//        throw new ClientException(sprintf('%s class does not exist.', Client::class));
-    }
-
-    /**
      * @return string access token string
      * @throws ClientException
      */
@@ -206,21 +140,14 @@ class Formatter implements FormatterInterface
         if (isset($tokenInfo['access_token'])) {
             return $tokenInfo['access_token'];
         }
-        throw new ClientException('无法获取 access token');
+        throw new ClientException('无法获取 access token', API::ERROR_CLIENT_FAILED_GET_ACCESS);
     }
 
-    protected function cacheKey()
-    {
-        return 'access_token_' . $this->client->config()->client('appid');
-    }
-
-    protected function bodyXML()
-    {
-        $data = $this->client->data();
-        $xml = new XmlEncoder();
-        return $xml->encode($data, 'xml');
-    }
-
+    /**
+     * @inheritDoc
+     *
+     * @return string
+     */
     protected function signBuild()
     {
         return $this->client->getSignature()->sign(
@@ -229,35 +156,13 @@ class Formatter implements FormatterInterface
         );
     }
 
-    protected function signHead()
-    {
-        $signConfig = $this->client->getSignConfig();
-
-        $headers = $signConfig->getAppends();
-        $headers[$signConfig->getKey()] = $this->signBuild();
-        $this->client->headers($headers);
-
-        $this->client->options([RequestOptions::HEADERS => $this->client->headers()->all()]);
-    }
-
-    protected function signGet()
-    {
-        $signConfig = $this->client->getSignConfig();
-
-        $queries = $signConfig->getAppends();
-        $queries[$signConfig->getKey()] = $this->signBuild();
-        $this->client->query($queries);
-    }
-
-    protected function signPost()
-    {
-        $signConfig = $this->client->getSignConfig();
-
-        $data = $signConfig->getAppends();
-        $data[$signConfig->getKey()] = $this->signBuild();
-        $this->client->data($data);
-    }
-
+    /**
+     * 生成待签名的字符串
+     *
+     * @param array $query
+     * @param array $data
+     * @return string
+     */
     protected function signString($query, $data)
     {
         $arr = array_merge($query, $data);

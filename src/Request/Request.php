@@ -35,10 +35,15 @@ class Request
      */
     public function __construct($method, $uri, $options, $config)
     {
-        $this->method = $method;
+        $this->method = strtoupper($method);
         $this->uri = $uri;
         $this->options = $options;
         $this->config = $config;
+    }
+
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     /**
