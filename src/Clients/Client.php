@@ -18,7 +18,6 @@ use Pff\EasyApi\Contracts\ConfigInterface;
 use Pff\EasyApi\Contracts\FormatterInterface;
 use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Exception\ServerException;
-use Pff\EasyApi\Format\Formatter;
 use Pff\EasyApi\Request\Headers;
 use Pff\EasyApi\Request\Parameters;
 use Pff\EasyApi\Request\SignConfig;
@@ -45,7 +44,7 @@ class Client
     protected $config;
 
     /**
-     * @var Formatter
+     * @var FormatterInterface
      */
     protected $formatter;
 
@@ -142,6 +141,7 @@ class Client
         $this->headers->replace([]);
         $this->cleanOptions();
 //        $this->init();
+        return $this;
     }
 
     /**
@@ -192,7 +192,11 @@ class Client
 //        }
 
         if (!$result->isSuccess()) {
-            throw new ServerException($result, API::ERROR_SERVER_UNKNOWN);
+            throw new ServerException(
+                $result,
+                sprintf('%d %s', $result->getStatusCode(), $result->getReasonPhrase()),
+                API::ERROR_SERVER_UNKNOWN
+            );
         }
 
         return $result;

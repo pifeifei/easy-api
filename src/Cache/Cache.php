@@ -18,6 +18,13 @@ class Cache implements CacheInterface
         return $this->getCache()->clear();
     }
 
+    /**
+     * 获取缓存对象
+     *
+     * 如果是 linux 系统，请设置缓存目录， /tmp 空间很小的，容易出错。
+     *
+     * @return Psr16Cache
+     */
     protected function getCache()
     {
         return new Psr16Cache(new FilesystemAdapter('easy-api', 1500));

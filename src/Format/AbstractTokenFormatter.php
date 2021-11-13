@@ -20,8 +20,10 @@ abstract class AbstractTokenFormatter extends AbstractFormatter
     protected function getAuthClient()
     {
         $class = get_class($this->client);
+        /* @var Client $client */
         $client = new $class($this->client->config()->all());
         $client->tokenClient(true);
+        $client->options($this->client->getOptions());
 
         return $client;
     }

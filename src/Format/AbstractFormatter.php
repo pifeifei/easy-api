@@ -77,6 +77,10 @@ abstract class AbstractFormatter implements FormatterInterface
     protected function sign()
     {
         $signPosition = $this->client->config()->request('sign.position');
+
+        if (empty($signPosition)) {
+            return;
+        }
         switch ($signPosition) {
             case API::SIGN_POSITION_HEAD:
                 $this->signHead();
@@ -93,7 +97,7 @@ abstract class AbstractFormatter implements FormatterInterface
                 return;
         };
 
-        throw new ClientException('不支持的加签方式', API::ERROR_CLIENT_UNSUPPORTED_SIGNATURE);
+        throw new ClientException('Unsupported signature method.', API::ERROR_CLIENT_UNSUPPORTED_SIGNATURE);
     }
 
     /**
@@ -155,5 +159,4 @@ abstract class AbstractFormatter implements FormatterInterface
         $data[$signConfig->getKey()] = $this->signBuild();
         $this->client->data($data);
     }
-
 }

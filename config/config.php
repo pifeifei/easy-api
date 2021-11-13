@@ -36,7 +36,7 @@ return [
             ],
 //            "adaptor" => \Pff\EasyApi\Adaptor\Adaptor::class, // 适配器
             "signature" => \Pff\EasyApi\Signature\MD5Signature::class, // 继承 \Pff\EasyApi\Signature\SignatureInterface::class
-            "formatter" => Pff\EasyApi\Format\Formatter::class,
+            "formatter" => Pff\EasyApi\Format\HttpBinFormatter::class,
 //            "formats" => [
 //              "data" => Pff\EasyApi\Formats\Formatter::class,
 //              "query" => Pff\EasyApi\Formats\QueryFormat::class,
