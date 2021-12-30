@@ -13,6 +13,8 @@ use Pff\EasyApi\Concerns\DataTrait;
 use Pff\EasyApi\Request\Request;
 use Psr\Http\Message\ResponseInterface;
 
+use function strtoupper;
+
 class Result extends Response implements ArrayAccess, IteratorAggregate, Countable
 {
     use DataTrait;
@@ -39,8 +41,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
             $response->getProtocolVersion(),
             $response->getReasonPhrase()
         );
-        // echo __METHOD__;
-//dump($response->getBody()->__toString());
+
         $this->request = $request;
 
         $this->resolveData();
@@ -74,10 +75,10 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     /**
      * @return string
      */
-    private function getRequestFormat()
+    private function getRequestFormat(): string
     {
         return ($this->request instanceof Request)
-            ? \strtoupper($this->request->format())
+            ? strtoupper($this->request->format())
             : API::RESPONSE_FORMAT_JSON;
     }
 
@@ -86,7 +87,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
      *
      * @return array
      */
-    private function jsonToArray($jsonString)
+    private function jsonToArray(string $jsonString): array
     {
         try {
             return Utils::jsonDecode($jsonString, true);
@@ -100,7 +101,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
      *
      * @return array
      */
-    private function xmlToArray($string)
+    private function xmlToArray(string $string): array
     {
         try {
             return json_decode(json_encode(simplexml_load_string($string)), true);
@@ -128,7 +129,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     /**
      * @return bool
      */
-    public function isSuccess()
+    public function isSuccess(): bool
     {
         return 200 <= $this->getStatusCode()
             && 300 > $this->getStatusCode();

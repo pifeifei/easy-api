@@ -10,7 +10,7 @@ class ShaHmac256Signature implements SignatureInterface
     /**
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return 'HMAC-SHA256';
     }
@@ -18,7 +18,7 @@ class ShaHmac256Signature implements SignatureInterface
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return '';
     }
@@ -26,7 +26,7 @@ class ShaHmac256Signature implements SignatureInterface
     /**
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return '1.0';
     }
@@ -37,7 +37,7 @@ class ShaHmac256Signature implements SignatureInterface
      *
      * @return string
      */
-    public function sign($string, $secretString)
+    public function sign(string $string, string $secretString): string
     {
         return hash_hmac('sha256', $string, $secretString, false);
     }

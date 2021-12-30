@@ -18,7 +18,7 @@ trait HistoryTrait
     /**
      * @return array
      */
-    public function getHistory()
+    public function getHistory(): array
     {
         return $this->histories;
     }
@@ -31,7 +31,7 @@ trait HistoryTrait
     /**
      * @param bool $remember
      */
-    public function rememberHistory($remember = true)
+    public function rememberHistory(bool $remember = true)
     {
         $this->isRememberHistory = $remember;
     }
@@ -39,7 +39,7 @@ trait HistoryTrait
     /**
      * @return bool
      */
-    public function isRememberHistory()
+    public function isRememberHistory(): bool
     {
         return $this->isRememberHistory;
     }
@@ -47,7 +47,7 @@ trait HistoryTrait
     /**
      * @return array
      */
-    public function &referenceHistory()
+    public function &referenceHistory(): array
     {
         return $this->histories;
     }
@@ -55,7 +55,7 @@ trait HistoryTrait
     /**
      * @return int
      */
-    public function countHistory()
+    public function countHistory(): int
     {
         return count($this->histories);
     }

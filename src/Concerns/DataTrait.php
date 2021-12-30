@@ -4,7 +4,6 @@ namespace Pff\EasyApi\Concerns;
 
 use ArrayIterator;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 
 trait DataTrait
 {
@@ -30,12 +29,12 @@ trait DataTrait
     /**
      * Flatten an array with the given character as a key delimiter
      *
-     * @param  string     $delimiter
-     * @param  array|null $items
-     * @param  string     $prepend
+     * @param string $delimiter
+     * @param array|null $items
+     * @param string $prepend
      * @return array
      */
-    public function flatten($delimiter = '.', $items = null, $prepend = '')
+    public function flatten(string $delimiter = '.', array $items = null, string $prepend = ''): array
     {
         $flatten = [];
 
@@ -86,7 +85,7 @@ trait DataTrait
      *
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->collection);
     }
@@ -94,11 +93,11 @@ trait DataTrait
     /**
      * Return the value of a given key or all the values as JSON
      *
-     * @param int   $options
+     * @param int $options
      *
      * @return string
      */
-    public function toJson($options = 0)
+    public function toJson(int $options = 0): string
     {
         return json_encode($this->collection, $options);
     }
@@ -106,7 +105,7 @@ trait DataTrait
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->collection;
     }
@@ -118,7 +117,7 @@ trait DataTrait
      *
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         return Arr::has($this->collection, $key);
     }
@@ -141,7 +140,7 @@ trait DataTrait
      * @param int|string|null $key
      * @param mixed           $value
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         $this->set($key, $value);
     }
@@ -151,7 +150,7 @@ trait DataTrait
      *
      * @param int|string $key
      */
-    public function offsetUnset($key)
+    public function offsetUnset($key): void
     {
         $this->delete($key);
     }
@@ -177,7 +176,7 @@ trait DataTrait
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->collection);
     }
@@ -187,7 +186,7 @@ trait DataTrait
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->collection);
     }
@@ -197,7 +196,7 @@ trait DataTrait
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->collection;
     }
@@ -207,7 +206,7 @@ trait DataTrait
      *
      * @return mixed|null
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->get($name);
     }
@@ -223,7 +222,7 @@ trait DataTrait
      *
      * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->collection;
     }
@@ -232,7 +231,7 @@ trait DataTrait
      * @param string $name
      * @param mixed  $value
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $this->add($name, $value);
     }
@@ -270,7 +269,7 @@ trait DataTrait
      *
      * @return bool
      */
-    public function __isset($name)
+    public function __isset(string $name)
     {
         return $this->has($name);
     }
@@ -282,7 +281,7 @@ trait DataTrait
      *
      * @return bool
      */
-    public function has($keys)
+    public function has($keys): bool
     {
         return Arr::has($this->collection, $keys);
     }

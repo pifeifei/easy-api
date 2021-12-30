@@ -30,7 +30,7 @@ class SignConfig
      * @param array $config
      * @return static
      */
-    public static function create($config = [])
+    public static function create(array $config = []): SignConfig
     {
         $key = Arr::get($config, 'key');
         $position = Arr::get($config, 'position');
@@ -41,7 +41,7 @@ class SignConfig
     /**
      * @return string
      */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
@@ -50,7 +50,7 @@ class SignConfig
      * @param string $key
      * @return SignConfig
      */
-    public function setKey(string $key)
+    public function setKey(string $key): SignConfig
     {
         $this->key = $key;
         return $this;
@@ -59,7 +59,7 @@ class SignConfig
     /**
      * @return string
      */
-    public function getPosition()
+    public function getPosition(): string
     {
         return $this->position;
     }
@@ -75,7 +75,7 @@ class SignConfig
     /**
      * @return array
      */
-    public function getAppends()
+    public function getAppends(): array
     {
         return $this->appends;
     }
@@ -83,8 +83,8 @@ class SignConfig
     /**
      * @param array $appends
      */
-    public function setAppends($appends)
+    public function setAppends(array $appends)
     {
-        $this->appends = (array)$appends;
+        $this->appends = $appends;
     }
 }

@@ -13,7 +13,7 @@ class Cache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function clear(): bool
     {
         return $this->getCache()->clear();
     }
@@ -25,7 +25,7 @@ class Cache implements CacheInterface
      *
      * @return Psr16Cache
      */
-    protected function getCache()
+    protected function getCache(): Psr16Cache
     {
         return new Psr16Cache(new FilesystemAdapter('easy-api', 1500));
     }
@@ -33,7 +33,7 @@ class Cache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key, $defaultValue = '')
+    public function get(string $key, $defaultValue = '')
     {
         return $this->getCache()->get($key, $defaultValue);
     }
@@ -41,7 +41,7 @@ class Cache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, $value, $ttl = null): bool
     {
         return $this->getCache()->set($key, $value, $ttl);
     }
@@ -49,7 +49,7 @@ class Cache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return $this->getCache()->has($key);
     }

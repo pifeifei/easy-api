@@ -29,7 +29,7 @@ class WechatFormatter extends AbstractTokenFormatter
     /**
      * @inheritDoc
      */
-    protected function getData()
+    protected function getData(): array
     {
         $data = $this->client->data();
         $data->add([
@@ -47,8 +47,7 @@ class WechatFormatter extends AbstractTokenFormatter
      */
     protected function getQuery()
     {
-        $queries = $this->client->query()->all();
-        return $queries;
+        return $this->client->query()->all();
     }
 
     /**
@@ -63,7 +62,7 @@ class WechatFormatter extends AbstractTokenFormatter
      * @return string access token string
      * @throws ClientException
      */
-    protected function getAccessToken()
+    protected function getAccessToken(): string
     {
         $tokenInfo = $this->getToken();
         if (isset($tokenInfo['access_token'])) {
@@ -84,7 +83,7 @@ class WechatFormatter extends AbstractTokenFormatter
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws ServerException
      */
-    protected function getToken($refresh = false)
+    protected function getToken(bool $refresh = false)
     {
         $key = $this->cacheKey();
         $cache = $this->client->cache();
@@ -143,8 +142,8 @@ class WechatFormatter extends AbstractTokenFormatter
     /**
      * @inheritDoc
      */
-    protected function signBuild()
+    protected function signBuild(): string
     {
-
+        return '';
     }
 }

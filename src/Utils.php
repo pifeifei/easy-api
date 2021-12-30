@@ -9,11 +9,11 @@ class Utils
     /**
      * 将布尔值转为字符串
      *
-     * @param  array  $arr
+     * @param array $arr
      *
      * @return array
      */
-    public static function boolToString($arr)
+    public static function boolToString(array $arr): array
     {
         foreach ($arr as & $item) {
 
@@ -42,7 +42,7 @@ class Utils
      *
      * @return array
      */
-    public static function ksortRecursive($arr)
+    public static function ksortRecursive(array $arr): array
     {
         ksort($arr);
         foreach ($arr as & $item) {
@@ -71,7 +71,7 @@ class Utils
      *
      * @return array
      */
-    public static function valueToJsonString($arr, $options = 0)
+    public static function valueToJsonString(array $arr, int $options = 0): array
     {
         foreach ($arr as & $item) {
             if (is_array($item)) {

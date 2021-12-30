@@ -10,26 +10,26 @@ interface ConfigInterface
      * @param array $config
      * @return ConfigInterface
      */
-    public static function create(array $config);
+    public static function create(array $config): ConfigInterface;
 
     /**
      * @param string $name
      * @param scalar|array $defaultValue
      * @return scalar|array
      */
-    public function client($name, $defaultValue = null);
+    public function client(string $name, $defaultValue = null);
 
     /**
      * @param string $name
      * @param scalar|array $defaultValue
      * @return scalar|array
      */
-    public function request($name, $defaultValue = null);
+    public function request(string $name, $defaultValue = null);
 
     /**
      * @return array
      */
-    public function all();
+    public function all(): array;
 
     /**
      * 设置属性
@@ -38,7 +38,7 @@ interface ConfigInterface
      * @param scalar|array $newValue
      * @return ConfigInterface
      */
-    public function set($name, $newValue = null);
+    public function set($name, $newValue = null): ConfigInterface;
 
     /**
      * 获取属性
@@ -47,14 +47,14 @@ interface ConfigInterface
      * @param scalar|array|null $defaultValue
      * @return scalar|array
      */
-    public function get($name, $defaultValue = null);
+    public function get(string $name, $defaultValue = null);
 
     /**
      * 判断是否存在键
      * @param $name
      * @return bool
      */
-    public function has($name);
+    public function has($name): bool;
 
     /**
      * 移除某个属性
@@ -62,6 +62,6 @@ interface ConfigInterface
      * @param string $name
      * @return ConfigInterface
      */
-    public function remove($name);
+    public function remove(string $name): ConfigInterface;
 
 }

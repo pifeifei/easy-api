@@ -29,7 +29,7 @@ class UserAgent
      *
      * @return string
      */
-    public static function toString(array $append = [])
+    public static function toString(array $append = []): string
     {
         self::defaultFields();
 
@@ -77,7 +77,7 @@ class UserAgent
      *
      * @return array
      */
-    public static function clean(array $append)
+    public static function clean(array $append): array
     {
         foreach ($append as $key => $value) {
             if (self::isGuarded($key)) {
@@ -93,7 +93,7 @@ class UserAgent
      *
      * @return bool
      */
-    public static function isGuarded($name)
+    public static function isGuarded($name): bool
     {
         return in_array(strtolower($name), self::$guard, true);
     }
@@ -102,11 +102,11 @@ class UserAgent
      * set User Agent of Alibaba Cloud.
      *
      * @param string $name
-     * @param string $value
+     * @param string|null $value
      *
      * @ throws ClientException
      */
-    public static function append($name, $value = null)
+    public static function append(string $name, string $value = null)
     {
         self::defaultFields();
 

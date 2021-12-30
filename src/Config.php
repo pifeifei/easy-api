@@ -17,17 +17,17 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public static function create(array $config)
+    public static function create(array $config): ConfigInterface
     {
         return new static($config);
     }
 
-    public function client($name, $defaultValue = null)
+    public function client(string $name, $defaultValue = null)
     {
         return $this->get('config.' . $name, $defaultValue);
     }
 
-    public function request($name, $defaultValue = null)
+    public function request(string $name, $defaultValue = null)
     {
         return $this->get('request.' . $name, $defaultValue);
     }
@@ -35,7 +35,7 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function all()
+    public function all(): array
     {
         return $this->item;
     }
@@ -43,7 +43,7 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function set($name, $newValue = null)
+    public function set($name, $newValue = null): ConfigInterface
     {
         Arr::set($this->item, $name, $newValue);
         return $this;
@@ -52,7 +52,7 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function get($name, $defaultValue = null)
+    public function get(string $name, $defaultValue = null)
     {
         return Arr::get($this->item, $name, $defaultValue);
     }
@@ -60,7 +60,7 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function has($name)
+    public function has($name): bool
     {
         return Arr::has($this->item, $name);
     }
@@ -68,7 +68,7 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function remove($name)
+    public function remove(string $name): ConfigInterface
     {
         Arr::forget($this->item, $name);
         return $this;

@@ -7,12 +7,12 @@ interface SignatureInterface
     /**
      * @return string
      */
-    public function getMethod();
+    public function getMethod(): string;
 
     /**
      * @return string
      */
-    public function getVersion();
+    public function getVersion(): string;
 
     /**
      * @param string $string
@@ -20,10 +20,10 @@ interface SignatureInterface
      *
      * @return string
      */
-    public function sign($string, $secretString);
+    public function sign(string $string, string $secretString): string;
 
     /**
      * @return string
      */
-    public function getType();
+    public function getType(): string;
 }

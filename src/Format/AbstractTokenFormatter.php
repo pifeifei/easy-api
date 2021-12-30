@@ -2,7 +2,6 @@
 
 namespace Pff\EasyApi\Format;
 
-use GuzzleHttp\RequestOptions;
 use Pff\EasyApi\Clients\Client;
 use Pff\EasyApi\Exception\ClientException;
 
@@ -17,7 +16,7 @@ abstract class AbstractTokenFormatter extends AbstractFormatter
     /**
      * @return Client
      */
-    protected function getAuthClient()
+    protected function getAuthClient(): Client
     {
         $class = get_class($this->client);
         /* @var Client $client */
@@ -32,7 +31,7 @@ abstract class AbstractTokenFormatter extends AbstractFormatter
      * 获取 token 缓存名
      * @return string
      */
-    protected function cacheKey()
+    protected function cacheKey(): string
     {
         return 'access_token_' . $this->client->config()->client('app_id');
     }

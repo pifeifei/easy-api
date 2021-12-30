@@ -2,9 +2,7 @@
 
 namespace Pff\EasyApi\Format;
 
-use GuzzleHttp\RequestOptions;
 use Pff\EasyApi\API;
-use Pff\EasyApi\Clients\Client;
 use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Exception\ServerException;
 
@@ -27,7 +25,7 @@ class Formatter extends AbstractTokenFormatter
      *
      * @return array
      */
-    protected function getData()
+    protected function getData(): array
     {
         $data = $this->client->data();
         $data->add([
@@ -70,7 +68,7 @@ class Formatter extends AbstractTokenFormatter
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws ServerException
      */
-    protected function getToken($refresh = false)
+    protected function getToken(bool $refresh = false): array
     {
         $key = $this->cacheKey();
         $cache = $this->client->cache();
@@ -134,7 +132,7 @@ class Formatter extends AbstractTokenFormatter
      * @return string access token string
      * @throws ClientException
      */
-    protected function getAccessToken()
+    protected function getAccessToken(): string
     {
         $tokenInfo = $this->getToken();
         if (isset($tokenInfo['access_token'])) {
@@ -148,7 +146,7 @@ class Formatter extends AbstractTokenFormatter
      *
      * @return string
      */
-    protected function signBuild()
+    protected function signBuild(): string
     {
         return $this->client->getSignature()->sign(
             $this->signString($this->client->query()->all(), $this->client->data()->all()),
@@ -163,7 +161,7 @@ class Formatter extends AbstractTokenFormatter
      * @param array $data
      * @return string
      */
-    protected function signString($query, $data)
+    protected function signString(array $query, array $data): string
     {
         $arr = array_merge($query, $data);
         return http_build_query($arr);

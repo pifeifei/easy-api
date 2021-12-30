@@ -10,7 +10,7 @@ class LaravelCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function clear(): bool
     {
         return Cache::tags(['easy', 'api'])->clear();
     }
@@ -18,7 +18,7 @@ class LaravelCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key, $defaultValue = '')
+    public function get(string $key, $defaultValue = '')
     {
         return Cache::tags(['easy', 'api'])->get($key, $defaultValue);
     }
@@ -26,7 +26,7 @@ class LaravelCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, $value, $ttl = null): bool
     {
         return Cache::tags(['easy', 'api'])->put($key, $value, $ttl);
     }
@@ -34,7 +34,7 @@ class LaravelCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return Cache::tags(['easy', 'api'])->has($key);
     }

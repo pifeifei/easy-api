@@ -25,7 +25,7 @@ abstract class AbstractFormatter implements FormatterInterface
      * post 数据处理
      * @return array
      */
-    abstract protected function getData();
+    abstract protected function getData(): array;
 
     /**
      * query 数据处理
@@ -56,7 +56,7 @@ abstract class AbstractFormatter implements FormatterInterface
                 return;
             case API::METHOD_GET:
                 return;
-        };
+        }
 
         throw new ClientException('不支持的请求类型：' . $method, API::ERROR_CLIENT_UNSUPPORTED_METHOD);
     }
@@ -96,7 +96,7 @@ abstract class AbstractFormatter implements FormatterInterface
                 return;
             Case API::SIGN_POSITION_NONE:
                 return;
-        };
+        }
 
         throw new ClientException('Unsupported signature method.', API::ERROR_CLIENT_UNSUPPORTED_SIGNATURE);
     }
@@ -118,13 +118,14 @@ abstract class AbstractFormatter implements FormatterInterface
      * @return string
      * @throws ClientException
      */
-    protected function signBuild()
+    protected function signBuild(): string
     {
         throw new ClientException('Formatter does not implement signBuild method.');
     }
 
     /**
      * 前面放到 header
+     * @throws ClientException
      */
     protected function signHead()
     {
@@ -137,6 +138,7 @@ abstract class AbstractFormatter implements FormatterInterface
 
     /**
      * query 方式请求签名
+     * @throws ClientException
      */
     protected function signGet()
     {
@@ -149,6 +151,7 @@ abstract class AbstractFormatter implements FormatterInterface
 
     /**
      * post 中进行签名
+     * @throws ClientException
      */
     protected function signPost()
     {

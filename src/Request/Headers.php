@@ -38,11 +38,11 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return array An array of headers
      */
-    public function all($key = null)
+    public function all(string $key = null): array
     {
         if (null !== $key) {
             $key2 = strtr($key, self::UPPER, self::LOWER);
-            return isset($this->headers[$key2]) ? $this->headers[$key2] : [];
+            return $this->headers[$key2] ?? [];
         }
 
         return $this->headers;
@@ -53,7 +53,7 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return array An array of parameter keys
      */
-    public function keys()
+    public function keys(): array
     {
         return array_keys($this->all());
     }
@@ -101,9 +101,9 @@ class Headers implements IteratorAggregate, Countable
      * Sets a header by name.
      *
      * @param string|string[]|null $values  The value or an array of values
-     * @param bool                 $replace Whether to replace the actual value or not (true by default)
+     * @param bool $replace Whether to replace the actual value or not (true by default)
      */
-    public function set($key, $values, $replace = true)
+    public function set($key, $values, bool $replace = true)
     {
         $key = strtr($key, self::UPPER, self::LOWER);
 
@@ -133,7 +133,7 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return bool true if the parameter exists, false otherwise
      */
-    public function has($key)
+    public function has($key): bool
     {
         return array_key_exists(strtr($key, self::UPPER, self::LOWER), $this->all());
     }
@@ -143,7 +143,7 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return bool true if the value is contained in the header, false otherwise
      */
-    public function contains($key, $value)
+    public function contains($key, $value): bool
     {
         return in_array($value, $this->all($key));
     }
@@ -199,7 +199,7 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return bool true if the directive exists, false otherwise
      */
-    public function hasCacheControlDirective($key)
+    public function hasCacheControlDirective($key): bool
     {
         return array_key_exists($key, $this->cacheControl);
     }
@@ -211,7 +211,7 @@ class Headers implements IteratorAggregate, Countable
      */
     public function getCacheControlDirective($key)
     {
-        return isset($this->cacheControl[$key]) ? $this->cacheControl[$key] : null;
+        return $this->cacheControl[$key] ?? null;
     }
 
     /**
@@ -229,7 +229,7 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return ArrayIterator An \ArrayIterator instance
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->headers);
     }
@@ -239,12 +239,15 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return int The number of headers
      */
-    public function count()
+    public function count(): int
     {
         return count($this->headers);
     }
 
-    protected function getCacheControlHeader()
+    /**
+     * @return string
+     */
+    protected function getCacheControlHeader(): string
     {
         ksort($this->cacheControl);
 
@@ -256,7 +259,7 @@ class Headers implements IteratorAggregate, Countable
      *
      * @return array An array representing the attribute values
      */
-    protected function parseCacheControl($header)
+    protected function parseCacheControl($header): array
     {
         $parts = HeaderUtils::split($header, ',=');
 

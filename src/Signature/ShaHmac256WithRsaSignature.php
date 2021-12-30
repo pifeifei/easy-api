@@ -9,7 +9,7 @@ class ShaHmac256WithRsaSignature implements SignatureInterface
     /**
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return 'SHA256withRSA';
     }
@@ -17,7 +17,7 @@ class ShaHmac256WithRsaSignature implements SignatureInterface
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return 'PRIVATEKEY';
     }
@@ -25,7 +25,7 @@ class ShaHmac256WithRsaSignature implements SignatureInterface
     /**
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return '1.0';
     }
@@ -36,7 +36,7 @@ class ShaHmac256WithRsaSignature implements SignatureInterface
      *
      * @return string
      */
-    public function sign($string, $secretString)
+    public function sign(string $string, string $secretString): string
     {
         $binarySignature = '';
         openssl_sign(

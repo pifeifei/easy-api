@@ -41,7 +41,7 @@ trait ClientTrait
      *
      * @return GuzzleClient
      */
-    public function createClient(Client $client = null)
+    public function createClient(Client $client = null): GuzzleClient
     {
         if (self::hasMock()) {
 //            echo __METHOD__ . ':' . __LINE__ . PHP_EOL;
@@ -82,7 +82,7 @@ trait ClientTrait
      * @param string|null $method
      * @return $this|string
      */
-    public function method($method = null)
+    public function method(string $method = null)
     {
         if (is_null($method)) {
             return $this->method;
@@ -137,7 +137,7 @@ trait ClientTrait
      * @param bool|null $isTokenClient
      * @return $this|bool
      */
-    public function tokenClient($isTokenClient = null)
+    public function tokenClient(bool $isTokenClient = null)
     {
         if (is_null($isTokenClient)) {
             return $this->isTokenClient;

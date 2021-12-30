@@ -31,7 +31,7 @@ class HeaderUtils
      * @return array Nested array with as many levels as there are characters in
      *               $separators
      */
-    public static function split($header, $separators)
+    public static function split($header, string $separators)
     {
         $quotedSeparators = preg_quote($separators, '/');
 
@@ -74,7 +74,7 @@ class HeaderUtils
         $assoc = [];
         foreach ($parts as $part) {
             $name = strtolower($part[0]);
-            $value = isset($part[1]) ? $part[1] : true;
+            $value = $part[1] ?? true;
             $assoc[$name] = $value;
         }
 

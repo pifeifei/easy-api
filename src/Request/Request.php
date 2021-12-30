@@ -28,12 +28,12 @@ class Request
     protected $options;
 
     /**
-     * @param  string  $method
-     * @param  UriInterface  $uri
-     * @param  array  $options
-     * @param  ConfigInterface  $config
+     * @param string $method
+     * @param UriInterface $uri
+     * @param array $options
+     * @param ConfigInterface $config
      */
-    public function __construct($method, $uri, $options, $config)
+    public function __construct(string $method, UriInterface $uri, array $options, ConfigInterface $config)
     {
         $this->method = strtoupper($method);
         $this->uri = $uri;
@@ -49,7 +49,7 @@ class Request
     /**
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -57,7 +57,7 @@ class Request
     /**
      * @return UriInterface
      */
-    public function getUri()
+    public function getUri(): UriInterface
     {
         return $this->uri;
     }
@@ -65,7 +65,7 @@ class Request
     /**
      * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
@@ -73,7 +73,7 @@ class Request
     /**
      * @return string
      */
-    public function format()
+    public function format(): string
     {
         return $this->config->request('format');
     }

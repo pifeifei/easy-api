@@ -16,7 +16,7 @@ trait CacheTrait
     /**
      * @return CacheInterface
      */
-    public function cache()
+    public function cache(): CacheInterface
     {
         return $this->cache;
     }

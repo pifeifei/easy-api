@@ -23,6 +23,7 @@ use Pff\EasyApi\Request\Parameters;
 use Pff\EasyApi\Request\SignConfig;
 use Pff\EasyApi\Request\UserAgent;
 use Pff\EasyApi\Result;
+use UnexpectedValueException;
 
 class Client
 {
@@ -75,8 +76,12 @@ class Client
         $this->init();
     }
 
-
-    public function appendUserAgent($name, $value)
+    /**
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
+    public function appendUserAgent(string $name, string $value): Client
     {
         if (!UserAgent::isGuarded($name)) {
             $this->userAgent[$name] = $value;
@@ -87,17 +92,19 @@ class Client
 
     /**
      * @param array $userAgent
-     * @return $this
+     * @return Client
      */
-    public function withUserAgent(array $userAgent)
+    public function withUserAgent(array $userAgent): Client
     {
         $this->userAgent = $userAgent;
 
         return $this;
     }
 
-
-    public function format()
+    /**
+     * @return string
+     */
+    public function format(): string
     {
         return $this->format;
     }
@@ -111,11 +118,11 @@ class Client
 
         $formatter = $config->request('formatter');
         if (! class_exists($formatter)) {
-            throw new \UnexpectedValueException(sprintf('%s class does not exist.', $formatter));
+            throw new UnexpectedValueException(sprintf('%s class does not exist.', $formatter));
         }
         $this->formatter = new $formatter($this);
         if (! ($this->formatter instanceof FormatterInterface)) {
-            throw new \UnexpectedValueException(sprintf('Formatter must implement %s interface.', FormatterInterface::class));
+            throw new UnexpectedValueException(sprintf('Formatter must implement %s interface.', FormatterInterface::class));
         }
 
         $this->format = $config->request('format', API::RESPONSE_FORMAT_JSON);
@@ -133,14 +140,13 @@ class Client
     /**
      * 清空数据
      */
-    public function clear()
+    public function clear(): Client
     {
         $this->method = $this->config()->request('method', API::METHOD_POST);
         $this->query->replace([]);
         $this->data->replace([]);
         $this->headers->replace([]);
         $this->cleanOptions();
-//        $this->init();
         return $this;
     }
 
@@ -163,7 +169,7 @@ class Client
         return $this->config->get($name, $default);
     }
 
-    public function getSignConfig()
+    public function getSignConfig(): SignConfig
     {
         return $this->signConfig;
     }
@@ -182,7 +188,7 @@ class Client
      * @throws ClientException
      * @throws ServerException
      */
-    public function request()
+    public function request(): Result
     {
         $this->resolveOption();
         $result = $this->response();
@@ -206,7 +212,7 @@ class Client
      * @return Result
      * @throws ClientException
      */
-    private function response()
+    private function response(): Result
     {
         try {
             /* @var Result $result */

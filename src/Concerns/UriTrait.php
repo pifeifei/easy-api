@@ -28,7 +28,7 @@ trait UriTrait
      * @param string $scheme
      * @return $this
      */
-    public function scheme($scheme)
+    public function scheme(string $scheme)
     {
         $this->uri = $this->uri()->withScheme($scheme);
         return $this;
@@ -38,7 +38,7 @@ trait UriTrait
      * @param string $host
      * @return $this
      */
-    public function host($host)
+    public function host(string $host)
     {
         $this->uri = $this->uri()->withHost($host);
         return $this;
@@ -48,7 +48,7 @@ trait UriTrait
      * @param string $path
      * @return $this
      */
-    public function path($path)
+    public function path(string $path)
     {
         if (strpos($path, '/') === 0) {
             $this->uri = $this->uri()->withPath($path);
@@ -63,7 +63,7 @@ trait UriTrait
      * @param int $port
      * @return $this
      */
-    public function port($port)
+    public function port(int $port)
     {
         $this->uri = $this->uri()->withPort($port);
         return $this;

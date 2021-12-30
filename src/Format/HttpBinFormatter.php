@@ -19,7 +19,7 @@ class HttpBinFormatter extends AbstractFormatter
     /**
      * @inheritDoc
      */
-    protected function getData()
+    protected function getData(): array
     {
         return Utils::ksortRecursive(Utils::boolToString($this->client->data()->all()));
     }

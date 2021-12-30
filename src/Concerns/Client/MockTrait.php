@@ -23,11 +23,12 @@ trait MockTrait
     protected $mock;
 
     /**
-     * @param integer             $status
-     * @param array               $headers
+     * @param integer $status
+     * @param array $headers
      * @param array|string|object $body
+     * @param string $version
      */
-    public function mockResponse($status = 200, array $headers = [], $body = null, $version = '1.1')
+    public function mockResponse(int $status = 200, array $headers = [], $body = null, string $version = '1.1')
     {
         if (is_array($body) || is_object($body)) {
             $body = json_encode($body);
@@ -71,7 +72,7 @@ trait MockTrait
     /**
      * @return bool
      */
-    public function hasMock()
+    public function hasMock(): bool
     {
         return $this->getMock()->count() > 0;
     }
@@ -79,7 +80,7 @@ trait MockTrait
     /**
      * @return MockHandler
      */
-    public function getMock()
+    public function getMock(): MockHandler
     {
         if (is_null($this->mock)) {
             $this->mock = new MockHandler($this->mockQueue);
