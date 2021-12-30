@@ -40,6 +40,7 @@ abstract class AbstractFormatter implements FormatterInterface
     protected function body()
     {
         $data = $this->getData();
+        $this->client->options([RequestOptions::HEADERS => $this->client->headers()->all()]);
         $method = $this->client->method();
         switch ($method) {
             case API::METHOD_POST:
@@ -132,8 +133,6 @@ abstract class AbstractFormatter implements FormatterInterface
         $headers = $signConfig->getAppends();
         $headers[$signConfig->getKey()] = $this->signBuild();
         $this->client->headers($headers);
-
-        $this->client->options([RequestOptions::HEADERS => $this->client->headers()->all()]);
     }
 
     /**
