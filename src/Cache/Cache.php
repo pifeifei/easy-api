@@ -1,13 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Cache;
 
 use Pff\EasyApi\Contracts\CacheInterface;
+use Pff\EasyApi\Exception\ClientException;
+use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 
 class Cache implements CacheInterface
 {
+    /**
+     * @var null|PsrCacheInterface
+     */
     protected $cache;
 
     /**
@@ -19,23 +27,15 @@ class Cache implements CacheInterface
     }
 
     /**
-     * 获取缓存对象
-     *
-     * 如果是 linux 系统，请设置缓存目录， /tmp 空间很小的，容易出错。
-     *
-     * @return Psr16Cache
-     */
-    protected function getCache(): Psr16Cache
-    {
-        return new Psr16Cache(new FilesystemAdapter('easy-api', 1500));
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function get(string $key, $defaultValue = '')
+    public function get(string $key, $defaultValue = null)
     {
-        return $this->getCache()->get($key, $defaultValue);
+        try {
+            return $this->getCache()->get($key, $defaultValue);
+        } catch (InvalidArgumentException $e) {
+            throw new ClientException('API get cache error: ' . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -43,7 +43,11 @@ class Cache implements CacheInterface
      */
     public function set(string $key, $value, $ttl = null): bool
     {
-        return $this->getCache()->set($key, $value, $ttl);
+        try {
+            return $this->getCache()->set($key, $value, $ttl);
+        } catch (InvalidArgumentException $e) {
+            throw new ClientException('API set cache error: ' . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -51,6 +55,40 @@ class Cache implements CacheInterface
      */
     public function has(string $key): bool
     {
-        return $this->getCache()->has($key);
+        try {
+            return $this->getCache()->has($key);
+        } catch (InvalidArgumentException $e) {
+            throw new ClientException('API cache error: ' . $e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * 获取默认缓存对象。
+     *
+     * @return PsrCacheInterface
+     */
+    public function getDefaultCache(): PsrCacheInterface
+    {
+        return new Psr16Cache(new FilesystemAdapter('easy-api', 1500));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCache(): PsrCacheInterface
+    {
+        if (isset($this->cache)) {
+            return $this->cache;
+        }
+
+        return $this->cache = new Psr16Cache(new FilesystemAdapter('easy-api', 1500));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCache(PsrCacheInterface $cache): void
+    {
+        $this->cache = $cache;
     }
 }

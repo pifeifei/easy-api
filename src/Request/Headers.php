@@ -1,29 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Request;
 
 use ArrayIterator;
 use Countable;
+
+use const DATE_RFC2822;
+
 use DateTime;
 use DateTimeInterface;
 use IteratorAggregate;
 use RuntimeException;
 
-use function array_key_exists;
-use function count;
-use function in_array;
-use function is_array;
-
-use const DATE_RFC2822;
-
 class Headers implements IteratorAggregate, Countable
 {
-    const UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const LOWER = '-abcdefghijklmnopqrstuvwxyz';
+    public const UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    public const LOWER = '-abcdefghijklmnopqrstuvwxyz';
 
+    /**
+     * @var array<string, string|string[]>
+     */
     protected $headers = [];
+    /**
+     * @var array<int|string, string>
+     */
     protected $cacheControl = [];
 
+    /**
+     * @param array<string, string|string[]> $headers
+     */
     public function __construct(array $headers = [])
     {
         foreach ($headers as $key => $values) {
@@ -34,14 +41,15 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns the headers.
      *
-     * @param string|null $key The name of the headers to return or null to get them all
+     * @param null|string $key The name of the headers to return or null to get them all
      *
-     * @return array An array of headers
+     * @return array<string|string[]>|string An array of headers
      */
-    public function all(string $key = null): array
+    public function all(string $key = null)
     {
         if (null !== $key) {
             $key2 = strtr($key, self::UPPER, self::LOWER);
+
             return $this->headers[$key2] ?? [];
         }
 
@@ -51,17 +59,18 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns the parameter keys.
      *
-     * @return array An array of parameter keys
+     * @return string[] An array of parameter keys
      */
     public function keys(): array
     {
+        /** @var string[] */
         return array_keys($this->all());
     }
 
     /**
      * Replaces the current HTTP headers by a new set.
      */
-    public function replace(array $headers = [])
+    public function replace(array $headers = []): void
     {
         $this->headers = [];
         $this->add($headers);
@@ -70,7 +79,7 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Adds new headers the current HTTP headers set.
      */
-    public function add(array $headers)
+    public function add(array $headers): void
     {
         foreach ($headers as $key => $values) {
             $this->set($key, $values);
@@ -80,7 +89,10 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns a header value by name.
      *
-     * @return string|null The first header value or default value
+     * @param mixed $key
+     * @param null|mixed $default
+     *
+     * @return null|string The first header value or default value
      */
     public function get($key, $default = null)
     {
@@ -100,14 +112,15 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Sets a header by name.
      *
-     * @param string|string[]|null $values  The value or an array of values
+     * @param null|string|string[] $values The value or an array of values
      * @param bool $replace Whether to replace the actual value or not (true by default)
+     * @param mixed $key
      */
-    public function set($key, $values, bool $replace = true)
+    public function set($key, $values, bool $replace = true): void
     {
         $key = strtr($key, self::UPPER, self::LOWER);
 
-        if (is_array($values)) {
+        if (\is_array($values)) {
             $values = array_values($values);
 
             if (true === $replace || !isset($this->headers[$key])) {
@@ -131,27 +144,34 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns true if the HTTP header is defined.
      *
+     * @param mixed $key
+     *
      * @return bool true if the parameter exists, false otherwise
      */
     public function has($key): bool
     {
-        return array_key_exists(strtr($key, self::UPPER, self::LOWER), $this->all());
+        return \array_key_exists(strtr($key, self::UPPER, self::LOWER), $this->all());
     }
 
     /**
      * Returns true if the given HTTP header contains the given value.
      *
+     * @param mixed $key
+     * @param mixed $value
+     *
      * @return bool true if the value is contained in the header, false otherwise
      */
     public function contains($key, $value): bool
     {
-        return in_array($value, $this->all($key));
+        return \in_array($value, $this->all($key), true);
     }
 
     /**
      * Removes a header.
+     *
+     * @param mixed $key
      */
-    public function remove($key)
+    public function remove($key): void
     {
         $key = strtr($key, self::UPPER, self::LOWER);
 
@@ -165,9 +185,11 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns the HTTP header value converted to a date.
      *
-     * @return DateTimeInterface|null The parsed DateTime or the default value if the header does not exist
+     * @param mixed $key
      *
      * @throws RuntimeException When the HTTP header is not parseable
+     *
+     * @return null|DateTimeInterface The parsed DateTime or the default value if the header does not exist
      */
     public function getDate($key, DateTime $default = null)
     {
@@ -186,8 +208,9 @@ class Headers implements IteratorAggregate, Countable
      * Adds a custom Cache-Control directive.
      *
      * @param bool|string $value The Cache-Control directive value
+     * @param mixed $key
      */
-    public function addCacheControlDirective($key, $value = true)
+    public function addCacheControlDirective($key, $value = true): void
     {
         $this->cacheControl[$key] = $value;
 
@@ -197,17 +220,21 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns true if the Cache-Control directive is defined.
      *
+     * @param mixed $key
+     *
      * @return bool true if the directive exists, false otherwise
      */
     public function hasCacheControlDirective($key): bool
     {
-        return array_key_exists($key, $this->cacheControl);
+        return \array_key_exists($key, $this->cacheControl);
     }
 
     /**
      * Returns a Cache-Control directive value by name.
      *
-     * @return bool|string|null The directive value if defined, null otherwise
+     * @param mixed $key
+     *
+     * @return null|bool|string The directive value if defined, null otherwise
      */
     public function getCacheControlDirective($key)
     {
@@ -216,8 +243,10 @@ class Headers implements IteratorAggregate, Countable
 
     /**
      * Removes a Cache-Control directive.
+     *
+     * @param mixed $key
      */
-    public function removeCacheControlDirective($key)
+    public function removeCacheControlDirective($key): void
     {
         unset($this->cacheControl[$key]);
 
@@ -241,12 +270,9 @@ class Headers implements IteratorAggregate, Countable
      */
     public function count(): int
     {
-        return count($this->headers);
+        return \count($this->headers);
     }
 
-    /**
-     * @return string
-     */
     protected function getCacheControlHeader(): string
     {
         ksort($this->cacheControl);
@@ -256,6 +282,8 @@ class Headers implements IteratorAggregate, Countable
 
     /**
      * Parses a Cache-Control HTTP header.
+     *
+     * @param mixed $header
      *
      * @return array An array representing the attribute values
      */

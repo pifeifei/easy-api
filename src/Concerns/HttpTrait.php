@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Concerns;
 
 use Pff\EasyApi\Request\Headers;
@@ -8,6 +10,7 @@ use Pff\EasyApi\Request\Parameters;
 trait HttpTrait
 {
     protected $options = [];
+
     /**
      * @var Parameters
      */
@@ -24,67 +27,76 @@ trait HttpTrait
     protected $headers;
 
     /**
-     * @param array|null $query
+     * @param null|array $query
      * @param bool $replace
+     *
      * @return $this|Parameters
      */
     public function query($query = null, $replace = false)
     {
-        if (is_null($query)) {
+        if (null === $query) {
             return $this->query;
         }
 
         if ($replace) {
             $this->query->replace($query);
+
             return $this;
         }
 
         $this->query->add($query);
+
         return $this;
     }
 
     /**
-     * @param array|null $post
+     * @param null|array $post
      * @param bool $replace
+     *
      * @return $this|Parameters
      */
     public function data($post = null, $replace = false)
     {
-        if (is_null($post)) {
+        if (null === $post) {
             return $this->data;
         }
 
         if ($replace) {
             $this->data->replace($post);
+
             return $this;
         }
 
         $this->data->add($post);
+
         return $this;
     }
 
     /**
-     * @param array|null $headers
+     * @param null|array $headers
      * @param false $replace
+     *
      * @return $this|Headers
      */
-    public function headers($headers =null, $replace = false)
+    public function headers($headers = null, $replace = false)
     {
-        if (is_null($headers)) {
+        if (null === $headers) {
             return $this->headers;
         }
 
         if ($replace) {
             $this->headers->replace($headers);
+
             return $this;
         }
 
         $this->headers->add($headers);
+
         return $this;
     }
 
     /**
-     * @param int|float $seconds
+     * @param float|int $seconds
      *
      * @return $this
      */
@@ -108,7 +120,7 @@ trait HttpTrait
     }
 
     /**
-     * @param int|float $seconds
+     * @param float|int $seconds
      *
      * @return $this
      */
@@ -184,13 +196,11 @@ trait HttpTrait
     }
 
     /**
-     * @param array $options
-     *
      * @return $this
      */
     public function options(array $options)
     {
-        if ($options !== []) {
+        if ([] !== $options) {
             $this->options = array_merge($this->options, $options);
         }
 

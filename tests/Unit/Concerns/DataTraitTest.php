@@ -1,144 +1,153 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Unit\Concerns;
 
 use Pff\EasyApiTest\TestCase;
 use Pff\EasyApiTest\Unit\Concerns\stubs\DataTraitStub;
 
-class DataTraitTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class DataTraitTest extends TestCase
 {
-
-    public function testDataTrait()
+    public function testDataTrait(): void
     {
         $data = new DataTraitStub([]);
-        $this->assertTrue($data->isEmpty());
+        static::assertTrue($data->isEmpty());
 
         $data->set('foo', 'f');
-        $this->assertEquals(1, $data->count());
+        static::assertSame(1, $data->count());
 
         $data->set('bar', 'bar');
-        $this->assertEquals(2, $data->count());
-        $this->assertEquals('bar', $data->get('bar'));
+        static::assertSame(2, $data->count());
+        static::assertSame('bar', $data->get('bar'));
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $data = new DataTraitStub([]);
         $data['foo'] = 'foo';
-        $this->assertEquals('foo', $data->get('foo'));
-        $this->assertEquals('foo', $data['foo']);
+        static::assertSame('foo', $data->get('foo'));
+        static::assertSame('foo', $data['foo']);
 
-        $this->assertTrue($data->has('foo'));
+        static::assertTrue($data->has('foo'));
         unset($data['foo']);
-        $this->assertFalse($data->has('foo'));
+        static::assertFalse($data->has('foo'));
 
         $data['bar'] = 'bar';
         foreach ($data as $item) {
             $iterator = true;
         }
-        $this->assertTrue($iterator);
+        static::assertTrue($iterator);
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $data = new DataTraitStub([]);
-        $data->add('a.b.c.d', 'value');
         $data->add($arr = ['foo' => 'foo', 'aa' => ['bb' => 'value'], 'a' => ['b' => ['cc' => 'value']]]);
+        $data->add('a.b.c.d', 'value');
         $arr['a']['b']['c']['d'] = 'value';
-        $this->assertEquals($arr, $data->all());
+        static::assertSame($arr, $data->all());
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $data = new DataTraitStub([
             'foo' => 'foo',
             'aa' => ['bb' => 'value'],
-            'a' => ['b' => ['cc' => 'value', 'c' => ['d' => 'value']]]
+            'a' => ['b' => ['cc' => 'value', 'c' => ['d' => 'value']]],
         ]);
-        $this->assertTrue($data->has('a.b.c.d'));
+        static::assertTrue($data->has('a.b.c.d'));
         $data->delete('a.b.c.d');
-        $this->assertFalse($data->has('a.b.c.d'));
+        static::assertFalse($data->has('a.b.c.d'));
         $data->delete(['a', 'aa']);
-        $this->assertFalse($data->has('a'));
-        $this->assertFalse($data->has('aa'));
+        static::assertFalse($data->has('a'));
+        static::assertFalse($data->has('aa'));
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $data = new DataTraitStub([]);
         $data->add('a.b.c.d', 'value');
         $data->add('a.b.cc.d', 'value');
-        $this->assertEquals('value', $data->get('a.b.c.d'));
+        static::assertSame('value', $data->get('a.b.c.d'));
 
-        $this->assertEquals([
+        static::assertSame([
             'c' => ['d' => 'value'],
             'cc' => ['d' => 'value'],
         ], $data->get('a.b'));
     }
 
-    public function testObject()
+    public function testObject(): void
     {
         $data = new DataTraitStub([]);
         $data->foo = 'foo';
-        $this->assertEquals('foo', $data->get('foo'));
-        $this->assertEquals('foo', $data->foo);
+        static::assertSame('foo', $data->get('foo'));
+        static::assertSame('foo', $data->foo);
 
-        $this->assertTrue($data->has('foo'));
-        $this->assertTrue(isset($data->foo));
-        unset($data->foo);
-        $this->assertFalse($data->has('foo'));
-        $this->assertFalse(isset($data->foo));
+        static::assertTrue($data->has('foo'));
+        static::assertTrue(isset($data->foo));
+        // phpstan-ignore-next-line
+        $data->foo = null;
+        static::assertFalse($data->has('foo'));
+        static::assertFalse(isset($data->foo));
     }
 
-    public function testArray()
+    public function testArray(): void
     {
         $data = new DataTraitStub(['foo' => 'foo']);
-        $this->assertEquals(['foo' => 'foo'], $data->toArray());
-        $this->assertEquals(['foo' => 'foo'], $data->all());
+        static::assertSame(['foo' => 'foo'], $data->toArray());
+        static::assertSame(['foo' => 'foo'], $data->all());
 
         $data->clear('foo');
-        $this->assertEmpty($data->toArray());
-        $this->assertEmpty($data->all());
+        static::assertEmpty($data->toArray());
+        static::assertEmpty($data->all());
 
         $data->foo = 'xx';
         $data->bar = 'xx';
-        $this->assertNotEmpty($data->toArray());
+        static::assertNotEmpty($data->toArray());
 
         $data->clear(['foo', 'bar']);
-        $this->assertEmpty($data->toArray());
-        $this->assertEmpty($data->all());
+        static::assertEmpty($data->toArray());
+        static::assertEmpty($data->all());
     }
 
-    public function testClear()
+    public function testClear(): void
     {
-        $data = new DataTraitStub(['foo' => 'foo', 'bar' => 'bar', "foobar" => 1]);
+        $data = new DataTraitStub(['foo' => 'foo', 'bar' => 'bar', 'foobar' => 1]);
         $data->clear('foo');
-        $this->assertEquals(2, $data->count());
+        static::assertSame(2, $data->count());
 
         $data->clear();
-        $this->assertEquals([], $data->all());
+        static::assertSame([], $data->all());
     }
 
-    public function testJson()
+    public function testJson(): void
     {
-        $data = new DataTraitStub(['foo' => 'foo', 'bar' => 'bar', "foobar" => 1]);
-        $this->assertEquals('{"foo":"foo","bar":"bar","foobar":1}', $data->toJson());
-        $this->assertEquals(['foo' => 'foo', 'bar' => 'bar', "foobar" => 1], $data->jsonSerialize());
+        $data = new DataTraitStub(['foo' => 'foo', 'bar' => 'bar', 'foobar' => 1]);
+        static::assertSame('{"foo":"foo","bar":"bar","foobar":1}', $data->toJson());
+        static::assertSame(['foo' => 'foo', 'bar' => 'bar', 'foobar' => 1], $data->jsonSerialize());
 
         $data->bar = true;
         $data->foobar = 1.0;
-        $this->assertEquals('{"foo":"foo","bar":true,"foobar":1}', $data->toJson());
-        $this->assertEquals(['foo' => 'foo', 'bar' => true, "foobar" => 1], $data->jsonSerialize());
-        $this->assertTrue($data->get('bar'));
+        static::assertSame('{"foo":"foo","bar":true,"foobar":1}', $data->toJson());
+        static::assertSame(['foo' => 'foo', 'bar' => true, 'foobar' => 1.0], $data->jsonSerialize());
+        static::assertTrue($data->get('bar'));
     }
 
     /**
      * @dataProvider flattenData
+     *
+     * @param mixed $arr
+     * @param mixed $val
      */
-    public function testFlatten($arr, $val)
+    public function testFlatten($arr, $val): void
     {
         $data = new DataTraitStub($arr);
-        $this->assertEquals($val, $data->flatten());
+        static::assertSame($val, $data->flatten());
     }
 
     public function flattenData()
@@ -146,11 +155,11 @@ class DataTraitTest extends TestCase
         return [
             [
                 ['foo' => 'foo', 'bar' => 'bar'],
-                ['foo' => 'foo', 'bar' => 'bar']
+                ['foo' => 'foo', 'bar' => 'bar'],
             ],
             [
                 ['foo' => 'foo', 'bar' => ['a' => ['b' => 'value']]],
-                ['foo' => 'foo', 'bar.a.b' => 'value']
+                ['foo' => 'foo', 'bar.a.b' => 'value'],
             ],
         ];
     }

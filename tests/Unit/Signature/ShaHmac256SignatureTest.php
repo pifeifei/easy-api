@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Unit\Signature;
 
 use Pff\EasyApi\Contracts\SignatureInterface;
 use Pff\EasyApi\Signature\ShaHmac256Signature;
 use Pff\EasyApiTest\TestCase;
 
-class ShaHmac256SignatureTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class ShaHmac256SignatureTest extends TestCase
 {
-    public function testShaHmac256Signature()
+    public function testShaHmac256Signature(): void
     {
         // Setup
         $string = 'this is a ShaHmac256 test.';
@@ -21,9 +27,9 @@ class ShaHmac256SignatureTest extends TestCase
         // Assert
         static::assertInstanceOf(SignatureInterface::class, $signature);
         static::assertInstanceOf(ShaHmac256Signature::class, $signature);
-        static::assertEquals('HMAC-SHA256', $signature->getMethod());
-        static::assertEquals('1.0', $signature->getVersion());
-        static::assertEquals('', $signature->getType());
+        static::assertSame('HMAC-SHA256', $signature->getMethod());
+        static::assertSame('1.0', $signature->getVersion());
+        static::assertSame('', $signature->getType());
 //        static::assertEquals(
 //            $expected,
 //            $signature->sign($string, $accessKeySecret)

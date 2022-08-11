@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Unit\Request;
 
 use GuzzleHttp\Psr7\Uri;
@@ -9,9 +11,13 @@ use Pff\EasyApi\Contracts\ConfigInterface;
 use Pff\EasyApi\Request\Request;
 use Pff\EasyApiTest\TestCase;
 
-class RequestTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class RequestTest extends TestCase
 {
-    public function testRequest()
+    public function testRequest(): void
     {
         $uri = new Uri('http://pifeifei.com/path/to/index.html');
         $options = [
@@ -20,17 +26,17 @@ class RequestTest extends TestCase
         $config = new Config([
             'config' => [
                 'app_key' => 'app key string',
-                'token' => 'token string'
+                'token' => 'token string',
             ],
             'request' => [
-                'format' => API::RESPONSE_FORMAT_JSON
-            ]
+                'format' => API::RESPONSE_FORMAT_JSON,
+            ],
         ]);
         $request = new Request('GET', $uri, $options, $config);
-        $this->assertEquals("GET", $request->getMethod());
-        $this->assertEquals(API::RESPONSE_FORMAT_JSON, $request->format());
-        $this->assertInstanceOf(Uri::class, $request->getUri());
-        $this->assertInstanceOf(ConfigInterface::class, $request->getConfig());
-        $this->assertEquals($options, $request->getOptions());
+        static::assertSame('GET', $request->getMethod());
+        static::assertSame(API::RESPONSE_FORMAT_JSON, $request->format());
+        static::assertInstanceOf(Uri::class, $request->getUri());
+        static::assertInstanceOf(ConfigInterface::class, $request->getConfig());
+        static::assertSame($options, $request->getOptions());
     }
 }

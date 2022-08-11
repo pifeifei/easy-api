@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Unit\Concerns\stubs;
 
 use ArrayAccess;

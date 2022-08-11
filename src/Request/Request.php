@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Request;
 
 use Pff\EasyApi\Contracts\ConfigInterface;
@@ -27,12 +29,6 @@ class Request
      */
     protected $options;
 
-    /**
-     * @param string $method
-     * @param UriInterface $uri
-     * @param array $options
-     * @param ConfigInterface $config
-     */
     public function __construct(string $method, UriInterface $uri, array $options, ConfigInterface $config)
     {
         $this->method = strtoupper($method);
@@ -46,33 +42,21 @@ class Request
         return $this->config;
     }
 
-    /**
-     * @return string
-     */
     public function getMethod(): string
     {
         return $this->method;
     }
 
-    /**
-     * @return UriInterface
-     */
     public function getUri(): UriInterface
     {
         return $this->uri;
     }
 
-    /**
-     * @return array
-     */
     public function getOptions(): array
     {
         return $this->options;
     }
 
-    /**
-     * @return string
-     */
     public function format(): string
     {
         return $this->config->request('format');

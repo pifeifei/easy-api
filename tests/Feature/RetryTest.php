@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Feature;
 
 use Pff\EasyApi\Clients\Client;
 use Pff\EasyApi\Exception\ServerException;
 use Pff\EasyApiTest\TestCase;
 
-class RetryTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class RetryTest extends TestCase
 {
-    public function testNoRetry()
+    public function testNoRetry(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
@@ -19,11 +25,11 @@ class RetryTest extends TestCase
         try {
             $client->request();
         } catch (ServerException $e) {
-            $this->assertGreaterThan(0, $e->getCode());
+            static::assertGreaterThan(0, $e->getCode());
         }
     }
 
-    public function testRetryWithStrings()
+    public function testRetryWithStrings(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
@@ -37,11 +43,11 @@ class RetryTest extends TestCase
         $client->retryByClient(10, ['client error', 'not find']);
         $response = $client->request();
 
-        $this->assertEquals(['code' => 200], $response->all());
-        $this->assertEquals(200, $response->getStatusCode());
+        static::assertSame(['code' => 200], $response->all());
+        static::assertSame(200, $response->getStatusCode());
     }
 
-    public function testRetryWithStatusCode()
+    public function testRetryWithStatusCode(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
@@ -53,7 +59,7 @@ class RetryTest extends TestCase
 
         $client->retryByClient(10, [], [400, 401]);
         $response = $client->request();
-        $this->assertEquals(['code' => 200], $response->all());
-        $this->assertEquals(200, $response->getStatusCode());
+        static::assertSame(['code' => 200], $response->all());
+        static::assertSame(200, $response->getStatusCode());
     }
 }

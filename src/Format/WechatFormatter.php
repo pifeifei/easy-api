@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Format;
 
 use Pff\EasyApi\API;
@@ -9,14 +11,14 @@ use Pff\EasyApi\Utils;
 
 /**
  * 这里微信 api 仅作案例使用，如果需要可以用稳定更新的  easy wechat.
- * 哈哈，如果有时间，也许我会完善这个案例，
+ * 哈哈，如果有时间，也许我会完善这个案例，.
  */
 class WechatFormatter extends AbstractTokenFormatter
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function resolve()
+    public function resolve(): void
     {
         if (false === $this->client->tokenClient()) {
             $this->token();
@@ -27,23 +29,24 @@ class WechatFormatter extends AbstractTokenFormatter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getData(): array
     {
         $data = $this->client->data();
         $data->add([
             'app_id' => $this->client->config()->client('app_id'),
-//            'app_secret' => $this->client->config()->client('app_secret'),
-//            'token' => $this->client->config()->client('token'),
+            //            'app_secret' => $this->client->config()->client('app_secret'),
+            //            'token' => $this->client->config()->client('token'),
         ]);
         $data = $data->all();
         Utils::ksortRecursive($data);
+
         return $data;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getQuery()
     {
@@ -51,16 +54,17 @@ class WechatFormatter extends AbstractTokenFormatter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    protected function token()
+    protected function token(): void
     {
         $this->client->query(['access_token' => $this->getAccessToken()]);
     }
 
     /**
-     * @return string access token string
      * @throws ClientException
+     *
+     * @return string access token string
      */
     protected function getAccessToken(): string
     {
@@ -74,14 +78,13 @@ class WechatFormatter extends AbstractTokenFormatter
     }
 
     /**
-     * 获取 access token
-     * @param bool $refresh
-     *
-     * @return array 请求的 token 完整数据
+     * 获取 access token.
      *
      * @throws ClientException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws ServerException
+     *
+     * @return array 请求的 token 完整数据
      */
     protected function getToken(bool $refresh = false)
     {
@@ -101,7 +104,8 @@ class WechatFormatter extends AbstractTokenFormatter
                     ->path('token')
                     ->method('GET')
                     ->query($query)
-                    ->request();
+                    ->request()
+                ;
 
                 $tokenInfo = [
                     'access_token' => $response->get('access_token'),
@@ -124,7 +128,8 @@ class WechatFormatter extends AbstractTokenFormatter
             ->path('token')
             ->method('GET')
             ->query($query)
-            ->request();
+            ->request()
+        ;
 
         if ($response->has('errcode') && 0 !== $response->get('errcode')) {
             throw new ServerException($response, $response->get('errmsg'), $response->getStatusCode());
@@ -140,7 +145,7 @@ class WechatFormatter extends AbstractTokenFormatter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function signBuild(): string
     {

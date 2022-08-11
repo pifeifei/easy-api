@@ -1,44 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Concerns;
 
+use Pff\EasyApi\Cache\Cache;
 use Pff\EasyApi\Contracts\CacheInterface;
 use Pff\EasyApi\Exception\ClientException;
+use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
 
 trait CacheTrait
 {
-
     /**
-     * @var CacheInterface
+     * @var null|CacheInterface
      */
     protected $cache;
 
-    /**
-     * @return CacheInterface
-     */
     public function cache(): CacheInterface
     {
-        return $this->cache;
+        if (isset($this->cache)) {
+            return $this->cache;
+        }
+
+        return $this->cache = new Cache();
     }
 
     /**
-     * @param CacheInterface|string|null $cache
-     * @return CacheTrait
+     * 设置缓存对象。
+     *
+     * @param class-string|PsrCacheInterface $cache
+     *
+     * @throws ClientException
      */
-    public function setCache($cache)
+    public function setCache($cache): void
     {
-        if (is_null($cache)) {
-            return $this;
-        }
-        if (is_string($cache) && class_exists($cache)) {
-            $cache = new $cache();
+        if ($cache instanceof PsrCacheInterface) {
+            $this->cache()->setCache($cache);
+
+            return;
         }
 
-        if ($cache instanceof CacheInterface) {
-            $this->cache = $cache;
-            return $this;
+        if (!class_exists($cache)) {
+            throw new ClientException(sprintf('%s class does not exist.', $cache));
         }
 
-        throw new \UnexpectedValueException(sprintf('Cache must implement %s interface.', CacheInterface::class));
+        $obj = new $cache();
+        if ($obj instanceof CacheInterface) {
+            $this->cache = $obj;
+
+            return;
+        }
+
+        throw new ClientException(sprintf('Cache must implement %s interface.', CacheInterface::class));
     }
 }

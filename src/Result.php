@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi;
 
 use ArrayAccess;
 use Countable;
-use Exception;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Utils;
 use InvalidArgumentException;
 use IteratorAggregate;
 use Pff\EasyApi\Concerns\DataTrait;
+use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Request\Request;
 use Psr\Http\Message\ResponseInterface;
 
@@ -22,15 +24,12 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     /**
      * Instance of the request.
      *
-     * @var Request
+     * @var null|Request
      */
     protected $request;
 
     /**
      * Result constructor.
-     *
-     * @param ResponseInterface $response
-     * @param Request           $request
      */
     public function __construct(ResponseInterface $response, Request $request = null)
     {
@@ -47,7 +46,29 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
         $this->resolveData();
     }
 
-    private function resolveData()
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->getBody();
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest(): ?Request
+    {
+        return $this->request;
+    }
+
+    public function isSuccess(): bool
+    {
+        return 200 <= $this->getStatusCode()
+            && 300 > $this->getStatusCode();
+    }
+
+    private function resolveData(): void
     {
         $content = $this->getBody()->__toString();
 
@@ -55,10 +76,12 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
             case API::RESPONSE_FORMAT_RAW:
             case API::RESPONSE_FORMAT_JSON:
                 $result_data = $this->jsonToArray($content);
+
                 break;
 
             case API::RESPONSE_FORMAT_XML:
                 $result_data = $this->xmlToArray($content);
+
                 break;
 
             default:
@@ -72,9 +95,6 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
         $this->collection($result_data);
     }
 
-    /**
-     * @return string
-     */
     private function getRequestFormat(): string
     {
         return ($this->request instanceof Request)
@@ -83,9 +103,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     }
 
     /**
-     * @param string $jsonString
-     *
-     * @return array
+     * @return array<string, mixed>
      */
     private function jsonToArray(string $jsonString): array
     {
@@ -97,41 +115,23 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     }
 
     /**
-     * @param string $string
+     * @throws ClientException
      *
-     * @return array
+     * @return array<string, mixed>
      */
     private function xmlToArray(string $string): array
     {
-        try {
-            return json_decode(json_encode(simplexml_load_string($string)), true);
-        } catch (Exception $exception) {
-            return [];
+        $json = simplexml_load_string($string);
+        if (false === $json) {
+            throw new ClientException('API xml parse error: ' . $string);
         }
-    }
 
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string)$this->getBody();
-    }
+        $arr = json_decode(json_encode((array) $json), true);
 
-    /**
-     * @return Request
-     */
-    public function getRequest()
-    {
-        return $this->request;
-    }
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new ClientException('API xml parse error: ' . json_last_error_msg());
+        }
 
-    /**
-     * @return bool
-     */
-    public function isSuccess(): bool
-    {
-        return 200 <= $this->getStatusCode()
-            && 300 > $this->getStatusCode();
+        return $arr;
     }
 }

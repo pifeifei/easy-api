@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Feature\Clients;
 
 use Pff\EasyApi\API;
@@ -16,34 +18,33 @@ class WechatClient
     protected $client;
 
     protected $defaultRequest = [
-        "uri" => 'https://api.weixin.qq.com/cgi-bin/',
-        "method" => "POST", // 默认请求方式，可选：GET, POST, JSON
-        "sign" => [
-            "position" => API::SIGN_POSITION_HEAD,
-            "key" => "sign",
-            "appends" => [
-                "sign_type" => 'MD5'
+        'uri' => 'https://api.weixin.qq.com/cgi-bin/',
+        'method' => 'POST', // 默认请求方式，可选：GET, POST, JSON
+        'sign' => [
+            'position' => API::SIGN_POSITION_HEAD,
+            'key' => 'sign',
+            'appends' => [
+                'sign_type' => 'MD5',
             ],
         ],
-        "signature" => MD5Signature::class, // 继承 \Pff\EasyApi\Signature\SignatureInterface::class
-        "formatter" => WechatFormatter::class,
-        "cache" => Cache::class, // auth 获取 access_token 等数据后，保存数据时会用到
-        "format" => "json", // 响应信息格式化
+        'signature' => MD5Signature::class, // 继承 \Pff\EasyApi\Signature\SignatureInterface::class
+        'formatter' => WechatFormatter::class,
+        'cache' => Cache::class, // auth 获取 access_token 等数据后，保存数据时会用到
+        'format' => 'json', // 响应信息格式化
     ];
 
     /**
-     * @param array $config
      * @param ?array $request
      */
     public function __construct(array $config, array $request = null)
     {
-        if (is_null($request)) {
+        if (null === $request) {
             $this->client = new Client(['config' => $config, 'request' => $this->defaultRequest]);
         } else {
             $this->client = new Client(compact('config', 'request'));
         }
 
-        $this->client->proxy( 'http://127.0.0.1:8888');
+        $this->client->proxy('http://127.0.0.1:8888');
     }
 
     public function client()
@@ -52,14 +53,16 @@ class WechatClient
     }
 
     /**
-     * 站点绑定
+     * 站点绑定.
      */
-    public function bind()
+    public function bind(): void
     {
         echo $_GET['echostr'] ?? '';
     }
 
     /**
+     * @param mixed $refresh
+     *
      * @return array
      */
     public function accessToken($refresh = false)
@@ -68,11 +71,14 @@ class WechatClient
     }
 
     /**
-     * 获取用户列表
-     * @param string|null $nextOpenid
-     * @return Result
+     * 获取用户列表.
+     *
+     * @param null|string $nextOpenid
+     *
      * @throws ClientException
      * @throws ServerException
+     *
+     * @return Result
      */
     public function users($nextOpenid = null)
     {
@@ -87,9 +93,11 @@ class WechatClient
     /**
      * @param $openid
      * @param $remark
-     * @return Result
+     *
      * @throws ClientException
      * @throws ServerException
+     *
+     * @return Result
      */
     public function userInfoUpdateRemark($openid, $remark)
     {
@@ -97,15 +105,18 @@ class WechatClient
             ->method(API::METHOD_JSON)
             ->path('user/info/updateremark')
             ->data(['openid' => $openid, 'remark' => $remark])
-            ->request();
+            ->request()
+        ;
     }
 
     /**
      * @param $openid
      * @param null $lang
-     * @return Result
+     *
      * @throws ClientException
      * @throws ServerException
+     *
+     * @return Result
      */
     public function userInfo($openid, $lang = null)
     {
@@ -113,6 +124,7 @@ class WechatClient
             ->method(API::METHOD_GET)
             ->path('user/info')
             ->query(compact('openid', 'lang'))
-            ->request();
+            ->request()
+        ;
     }
 }

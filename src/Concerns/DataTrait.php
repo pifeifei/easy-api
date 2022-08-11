@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Concerns;
 
 use ArrayIterator;
@@ -13,43 +15,77 @@ trait DataTrait
     protected $collection;
 
     /**
-     * Delete the contents of a given key or keys
-     *
-     * @param array|int|string|null $keys
+     * @return null|mixed
      */
-    public function clear($keys = null)
+    public function __get(string $name)
     {
-        if (is_null($keys)) {
+        return $this->get($name);
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public function __set(string $name, $value): void
+    {
+        $this->add($name, $value);
+    }
+
+    /*
+     * --------------------------------------------------------------
+     * ObjectAccess
+     * --------------------------------------------------------------
+     */
+
+    /**
+     * @return bool
+     */
+    public function __isset(string $name)
+    {
+        return $this->has($name);
+    }
+
+    /**
+     * @param $name
+     */
+    public function __unset($name): void
+    {
+        $this->delete($name);
+    }
+
+    /**
+     * Delete the contents of a given key or keys.
+     *
+     * @param null|array|int|string $keys
+     */
+    public function clear($keys = null): void
+    {
+        if (null === $keys) {
             $this->collection = [];
+
             return;
         }
         $this->delete($keys);
     }
 
     /**
-     * Flatten an array with the given character as a key delimiter
-     *
-     * @param string $delimiter
-     * @param array|null $items
-     * @param string $prepend
-     * @return array
+     * Flatten an array with the given character as a key delimiter.
      */
     public function flatten(string $delimiter = '.', array $items = null, string $prepend = ''): array
     {
         $flatten = [];
 
-        if (is_null($items)) {
+        if (null === $items) {
             $items = $this->collection;
         }
 
         foreach ($items as $key => $value) {
-            if (is_array($value) && !empty($value)) {
+            if (\is_array($value) && !empty($value)) {
                 $flatten = array_merge(
                     $flatten,
-                    $this->flatten($delimiter, $value, $prepend.$key.$delimiter)
+                    $this->flatten($delimiter, $value, $prepend . $key . $delimiter)
                 );
             } else {
-                $flatten[$prepend.$key] = $value;
+                $flatten[$prepend . $key] = $value;
             }
         }
 
@@ -57,10 +93,10 @@ trait DataTrait
     }
 
     /**
-     * Return the value of a given key
+     * Return the value of a given key.
      *
-     * @param int|string|null $key
-     * @param mixed           $default
+     * @param null|int|string $key
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -70,20 +106,18 @@ trait DataTrait
     }
 
     /**
-     * Set a given key / value pair or pairs
+     * Set a given key / value pair or pairs.
      *
-     * @param int|string $key  支持批量设置
-     * @param mixed            $value
+     * @param int|string $key 支持批量设置
+     * @param mixed $value
      */
-    public function set($key, $value = null)
+    public function set($key, $value = null): void
     {
         Arr::set($this->collection, $key, $value);
     }
 
     /**
-     * Check if a given key or keys are empty
-     *
-     * @return bool
+     * Check if a given key or keys are empty.
      */
     public function isEmpty(): bool
     {
@@ -91,31 +125,22 @@ trait DataTrait
     }
 
     /**
-     * Return the value of a given key or all the values as JSON
-     *
-     * @param int $options
-     *
-     * @return string
+     * Return the value of a given key or all the values as JSON.
      */
     public function toJson(int $options = 0): string
     {
         return json_encode($this->collection, $options);
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return $this->collection;
     }
 
     /**
-     * Check if a given key exists
+     * Check if a given key exists.
      *
      * @param int|string $key
-     *
-     * @return bool
      */
     public function offsetExists($key): bool
     {
@@ -123,7 +148,7 @@ trait DataTrait
     }
 
     /**
-     * Return the value of a given key
+     * Return the value of a given key.
      *
      * @param int|string $key
      *
@@ -135,10 +160,10 @@ trait DataTrait
     }
 
     /**
-     * Set a given value to the given key
+     * Set a given value to the given key.
      *
-     * @param int|string|null $key
-     * @param mixed           $value
+     * @param null|int|string $key
+     * @param mixed $value
      */
     public function offsetSet($key, $value): void
     {
@@ -146,7 +171,7 @@ trait DataTrait
     }
 
     /**
-     * Delete the given key
+     * Delete the given key.
      *
      * @param int|string $key
      */
@@ -156,11 +181,11 @@ trait DataTrait
     }
 
     /**
-     * Delete the given key or keys
+     * Delete the given key or keys.
      *
      * @param array|int|string $keys
      */
-    public function delete($keys)
+    public function delete($keys): void
     {
         Arr::forget($this->collection, $keys);
     }
@@ -172,19 +197,15 @@ trait DataTrait
      */
 
     /**
-     * Return the number of items in a given key
-     *
-     * @return int
+     * Return the number of items in a given key.
      */
     public function count(): int
     {
-        return count($this->collection);
+        return \count($this->collection);
     }
 
     /**
-     * Get an iterator for the stored items
-     *
-     * @return ArrayIterator
+     * Get an iterator for the stored items.
      */
     public function getIterator(): ArrayIterator
     {
@@ -192,23 +213,11 @@ trait DataTrait
     }
 
     /**
-     * Return items for JSON serialization
-     *
-     * @return array
+     * Return items for JSON serialization.
      */
     public function jsonSerialize(): array
     {
         return $this->collection;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return mixed|null
-     */
-    public function __get(string $name)
-    {
-        return $this->get($name);
     }
 
     /*
@@ -218,9 +227,7 @@ trait DataTrait
      */
 
     /**
-     * Return all the stored items
-     *
-     * @return array
+     * Return all the stored items.
      */
     public function all(): array
     {
@@ -228,75 +235,45 @@ trait DataTrait
     }
 
     /**
-     * @param string $name
-     * @param mixed  $value
-     */
-    public function __set(string $name, $value)
-    {
-        $this->add($name, $value);
-    }
-
-    /**
      * Set a given key / value pair or pairs
-     * if the key doesn't exist already
+     * if the key doesn't exist already.
      *
      * @param array|int|string $keys
-     * @param mixed            $value
+     * @param mixed $value
      */
-    public function add($keys, $value = null)
+    public function add($keys, $value = null): void
     {
-        if (is_array($keys)) {
+        if (\is_array($keys)) {
             $arr = $this->flatten('.', $keys);
             foreach ($arr as $key => $item) {
                 $this->set($key, $item);
             }
+
+            return;
         }
 
-        if (! is_null($value)) {
+        if (null !== $value) {
             Arr::set($this->collection, $keys, $value);
+
+            return;
+        }
+
+        if (is_null($value)) {
+            Arr::forget($this->collection, $keys);
         }
     }
 
-
-    /*
-     * --------------------------------------------------------------
-     * ObjectAccess
-     * --------------------------------------------------------------
-     */
-
     /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function __isset(string $name)
-    {
-        return $this->has($name);
-    }
-
-    /**
-     * Check if a given key or keys exists
+     * Check if a given key or keys exists.
      *
      * @param array|int|string $keys
-     *
-     * @return bool
      */
     public function has($keys): bool
     {
         return Arr::has($this->collection, $keys);
     }
 
-    /**
-     * @param $name
-     *
-     * @return void
-     */
-    public function __unset($name)
-    {
-        $this->delete($name);
-    }
-
-    protected function collection($data = [])
+    protected function collection($data = []): void
     {
         $this->collection = $data;
     }

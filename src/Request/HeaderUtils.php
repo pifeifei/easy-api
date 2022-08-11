@@ -1,14 +1,13 @@
 <?php
 
-namespace Pff\EasyApi\Request;
+declare(strict_types=1);
 
-use function array_slice;
-use function count;
+namespace Pff\EasyApi\Request;
 
 class HeaderUtils
 {
-    const DISPOSITION_ATTACHMENT = 'attachment';
-    const DISPOSITION_INLINE = 'inline';
+    public const DISPOSITION_ATTACHMENT = 'attachment';
+    public const DISPOSITION_INLINE = 'inline';
 
     /**
      * This class should not be instantiated.
@@ -27,6 +26,7 @@ class HeaderUtils
      *
      * @param string $separators List of characters to split on, ordered by
      *                           precedence, e.g. ",", ";=", or ",;="
+     * @param mixed $header
      *
      * @return array Nested array with as many levels as there are characters in
      *               $separators
@@ -43,15 +43,15 @@ class HeaderUtils
                         "(?:[^"\\\\]|\\\\.)*(?:"|\\\\|$)
                     |
                         # token
-                        [^"'.$quotedSeparators.']+
+                        [^"' . $quotedSeparators . ']+
                     )+
                 (?<!\s)
             |
                 # separator
                 \s*
-                (?<separator>['.$quotedSeparators.'])
+                (?<separator>[' . $quotedSeparators . '])
                 \s*
-            /x', trim($header), $matches, \PREG_SET_ORDER);
+            /x', trim($header), $matches, PREG_SET_ORDER);
 
         return self::groupParts($matches, $separators);
     }
@@ -92,6 +92,8 @@ class HeaderUtils
      *
      *     HeaderUtils::toString(["foo" => "abc", "bar" => true, "baz" => "a b c"], ",")
      *     // => 'foo=abc, bar, baz="a b c"'
+     *
+     * @param mixed $separator
      */
     public static function toString(array $assoc, $separator)
     {
@@ -100,11 +102,11 @@ class HeaderUtils
             if (true === $value) {
                 $parts[] = $name;
             } else {
-                $parts[] = $name.'='.self::quote($value);
+                $parts[] = $name . '=' . self::quote($value);
             }
         }
 
-        return implode($separator.' ', $parts);
+        return implode($separator . ' ', $parts);
     }
 
     /**
@@ -113,6 +115,8 @@ class HeaderUtils
      * If a string contains characters not allowed by the "token" construct in
      * the HTTP specification, it is backslash-escaped and enclosed in quotes
      * to match the "quoted-string" construct.
+     *
+     * @param mixed $s
      */
     public static function quote($s)
     {
@@ -120,7 +124,7 @@ class HeaderUtils
             return $s;
         }
 
-        return '"'.addcslashes($s, '"\\"').'"';
+        return '"' . addcslashes($s, '"\\"') . '"';
     }
 
     /**
@@ -128,6 +132,8 @@ class HeaderUtils
      *
      * If passed an unquoted string that matches the "token" construct (as
      * defined in the HTTP specification), it is passed through verbatimly.
+     *
+     * @param mixed $s
      */
     public static function unquote($s)
     {
@@ -137,21 +143,21 @@ class HeaderUtils
     /**
      * Generates an HTTP Content-Disposition field-value.
      *
-     * @param string $disposition      One of "inline" or "attachment"
-     * @param string $filename         A unicode string
+     * @param string $disposition One of "inline" or "attachment"
+     * @param string $filename A unicode string
      * @param string $filenameFallback A string containing only ASCII characters that
      *                                 is semantically equivalent to $filename. If the filename is already ASCII,
      *                                 it can be omitted, or just copied from $filename
      *
-     * @return string A string suitable for use as a Content-Disposition field-value
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return string A string suitable for use as a Content-Disposition field-value
      *
      * @see RFC 6266
      */
     public static function makeDisposition($disposition, $filename, $filenameFallback = '')
     {
-        if (!\in_array($disposition, [self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE])) {
+        if (!\in_array($disposition, [self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE], true)) {
             throw new \InvalidArgumentException(sprintf('The disposition must be either "%s" or "%s".', self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE));
         }
 
@@ -176,19 +182,20 @@ class HeaderUtils
 
         $params = ['filename' => $filenameFallback];
         if ($filename !== $filenameFallback) {
-            $params['filename*'] = "utf-8''".rawurlencode($filename);
+            $params['filename*'] = "utf-8''" . rawurlencode($filename);
         }
 
-        return $disposition.'; '.self::toString($params, ';');
+        return $disposition . '; ' . self::toString($params, ';');
     }
 
     /**
      * Like parse_str(), but preserves dots in variable names.
      */
-    public static function parseQuery($query, $ignoreBrackets = false, $separator = '&')
+    public static function parseQuery(string $query, bool $ignoreBrackets = false, string $separator = '&')
     {
         $q = [];
 
+        // phpstan-ignore-next-line
         foreach (explode($separator, $query) as $v) {
             if (false !== $i = strpos($v, "\0")) {
                 $v = substr($v, 0, $i);
@@ -271,10 +278,10 @@ class HeaderUtils
                 $parts[] = self::unquote($matches[0][0]);
             }
 
-            if (!$first && 2 < count($parts)) {
+            if (!$first && 2 < \count($parts)) {
                 $parts = [
                     $parts[0],
-                    implode($separator, array_slice($parts, 1)),
+                    implode($separator, \array_slice($parts, 1)),
                 ];
             }
         }

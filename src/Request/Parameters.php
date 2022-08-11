@@ -1,14 +1,13 @@
 <?php
 
-namespace Pff\EasyApi\Request;
+declare(strict_types=1);
 
+namespace Pff\EasyApi\Request;
 
 use ArrayIterator;
 use Countable;
 use Illuminate\Support\Arr;
 use IteratorAggregate;
-
-use function count;
 
 class Parameters implements IteratorAggregate, Countable
 {
@@ -44,23 +43,18 @@ class Parameters implements IteratorAggregate, Countable
 
     /**
      * Replaces the current parameters by a new set.
-     *
-     * @param array $parameters
-     * @return Parameters
      */
-    public function replace(array $parameters = []): Parameters
+    public function replace(array $parameters = []): self
     {
         $this->parameters = $parameters;
+
         return $this;
     }
 
     /**
      * Adds parameters.
-     *
-     * @param array $parameters
-     * @return Parameters
      */
-    public function add(array $parameters = []): Parameters
+    public function add(array $parameters = []): self
     {
         $this->parameters = array_replace($this->parameters, $parameters);
 
@@ -70,7 +64,8 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Returns a parameter by name.
      *
-     * @param mixed|null $default The default value if the parameter key does not exist
+     * @param null|mixed $default The default value if the parameter key does not exist
+     * @param mixed $key
      *
      * @return mixed
      */
@@ -82,20 +77,17 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Sets a parameter by name.
      *
-     * @param string|null $key
      * @param mixed $value The value
-     * @return Parameters
      */
-    public function set(?string $key, $value): Parameters
+    public function set(?string $key, $value): self
     {
         Arr::set($this->parameters, $key, $value);
+
         return $this;
     }
 
     /**
      * Returns true if the parameter is defined.
-     *
-     * @param string $key
      *
      * @return bool true if the parameter exists, false otherwise
      */
@@ -107,12 +99,12 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Remove one or many array items from a given array using "dot" notation.
      *
-     * @param string|array $keys
-     * @return Parameters
+     * @param array|string $keys
      */
-    public function remove($keys): Parameters
+    public function remove($keys): self
     {
         Arr::forget($this->parameters, $keys);
+
         return $this;
     }
 
@@ -133,6 +125,6 @@ class Parameters implements IteratorAggregate, Countable
      */
     public function count(): int
     {
-        return count($this->parameters);
+        return \count($this->parameters);
     }
 }

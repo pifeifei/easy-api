@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Unit\Signature;
 
 use Pff\EasyApi\Contracts\SignatureInterface;
 use Pff\EasyApi\Signature\MD5Signature;
 use Pff\EasyApiTest\TestCase;
 
-class MD5SignatureTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class MD5SignatureTest extends TestCase
 {
-    public function testShaHmac256Signature()
+    public function testShaHmac256Signature(): void
     {
         // Setup
         $string = 'this is a md5 test.';
@@ -21,10 +27,10 @@ class MD5SignatureTest extends TestCase
         // Assert
         static::assertInstanceOf(SignatureInterface::class, $signature);
         static::assertInstanceOf(MD5Signature::class, $signature);
-        static::assertEquals('MD5', $signature->getMethod());
-        static::assertEquals('1.0', $signature->getVersion());
-        static::assertEquals('', $signature->getType());
-        static::assertEquals(
+        static::assertSame('MD5', $signature->getMethod());
+        static::assertSame('1.0', $signature->getVersion());
+        static::assertSame('', $signature->getType());
+        static::assertSame(
             $expected,
             $signature->sign($string, $accessKeySecret)
         );

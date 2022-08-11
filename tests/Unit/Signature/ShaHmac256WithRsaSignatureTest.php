@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Unit\Signature;
 
 use Pff\EasyApi\Contracts\SignatureInterface;
 use Pff\EasyApi\Signature\ShaHmac256WithRsaSignature;
 use Pff\EasyApiTest\TestCase;
 
-class ShaHmac256WithRsaSignatureTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class ShaHmac256WithRsaSignatureTest extends TestCase
 {
-    public function testShaHmac256Signature()
+    public function testShaHmac256Signature(): void
     {
         // Setup
         $string = 'this is a sha256 with RSA test.';
@@ -21,9 +27,9 @@ class ShaHmac256WithRsaSignatureTest extends TestCase
         // Assert
         static::assertInstanceOf(SignatureInterface::class, $signature);
         static::assertInstanceOf(ShaHmac256WithRsaSignature::class, $signature);
-        static::assertEquals('SHA256withRSA', $signature->getMethod());
-        static::assertEquals('1.0', $signature->getVersion());
-        static::assertEquals('PRIVATEKEY', $signature->getType());
+        static::assertSame('SHA256withRSA', $signature->getMethod());
+        static::assertSame('1.0', $signature->getVersion());
+        static::assertSame('PRIVATEKEY', $signature->getType());
 //        TODO: 需要一个 openssl 证书
 //        static::assertEquals(
 //            $expected,

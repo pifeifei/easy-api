@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Exception;
 
 use Pff\EasyApi\Result;
@@ -9,7 +11,7 @@ class ServerException extends ApiException
 {
     protected $result;
 
-    public function __construct(Result $result, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct(Result $result, $message = '', $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->result = $result;

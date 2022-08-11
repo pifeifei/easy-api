@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Clients;
 
 use GuzzleHttp\Exception\GuzzleException;
@@ -27,17 +29,23 @@ use UnexpectedValueException;
 
 class Client
 {
-    use CacheTrait, ClientTrait, HttpTrait, HistoryTrait, MockTrait, RetryTrait, UriTrait;
+    use CacheTrait;
+    use ClientTrait;
+    use HistoryTrait;
+    use HttpTrait;
+    use MockTrait;
+    use RetryTrait;
+    use UriTrait;
 
     /**
-     * Request Connect Timeout
+     * Request Connect Timeout.
      */
-    const CONNECT_TIMEOUT = 5;
+    public const CONNECT_TIMEOUT = 5;
 
     /**
-     * Request Timeout
+     * Request Timeout.
      */
-    const TIMEOUT = 10;
+    public const TIMEOUT = 10;
 
     /**
      * @var ConfigInterface
@@ -50,7 +58,7 @@ class Client
     protected $formatter;
 
     /**
-     * Response format
+     * Response format.
      *
      * @var string
      */
@@ -62,26 +70,29 @@ class Client
     protected $signConfig;
 
     /**
-     * @var array
+     * @var array<int|string>
      */
     protected $userAgent = [];
 
-    public function __construct($config)
+    /**
+     * @param array<string, mixed> $config
+     *
+     * @throws ClientException
+     */
+    public function __construct(array $config)
     {
         $this->config = Config::create($config);
-        $this->options[RequestOptions::HTTP_ERRORS]     = false;
+        $this->options[RequestOptions::HTTP_ERRORS] = false;
         $this->options[RequestOptions::CONNECT_TIMEOUT] = self::CONNECT_TIMEOUT;
-        $this->options[RequestOptions::TIMEOUT]         = self::TIMEOUT;
+        $this->options[RequestOptions::TIMEOUT] = self::TIMEOUT;
 
         $this->init();
     }
 
     /**
-     * @param string $name
-     * @param string $value
      * @return $this
      */
-    public function appendUserAgent(string $name, string $value): Client
+    public function appendUserAgent(string $name, string $value): self
     {
         if (!UserAgent::isGuarded($name)) {
             $this->userAgent[$name] = $value;
@@ -91,82 +102,42 @@ class Client
     }
 
     /**
-     * @param array $userAgent
-     * @return Client
+     * @param array<int|string> $userAgent
+     *
+     * @return static
      */
-    public function withUserAgent(array $userAgent): Client
+    public function withUserAgent(array $userAgent): self
     {
         $this->userAgent = $userAgent;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function format(): string
     {
         return $this->format;
     }
 
-    protected function init()
-    {
-        $config = $this->config();
-        $this->uri = new Uri($config->request('uri'));
-        $this->prefixPath = rtrim($this->uri()->getPath(), '/');
-        $this->method = $config->request('method', API::METHOD_POST);
-
-        $formatter = $config->request('formatter');
-        if (! class_exists($formatter)) {
-            throw new UnexpectedValueException(sprintf('%s class does not exist.', $formatter));
-        }
-        $this->formatter = new $formatter($this);
-        if (! ($this->formatter instanceof FormatterInterface)) {
-            throw new UnexpectedValueException(sprintf('Formatter must implement %s interface.', FormatterInterface::class));
-        }
-
-        $this->format = $config->request('format', API::RESPONSE_FORMAT_JSON);
-
-        $this->query = new Parameters();
-        $this->data = new Parameters();
-        $this->headers = new Headers();
-
-        $this->signConfig = SignConfig::create($config->request('sign'));
-
-        $this->setSignature($config->request('signature'));
-        $this->setCache($config->request('cache'));
-    }
-
     /**
-     * 清空数据
+     * 清空数据。
      */
-    public function clear(): Client
+    public function clear(): self
     {
-        $this->method = $this->config()->request('method', API::METHOD_POST);
+        $this->method = $this->config()->requestMethod();
         $this->query->replace([]);
         $this->data->replace([]);
         $this->headers->replace([]);
         $this->cleanOptions();
+
         return $this;
     }
 
     /**
-     * @param null $name
-     * @param null $default
-     * @return ConfigInterface|array|bool|float|int|string
+     * 获取配置对象。
      */
-    public function config($name = null, $default = null)
+    public function config(): ConfigInterface
     {
-        if (is_null($name)) {
-            return $this->config;
-        }
-
-        if (is_array($name)) {
-
-            return $this->config;
-        }
-
-        return $this->config->get($name, $default);
+        return $this->config;
     }
 
     public function getSignConfig(): SignConfig
@@ -177,7 +148,7 @@ class Client
     /**
      * @throws ClientException
      */
-    public function resolveOption()
+    public function resolveOption(): void
     {
         $this->headers->set('User-Agent', UserAgent::toString($this->userAgent));
         $this->cleanOptions();
@@ -209,18 +180,51 @@ class Client
     }
 
     /**
-     * @return Result
+     * @throws ClientException
+     */
+    protected function init(): void
+    {
+        $config = $this->config();
+        $this->uri = new Uri($config->requestUri());
+        $this->prefixPath = rtrim($this->uri()->getPath(), '/');
+        $this->method = $config->requestMethod(API::METHOD_POST);
+
+        $formatter = $config->requestFormatter();
+        if (!class_exists($formatter)) {
+            throw new UnexpectedValueException(sprintf('%s class does not exist.', $formatter));
+        }
+
+        $formatter = new $formatter($this);
+        if (!$formatter instanceof FormatterInterface) {
+            throw new UnexpectedValueException(sprintf('Formatter must implement %s interface.', FormatterInterface::class));
+        }
+
+        $this->formatter = $formatter;
+        $this->format = $config->requestFormat(API::RESPONSE_FORMAT_JSON);
+        $this->query = new Parameters();
+        $this->data = new Parameters();
+        $this->headers = new Headers();
+
+        $this->signConfig = SignConfig::create($config->requestSign());
+
+        $this->setSignature($config->requestSignature());
+        $this->setCache($config->requestCache());
+    }
+
+    /**
      * @throws ClientException
      */
     private function response(): Result
     {
         try {
-            /* @var Result $result */
+            /** @var Result $result */
             $result = self::createClient($this)->request(
                 $this->requestMethod(),
-                (string)$this->uri,
+                (string) $this->uri,
                 $this->options
             );
+
+            /** @var Result */
             return value($result);
         } catch (GuzzleException $exception) {
 //            if ($this->shouldClientRetry($exception)) {
@@ -235,11 +239,11 @@ class Client
     }
 
     /**
-     * Remove redundant Query
+     * Remove redundant Query.
      *
      * @codeCoverageIgnore
      */
-    private function cleanOptions()
+    private function cleanOptions(): void
     {
         if (isset($this->options[RequestOptions::HEADERS])) {
             unset($this->options[RequestOptions::HEADERS]);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Format;
 
 use GuzzleHttp\RequestOptions;
@@ -22,38 +24,46 @@ abstract class AbstractFormatter implements FormatterInterface
     }
 
     /**
-     * post 数据处理
-     * @return array
+     * post 数据处理。
+     *
+     * @return array<string, mixed>
      */
     abstract protected function getData(): array;
 
     /**
-     * query 数据处理
-     * @return array|false
+     * query 数据处理。
+     *
+     * @return array<float|int|string>|false
      */
     abstract protected function getQuery();
 
     /**
-     * 设置 post 数据
+     * 设置 post 数据。
+     *
      * @throws ClientException
      */
-    protected function body()
+    protected function body(): void
     {
         $data = $this->getData();
         $this->client->options([RequestOptions::HEADERS => $this->client->headers()->all()]);
         $method = $this->client->method();
+
         switch ($method) {
             case API::METHOD_POST:
                 $this->client->options([RequestOptions::FORM_PARAMS => $data]);
+
                 return;
 
             case API::METHOD_XML:
                 $this->client->options([RequestOptions::BODY => $this->bodyXML()]);
+
                 return;
 
             case API::METHOD_JSON:
                 $this->client->options([RequestOptions::JSON => $data]);
+
                 return;
+
             case API::METHOD_GET:
                 return;
         }
@@ -62,9 +72,9 @@ abstract class AbstractFormatter implements FormatterInterface
     }
 
     /**
-     * 设置 query 参数
+     * 设置 query 参数。
      */
-    protected function query()
+    protected function query(): void
     {
         if ($queries = $this->getQuery()) {
             $this->client->options([RequestOptions::QUERY => $queries]);
@@ -72,29 +82,35 @@ abstract class AbstractFormatter implements FormatterInterface
     }
 
     /**
-     * 加签名
+     * 添加签名。
+     *
      * @throws ClientException
      */
-    protected function sign()
+    protected function sign(): void
     {
         $signPosition = $this->client->config()->request('sign.position');
 
         if (empty($signPosition)) {
             return;
         }
+
         switch ($signPosition) {
             case API::SIGN_POSITION_HEAD:
                 $this->signHead();
+
                 return;
 
             case API::SIGN_POSITION_GET:
                 $this->signGet();
+
                 return;
 
             case API::SIGN_POSITION_POST:
                 $this->signPost();
+
                 return;
-            Case API::SIGN_POSITION_NONE:
+
+            case API::SIGN_POSITION_NONE:
                 return;
         }
 
@@ -102,20 +118,21 @@ abstract class AbstractFormatter implements FormatterInterface
     }
 
     /**
-     * 格式化 xml 请求体
+     * 格式化 xml 请求体。
+     *
      * @return false|string
      */
     protected function bodyXML()
     {
         $data = $this->client->data();
         $xml = new XmlEncoder();
+
         return $xml->encode($data, 'xml');
     }
 
     /**
-     * 计算签名字符串
+     * 计算签名字符串。
      *
-     * @return string
      * @throws ClientException
      */
     protected function signBuild(): string
@@ -124,10 +141,11 @@ abstract class AbstractFormatter implements FormatterInterface
     }
 
     /**
-     * 前面放到 header
+     * 签名放到请求头。
+     *
      * @throws ClientException
      */
-    protected function signHead()
+    protected function signHead(): void
     {
         $signConfig = $this->client->getSignConfig();
 
@@ -137,10 +155,11 @@ abstract class AbstractFormatter implements FormatterInterface
     }
 
     /**
-     * query 方式请求签名
+     * query 方式请求签名。
+     *
      * @throws ClientException
      */
-    protected function signGet()
+    protected function signGet(): void
     {
         $signConfig = $this->client->getSignConfig();
 
@@ -150,10 +169,11 @@ abstract class AbstractFormatter implements FormatterInterface
     }
 
     /**
-     * post 中进行签名
+     * post 中进行签名。
+     *
      * @throws ClientException
      */
-    protected function signPost()
+    protected function signPost(): void
     {
         $signConfig = $this->client->getSignConfig();
 

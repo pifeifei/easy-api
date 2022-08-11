@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Format;
 
 use Pff\EasyApi\Utils;
 
 class HttpBinFormatter extends AbstractFormatter
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function resolve()
+    public function resolve(): void
     {
         $this->query();
         $this->body();
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getData(): array
     {
@@ -25,7 +26,7 @@ class HttpBinFormatter extends AbstractFormatter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getQuery()
     {

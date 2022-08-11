@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Concerns\Client;
 
 use Exception;
@@ -14,81 +16,78 @@ use Psr\Http\Message\ResponseInterface;
 trait RetryTrait
 {
     /**
-     * Server Retry Times
+     * Server Retry Times.
      *
      * @var int
      */
     private $serverRetry = 0;
 
     /**
-     * Server Retry Strings
+     * Server Retry Strings.
      *
      * @var string[]
      */
     private $serverRetryStrings = [];
 
     /**
-     * Server Retry Codes
+     * Server Retry Codes.
      *
      * @var int[]
      */
     private $serverRetryStatusCodes = [];
 
     /**
-     * Client Retry Times
+     * Client Retry Times.
      *
      * @var int
      */
     private $clientRetry = 0;
 
     /**
-     * Client Retry Strings
+     * Client Retry Strings.
      *
      * @var string[]
      */
     private $clientRetryStrings = [];
 
     /**
-     * Client Retry Codes
+     * Client Retry Codes.
      *
      * @var int[]
      */
     private $clientRetryStatusCodes = [];
 
     /**
-     * @param int   $times
-     * @param array $strings
-     * @param array $statusCodes
+     * @param int $times
+     *
+     * @throws ClientException
      *
      * @return $this
-     * @throws ClientException
      */
     public function retryByServer($times, array $strings, array $statusCodes = [])
     {
-        $this->serverRetry            = (int)$times;
-        $this->serverRetryStrings     = $strings;
+        $this->serverRetry = (int) $times;
+        $this->serverRetryStrings = $strings;
         $this->serverRetryStatusCodes = $statusCodes;
 
         return $this;
     }
 
     /**
-     * @param int   $times
-     * @param array $strings
-     * @param array $codes
+     * @param int $times
      *
      * @return $this
      */
     public function retryByClient($times, array $strings, array $codes = [])
     {
-        $this->clientRetry            = (int) $times;
-        $this->clientRetryStrings     = $strings;
+        $this->clientRetry = (int) $times;
+        $this->clientRetryStrings = $strings;
         $this->clientRetryStatusCodes = $codes;
 
         return $this;
     }
 
-    protected function pushRetryMiddleware(HandlerStack $stack)
+    protected function pushRetryMiddleware(HandlerStack $stack): void
     {
         $stack->push($this->retryMiddleware(), 'retry');
     }
@@ -103,12 +102,12 @@ trait RetryTrait
                 $retries,
                 RequestInterface $request,
                 ResponseInterface $response = null
-            ){
+            ) {
                 $statusCode = $response->getStatusCode();
                 // Limit the number of retries to 2
                 if ($retries < $this->clientRetry && 400 <= $statusCode && $statusCode < 500) {
                     // Retry on server errors
-                    if (in_array($statusCode, $this->clientRetryStatusCodes)) {
+                    if (\in_array($statusCode, $this->clientRetryStatusCodes, true)) {
                         return true;
                     }
 
@@ -125,7 +124,7 @@ trait RetryTrait
 
                 if ($retries < $this->serverRetry && 500 <= $statusCode && $statusCode < 600) {
                     // Retry on server errors
-                    if (in_array($statusCode, $this->serverRetryStatusCodes)) {
+                    if (\in_array($statusCode, $this->serverRetryStatusCodes, true)) {
                         return true;
                     }
 
@@ -140,18 +139,19 @@ trait RetryTrait
                 }
 //                echo ("retry  {$statusCode}  {$this->clientRetry}  : " . __FILE__ . ':' . __LINE__) . PHP_EOL;
                 return false;
-            }, function () {
-            return 500;
-        });
+            },
+            function () {
+                return 500;
+            }
+        );
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return  bool
+     * @return bool
      */
     protected function isText(ResponseInterface $response)
     {
-        $type = strtolower($response->getHeaderLine('Content-Type'));// json, xml, text, html,
+        $type = strtolower($response->getHeaderLine('Content-Type')); // json, xml, text, html,
 
         $allow = ['json', 'xml', 'text', 'html'];
         foreach ($allow as $item) {
@@ -159,6 +159,7 @@ trait RetryTrait
                 return true;
             }
         }
+
         return false;
     }
 
@@ -173,9 +174,8 @@ trait RetryTrait
 
         return false;
     }
+
     /**
-     * @param Result $result
-     *
      * @return bool
      */
     private function shouldServerRetry(Result $result)
@@ -184,15 +184,15 @@ trait RetryTrait
             return false;
         }
 
-        if (in_array($result->getStatusCode(), $this->serverRetryStatusCodes)) {
-            $this->serverRetry--;
+        if (\in_array($result->getStatusCode(), $this->serverRetryStatusCodes, true)) {
+            --$this->serverRetry;
 
             return true;
         }
 
         foreach ($this->serverRetryStrings as $message) {
             if (Str::contains($result->getBody(), $message)) {
-                $this->serverRetry--;
+                --$this->serverRetry;
 
                 return true;
             }
@@ -202,8 +202,6 @@ trait RetryTrait
     }
 
     /**
-     * @param Exception $exception
-     *
      * @return bool
      */
     private function shouldClientRetry(Exception $exception)
@@ -212,15 +210,15 @@ trait RetryTrait
             return false;
         }
 
-        if (in_array($exception->getCode(), $this->clientRetryStatusCodes, true)) {
-            $this->clientRetry--;
+        if (\in_array($exception->getCode(), $this->clientRetryStatusCodes, true)) {
+            --$this->clientRetry;
 
             return true;
         }
 
         foreach ($this->clientRetryStrings as $message) {
             if (Str::contains($exception->getMessage(), $message)) {
-                $this->clientRetry--;
+                --$this->clientRetry;
 
                 return true;
             }

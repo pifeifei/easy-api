@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Concerns;
 
 use GuzzleHttp\Client as GuzzleClient;
@@ -21,6 +23,7 @@ trait ClientTrait
         API::METHOD_POST => 'POST',
         API::METHOD_XML => 'POST',
     ];
+
     /**
      * @var string
      */
@@ -36,11 +39,6 @@ trait ClientTrait
      */
     protected $isTokenClient = false;
 
-    /**
-     * @param Client|null $client
-     *
-     * @return GuzzleClient
-     */
     public function createClient(Client $client = null): GuzzleClient
     {
         if (self::hasMock()) {
@@ -53,7 +51,6 @@ trait ClientTrait
         if ($this->isRememberHistory()) {
             $stack->push(Middleware::history($this->histories));
         }
-
 
         if ($this->shouldRetryMiddleware()) {
             $this->pushRetryMiddleware($stack);
@@ -78,17 +75,18 @@ trait ClientTrait
     }
 
     /**
-     * setter or getter method
-     * @param string|null $method
+     * setter or getter method.
+     *
      * @return $this|string
      */
     public function method(string $method = null)
     {
-        if (is_null($method)) {
+        if (null === $method) {
             return $this->method;
         }
 
         $this->method = strtoupper($method);
+
         return $this;
     }
 
@@ -109,23 +107,25 @@ trait ClientTrait
     }
 
     /**
+     * @param null|SignatureInterface|string $signature
      *
-     * @param SignatureInterface|string|null $signature
      * @return $this
      */
     public function setSignature($signature = null)
     {
-        if (is_null($signature)) {
+        if (null === $signature) {
             return $this;
         }
 
-        if (is_string($signature) && class_exists($signature)) {
-            $this->signature = new $signature;
+        if (\is_string($signature) && class_exists($signature)) {
+            $this->signature = new $signature();
+
             return $this;
         }
 
         if ($signature instanceof SignatureInterface) {
             $this->signature = $signature;
+
             return $this;
         }
 
@@ -134,16 +134,16 @@ trait ClientTrait
     }
 
     /**
-     * @param bool|null $isTokenClient
      * @return $this|bool
      */
     public function tokenClient(bool $isTokenClient = null)
     {
-        if (is_null($isTokenClient)) {
+        if (null === $isTokenClient) {
             return $this->isTokenClient;
         }
 
         $this->isTokenClient = (bool) $isTokenClient;
+
         return $this;
     }
 }

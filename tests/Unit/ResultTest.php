@@ -1,7 +1,8 @@
 <?php
 
-namespace Pff\EasyApiTest\Unit;
+declare(strict_types=1);
 
+namespace Pff\EasyApiTest\Unit;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
@@ -11,27 +12,16 @@ use Pff\EasyApi\Request\Request;
 use Pff\EasyApi\Result;
 use Pff\EasyApiTest\TestCase;
 
-class ResultTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class ResultTest extends TestCase
 {
     /**
      * @var Result
      */
     protected $result;
-
-    public function testResult()
-    {
-        $this->assertTrue($this->result->isSuccess());
-        $this->assertInstanceOf(Request::class, $this->result->getRequest());
-        $this->assertEquals(200, $this->result->getStatusCode());
-        $this->assertEquals('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->toJson());
-        $this->assertEquals('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->getBody()->__toString());
-        $this->assertEquals("v1", $this->result->get('arr.a1'));
-        $this->assertFalse($this->result->isEmpty());
-        $this->assertTrue($this->result->has("foo"));
-        $this->assertEquals(3, $this->result->count());
-        $this->result->clear(['bar', 'none']);
-        $this->assertEquals(2, $this->result->count());
-    }
 
     protected function setUp(): void
     {
@@ -42,11 +32,11 @@ class ResultTest extends TestCase
         $config = new Config([
             'config' => [
                 'app_key' => 'app key string',
-                'token' => 'token string'
+                'token' => 'token string',
             ],
             'request' => [
-                'format' => API::RESPONSE_FORMAT_JSON
-            ]
+                'format' => API::RESPONSE_FORMAT_JSON,
+            ],
         ]);
 
         $response = new Response(
@@ -61,6 +51,21 @@ class ResultTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($this->result);
+        $this->result = null;
+    }
+
+    public function testResult(): void
+    {
+        static::assertTrue($this->result->isSuccess());
+        static::assertInstanceOf(Request::class, $this->result->getRequest());
+        static::assertSame(200, $this->result->getStatusCode());
+        static::assertSame('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->toJson());
+        static::assertSame('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->getBody()->__toString());
+        static::assertSame('v1', $this->result->get('arr.a1'));
+        static::assertFalse($this->result->isEmpty());
+        static::assertTrue($this->result->has('foo'));
+        static::assertSame(3, $this->result->count());
+        $this->result->clear(['bar', 'none']);
+        static::assertSame(2, $this->result->count());
     }
 }

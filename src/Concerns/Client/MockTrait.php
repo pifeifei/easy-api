@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApi\Concerns\Client;
 
 use Exception;
@@ -23,14 +25,11 @@ trait MockTrait
     protected $mock;
 
     /**
-     * @param integer $status
-     * @param array $headers
-     * @param array|string|object $body
-     * @param string $version
+     * @param array|object|string $body
      */
-    public function mockResponse(int $status = 200, array $headers = [], $body = null, string $version = '1.1')
+    public function mockResponse(int $status = 200, array $headers = [], $body = null, string $version = '1.1'): void
     {
-        if (is_array($body) || is_object($body)) {
+        if (\is_array($body) || \is_object($body)) {
             $body = json_encode($body);
         }
 
@@ -39,11 +38,7 @@ trait MockTrait
     }
 
     /**
-     * @param string                 $message
-     * @param RequestInterface       $request
-     * @param ResponseInterface|null $response
-     * @param Exception|null         $previous
-     * @param array                  $handlerContext
+     * @param string $message
      */
     public function mockRequestException(
         $message,
@@ -51,7 +46,7 @@ trait MockTrait
         ResponseInterface $response = null,
         Exception $previous = null,
         array $handlerContext = []
-    ) {
+    ): void {
         $this->mockQueue[] = new RequestException(
             $message,
             $request,
@@ -63,28 +58,23 @@ trait MockTrait
         $this->getMock()->append(Arr::last($this->mockQueue));
     }
 
-    public function cancelMock()
+    public function cancelMock(): void
     {
         $this->mockQueue = [];
         $this->getMock()->reset();
     }
 
-    /**
-     * @return bool
-     */
     public function hasMock(): bool
     {
         return $this->getMock()->count() > 0;
     }
 
-    /**
-     * @return MockHandler
-     */
     public function getMock(): MockHandler
     {
-        if (is_null($this->mock)) {
+        if (null === $this->mock) {
             $this->mock = new MockHandler($this->mockQueue);
         }
+
         return $this->mock;
     }
 }

@@ -1,76 +1,82 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pff\EasyApiTest\Unit\Concerns;
 
 use GuzzleHttp\Psr7\Uri;
 use Pff\EasyApi\Clients\Client;
 use Pff\EasyApiTest\TestCase;
 
-class UriTraitTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class UriTraitTest extends TestCase
 {
-    public function testUri()
+    public function testUri(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
         $uri = $client->uri();
-        $this->assertInstanceOf(Uri::class, $uri);
-        $this->assertEquals($config['request']['uri'], $uri->__toString());
+        static::assertInstanceOf(Uri::class, $uri);
+        static::assertSame($config['request']['uri'], $uri->__toString());
 
         $client->path('test');
         $uri2 = $client->uri();
-        $this->assertNotEquals($uri, $uri2);
+        static::assertNotSame($uri, $uri2);
     }
 
-    public function testScheme()
+    public function testScheme(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
 
-        $this->assertEquals('https', $client->uri()->getScheme());
+        static::assertSame('https', $client->uri()->getScheme());
 
         $client->scheme('http');
-        $this->assertEquals('http', $client->uri()->getScheme());
+        static::assertSame('http', $client->uri()->getScheme());
     }
 
-    public function testHost()
+    public function testHost(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
 
-        $this->assertEquals('httpbin.org', $client->uri()->getHost());
+        static::assertSame('httpbin.org', $client->uri()->getHost());
 
         $client->host('pff.sample.cn');
-        $this->assertEquals('pff.sample.cn', $client->uri()->getHost());
+        static::assertSame('pff.sample.cn', $client->uri()->getHost());
     }
 
-    public function testPath()
+    public function testPath(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
 
-        $this->assertEquals('/anything', $client->uri()->getPath());
+        static::assertSame('/anything', $client->uri()->getPath());
 
         $client->path('path/to');
-        $this->assertEquals('/anything/path/to', $client->uri()->getPath());
+        static::assertSame('/anything/path/to', $client->uri()->getPath());
 
         $client->path('/path/to');
-        $this->assertEquals('/path/to', $client->uri()->getPath());
+        static::assertSame('/path/to', $client->uri()->getPath());
 
         $client->path('../path/to');
-        $this->assertEquals('/anything/../path/to', $client->uri()->getPath());
+        static::assertSame('/anything/../path/to', $client->uri()->getPath());
     }
 
-    public function testPort()
+    public function testPort(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
 
-        $this->assertNull($client->uri()->getPort());
+        static::assertNull($client->uri()->getPort());
 
         $client->port(99);
-        $this->assertEquals(99, $client->uri()->getPort());
+        static::assertSame(99, $client->uri()->getPort());
 
         $client->port(80);
-        $this->assertEquals(80, $client->uri()->getPort());
+        static::assertSame(80, $client->uri()->getPort());
     }
 }

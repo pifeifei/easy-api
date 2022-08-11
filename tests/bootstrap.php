@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 |--------------------------------------------------------------------------
 | Register The Composer Auto Loader
@@ -12,7 +14,7 @@
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 /*
  *--------------------------------------------------------------------------
@@ -29,9 +31,9 @@ date_default_timezone_set('UTC');
 
 setlocale(LC_ALL, 'C.UTF-8');
 
-//$env = \Dotenv\Dotenv::createImmutable(dirname(__DIR__))->safeLoad();
+// $env = \Dotenv\Dotenv::createImmutable(dirname(__DIR__))->safeLoad();
 $env = \Dotenv\Dotenv::createMutable(dirname(__DIR__))->safeLoad();
-//dump($env);
+// dump($env);
 
-//var_dump($_ENV);
-//echo getenv('WECHAT_APP_ID');
+// var_dump($_ENV);
+// echo getenv('WECHAT_APP_ID');

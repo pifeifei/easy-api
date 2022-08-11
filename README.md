@@ -25,6 +25,7 @@ $config = [
     ],
     'request' => [
         "uri" => 'https://httpbin.org/anything',
+        "sandbox_uri" => 'https://httpbin.org/anything/sandbox',
         "method" => Pff\EasyApi\API::METHOD_JSON, // 默认请求方式，可选：GET, POST, JSON
         "sign" => [
             "position" => Pff\EasyApi\API::SIGN_POSITION_HEAD,
