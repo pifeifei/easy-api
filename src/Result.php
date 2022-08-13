@@ -121,12 +121,14 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
      */
     private function xmlToArray(string $string): array
     {
+        /** @var array<string, mixed>|false $json */
         $json = simplexml_load_string($string);
         if (false === $json) {
             throw new ClientException('API xml parse error: ' . $string);
         }
 
-        $arr = json_decode(json_encode((array) $json), true);
+        /** @var array<string, mixed> $arr */
+        $arr = json_decode(json_encode($json), true);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new ClientException('API xml parse error: ' . json_last_error_msg());

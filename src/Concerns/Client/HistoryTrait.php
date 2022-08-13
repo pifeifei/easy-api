@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Concerns\Client;
 
+use Psr\Http\Message\RequestInterface;
+
 trait HistoryTrait
 {
     /**
-     * @var array
+     * @var array{request: RequestInterface, response: null|object, error: null|object, option: array<int|string>}
      */
     protected $histories = [];
 
