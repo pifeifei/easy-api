@@ -12,17 +12,27 @@ jobs:
       fail-fast: false
       matrix:
         php_version:
-          - 7.4
-          - 8.0
+          - '7.4'
+          - '8.0'
         perfer:
           - stable
           - lowest
     steps:
       - name: Checkout code
-        uses: actions/checkout@master
-      - name: Install Dependencies
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Install Composer dependencies
         run: composer update --prefer-dist --no-interaction --no-suggest --prefer-${{ matrix.perfer }}
+
       - name: PHP version
         run: php -v
+
       - name: Run PHPUnit
         run: ./vendor/bin/phpunit
