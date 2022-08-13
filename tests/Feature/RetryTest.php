@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pff\EasyApiTest\Feature;
 
 use Pff\EasyApi\Clients\Client;
+use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Exception\ServerException;
 use Pff\EasyApiTest\TestCase;
 
@@ -16,15 +17,15 @@ final class RetryTest extends TestCase
 {
     public function testNoRetry(): void
     {
-        $config = $this->getConfig();
-        $client = new Client($config);
-        $client->cancelMock();
-
-        $client->mockResponse(400, [], '{"code":400}');
-
         try {
+            $config = $this->getConfig();
+            $client = new Client($config);
+            $client->cancelMock();
+
+            $client->mockResponse(400, [], '{"code":400}');
+
             $client->request();
-        } catch (ServerException $e) {
+        } catch (ServerException|ClientException $e) {
             static::assertGreaterThan(0, $e->getCode());
         }
     }

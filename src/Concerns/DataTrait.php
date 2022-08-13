@@ -258,7 +258,7 @@ trait DataTrait
             return;
         }
 
-        if (is_null($value)) {
+        if (null === $value) {
             Arr::forget($this->collection, $keys);
         }
     }

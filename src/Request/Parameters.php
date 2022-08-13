@@ -9,13 +9,26 @@ use Countable;
 use Illuminate\Support\Arr;
 use IteratorAggregate;
 
+/**
+ * 参数。
+ *
+ * @template TKey of string
+ * @template TValue of mixed
+ *
+ * @implements IteratorAggregate<TKey, TValue>
+ */
 class Parameters implements IteratorAggregate, Countable
 {
     /**
      * Parameter storage.
+     *
+     * @var array<TKey, TValue>
      */
-    protected $parameters;
+    protected array $parameters;
 
+    /**
+     * @param array<TKey, TValue> $parameters
+     */
     public function __construct(array $parameters = [])
     {
         $this->parameters = $parameters;
@@ -24,7 +37,7 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Returns the parameters.
      *
-     * @return array An int, float, boolean, string or array of parameters
+     * @return array<TKey, TValue> An int, float, boolean, string or array of parameters
      */
     public function all(): array
     {
@@ -34,7 +47,7 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Returns the parameter keys.
      *
-     * @return array An array of parameter keys
+     * @return string[] An array of parameter keys
      */
     public function keys(): array
     {
@@ -43,6 +56,8 @@ class Parameters implements IteratorAggregate, Countable
 
     /**
      * Replaces the current parameters by a new set.
+     *
+     * @param array<TKey, TValue> $parameters
      */
     public function replace(array $parameters = []): self
     {
@@ -53,6 +68,8 @@ class Parameters implements IteratorAggregate, Countable
 
     /**
      * Adds parameters.
+     *
+     * @param array<TKey, TValue> $parameters
      */
     public function add(array $parameters = []): self
     {
@@ -64,14 +81,14 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Returns a parameter by name.
      *
-     * @param null|mixed $default The default value if the parameter key does not exist
-     * @param mixed $key
+     * @param null|TValue $default The default value if the parameter key does not exist
+     * @param TValue $key
      *
-     * @return mixed
+     * @return TValue
      */
     public function get($key, $default = null)
     {
-        return Arr::get($this->parameters, $key, $default);
+        return Arr::get($this->parameters, $key, $default); // @phpstan-ignore-line
     }
 
     /**
@@ -79,7 +96,7 @@ class Parameters implements IteratorAggregate, Countable
      *
      * @param mixed $value The value
      */
-    public function set(?string $key, $value): self
+    public function set(string $key, $value): self
     {
         Arr::set($this->parameters, $key, $value);
 
@@ -99,7 +116,7 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Remove one or many array items from a given array using "dot" notation.
      *
-     * @param array|string $keys
+     * @param array<string>|string $keys
      */
     public function remove($keys): self
     {
@@ -111,7 +128,7 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Returns an iterator for parameters.
      *
-     * @return ArrayIterator An \ArrayIterator instance
+     * @return ArrayIterator<TKey, TValue> An \ArrayIterator instance
      */
     public function getIterator(): ArrayIterator
     {

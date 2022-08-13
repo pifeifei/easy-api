@@ -7,7 +7,6 @@ namespace Pff\EasyApi;
 use ArrayAccess;
 use Countable;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Utils;
 use InvalidArgumentException;
 use IteratorAggregate;
 use Pff\EasyApi\Concerns\DataTrait;
@@ -17,6 +16,13 @@ use Psr\Http\Message\ResponseInterface;
 
 use function strtoupper;
 
+/**
+ * @template TKey as array-key
+ * @template TValue as mixed
+ *
+ * @implements IteratorAggregate<TKey, TValue>
+ * @implements ArrayAccess<TKey, TValue>
+ */
 class Result extends Response implements ArrayAccess, IteratorAggregate, Countable
 {
     use DataTrait;
@@ -24,14 +30,14 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     /**
      * Instance of the request.
      *
-     * @var null|Request
+     * @var Request
      */
     protected $request;
 
     /**
      * Result constructor.
      */
-    public function __construct(ResponseInterface $response, Request $request = null)
+    public function __construct(ResponseInterface $response, Request $request)
     {
         parent::__construct(
             $response->getStatusCode(),
@@ -54,10 +60,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
         return (string) $this->getBody();
     }
 
-    /**
-     * @return Request
-     */
-    public function getRequest(): ?Request
+    public function getRequest(): Request
     {
         return $this->request;
     }
@@ -97,9 +100,13 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
 
     private function getRequestFormat(): string
     {
-        return ($this->request instanceof Request)
-            ? strtoupper($this->request->format())
-            : API::RESPONSE_FORMAT_JSON;
+        if ($this->request instanceof Request) {
+            if ($format = $this->request->format()) {
+                return strtoupper($format);
+            }
+        }
+
+        return API::RESPONSE_FORMAT_JSON;
     }
 
     /**
@@ -127,13 +134,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
             throw new ClientException('API xml parse error: ' . $string);
         }
 
-        /** @var array<string, mixed> $arr */
-        $arr = json_decode(json_encode($json), true);
-
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new ClientException('API xml parse error: ' . json_last_error_msg());
-        }
-
-        return $arr;
+        /** @var array<string, mixed> */
+        return (array) $json;
     }
 }

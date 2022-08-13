@@ -14,7 +14,7 @@ use const PHP_VERSION;
 class UserAgent
 {
     /**
-     * @var array<int|string, string>
+     * @var array<string, string|true>
      */
     private static $userAgent = [];
 
@@ -27,7 +27,7 @@ class UserAgent
     ];
 
     /**
-     * @param array<int|string, string> $append
+     * @param array<string, string|true> $append
      */
     public static function toString(array $append = []): string
     {
@@ -45,8 +45,8 @@ class UserAgent
         $append = array_merge(self::$userAgent, $append);
 
         foreach ($append as $key => $value) {
-            if (is_numeric($key)) {
-                $newUserAgent[] = $value;
+            if (true === $value) {
+                $newUserAgent[] = $key;
 
                 continue;
             }
@@ -57,9 +57,9 @@ class UserAgent
     }
 
     /**
-     * @param array<int|string, string> $append
+     * @param array<int|string, string|true> $append
      *
-     * @return array<int|string, string>
+     * @return array<string, string|true>
      */
     public static function clean(array $append): array
     {
@@ -67,9 +67,14 @@ class UserAgent
             if (self::isGuarded($key)) {
                 unset($append[$key]);
             }
+
+            if (\is_int($key)) {
+                $append[$value] = true;
+                unset($append[$key]);
+            }
         }
 
-        return $append;
+        return $append; // @phpstan-ignore-line
     }
 
     /**
@@ -98,7 +103,7 @@ class UserAgent
         }
 
         if (null === $value) {
-            self::$userAgent[] = $name;
+            self::$userAgent[$name] = true;
 
             return;
         }
@@ -107,7 +112,7 @@ class UserAgent
     }
 
     /**
-     * @param array<int|string, string> $userAgent
+     * @param array<int|string, string|true> $userAgent
      */
     public static function with(array $userAgent): void
     {

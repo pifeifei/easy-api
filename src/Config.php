@@ -96,7 +96,7 @@ class Config implements ConfigInterface
     /**
      * {@inheritDoc}
      */
-    public function requestFormat(string $default = null): string
+    public function requestFormat(string $default = API::RESPONSE_FORMAT_JSON): string
     {
         /** @var string */
         return $this->request('format', $default);

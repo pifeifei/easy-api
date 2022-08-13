@@ -59,8 +59,6 @@ interface CacheInterface
 
     /**
      * 设置缓存对象。
-     *
-     * @param PsrCacheInterface $cache
      */
     public function setCache(PsrCacheInterface $cache): void;
 }

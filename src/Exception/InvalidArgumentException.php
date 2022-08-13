@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Exception;
 
-use Exception;
 use Pff\EasyApi\Contracts\ApiExceptionInterface;
 use Pff\EasyApi\Exception\Contracts\ContextTrait;
 use Throwable;
 
-class ApiException extends Exception implements ApiExceptionInterface
+class InvalidArgumentException extends \InvalidArgumentException implements ApiExceptionInterface
 {
     use ContextTrait;
 

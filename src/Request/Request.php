@@ -10,7 +10,7 @@ use Psr\Http\Message\UriInterface;
 class Request
 {
     /**
-     * @var string
+     * @var ConfigInterface
      */
     protected $config;
 
@@ -25,10 +25,13 @@ class Request
     protected $uri;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected $options;
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function __construct(string $method, UriInterface $uri, array $options, ConfigInterface $config)
     {
         $this->method = strtoupper($method);
@@ -37,7 +40,7 @@ class Request
         $this->config = $config;
     }
 
-    public function getConfig()
+    public function getConfig(): ConfigInterface
     {
         return $this->config;
     }
@@ -52,13 +55,16 @@ class Request
         return $this->uri;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getOptions(): array
     {
         return $this->options;
     }
 
-    public function format(): string
+    public function format(): ?string
     {
-        return $this->config->request('format');
+        return $this->config->requestFormat();
     }
 }

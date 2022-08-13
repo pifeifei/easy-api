@@ -51,8 +51,9 @@ final class UserAgentTest extends TestCase
 
     public static function testUserAgentWith(): void
     {
-        UserAgent::with(['With' => '1.0.0', 'With2' => '2.0.0', 'With3']);
-        static::assertStringEndsWith('With/1.0.0 With2/2.0.0 With3', UserAgent::toString());
+        $userAgent = ['With' => '1.0.0', 'With2' => '2.0.0', 'With3' => true, 'With4'];
+        UserAgent::with($userAgent);
+        static::assertStringEndsWith('With/1.0.0 With2/2.0.0 With3 With4', UserAgent::toString());
     }
 
     public static function testGuard(): void

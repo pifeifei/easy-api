@@ -14,9 +14,12 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
  * @internal
  * @coversNothing
  */
-class TestCase extends BaseTestCase
+abstract class TestCase extends BaseTestCase
 {
-    protected function getConfig()
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getConfig(): array
     {
         return [
             'config' => [

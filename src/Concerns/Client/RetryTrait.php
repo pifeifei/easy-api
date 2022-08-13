@@ -74,13 +74,11 @@ trait RetryTrait
     }
 
     /**
-     * @param int $times
-     *
      * @return $this
      */
-    public function retryByClient($times, array $strings, array $codes = [])
+    public function retryByClient(int $times, array $strings, array $codes = [])
     {
-        $this->clientRetry = (int) $times;
+        $this->clientRetry = $times;
         $this->clientRetryStrings = $strings;
         $this->clientRetryStatusCodes = $codes;
 

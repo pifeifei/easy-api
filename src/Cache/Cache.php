@@ -16,7 +16,7 @@ class Cache implements CacheInterface
     /**
      * @var null|PsrCacheInterface
      */
-    protected $cache;
+    protected ?PsrCacheInterface $cache;
 
     /**
      * {@inheritdoc}
@@ -34,7 +34,7 @@ class Cache implements CacheInterface
         try {
             return $this->getCache()->get($key, $defaultValue);
         } catch (InvalidArgumentException $e) {
-            throw new ClientException('API get cache error: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new ClientException('API get cache error: ' . $e->getMessage(), ['cacheKey' => $key], $e->getCode(), $e);
         }
     }
 
@@ -46,7 +46,7 @@ class Cache implements CacheInterface
         try {
             return $this->getCache()->set($key, $value, $ttl);
         } catch (InvalidArgumentException $e) {
-            throw new ClientException('API set cache error: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new ClientException('API set cache error: ' . $e->getMessage(), ['cacheKey' => $key], $e->getCode(), $e);
         }
     }
 
@@ -58,14 +58,12 @@ class Cache implements CacheInterface
         try {
             return $this->getCache()->has($key);
         } catch (InvalidArgumentException $e) {
-            throw new ClientException('API cache error: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new ClientException('API has cache error: ' . $e->getMessage(), ['cacheKey' => $key], $e->getCode(), $e);
         }
     }
 
     /**
      * 获取默认缓存对象。
-     *
-     * @return PsrCacheInterface
      */
     public function getDefaultCache(): PsrCacheInterface
     {

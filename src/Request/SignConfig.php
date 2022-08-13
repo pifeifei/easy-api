@@ -25,7 +25,6 @@ class SignConfig
     protected $appends = [];
 
     /**
-     * @param string $key
      * @param array<string, string> $appends
      */
     final public function __construct(string $key, string $position = null, array $appends = [])

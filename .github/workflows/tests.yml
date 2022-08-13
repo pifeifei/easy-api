@@ -1,5 +1,5 @@
 # sample: https://github.com/github/docs/blob/main/.github/workflows/link-check-all.yml
-name: Test
+name: Tests
 on:
   push:
   pull_request:

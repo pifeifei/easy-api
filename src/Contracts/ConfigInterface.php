@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Contracts;
 
+use Pff\EasyApi\API;
+
 interface ConfigInterface
 {
     /**
@@ -63,7 +65,7 @@ interface ConfigInterface
     /**
      * 获取响应数据类型，允许自定义。
      */
-    public function requestFormat(string $default = null): string;
+    public function requestFormat(string $default = API::RESPONSE_FORMAT_JSON): string;
 
     /**
      * 获取签名的配置。

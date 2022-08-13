@@ -16,7 +16,7 @@ abstract class AbstractFormatter implements FormatterInterface
     /**
      * @var Client
      */
-    protected $client;
+    protected Client $client;
 
     public function __construct(Client $client)
     {
@@ -68,7 +68,7 @@ abstract class AbstractFormatter implements FormatterInterface
                 return;
         }
 
-        throw new ClientException('不支持的请求类型：' . $method, API::ERROR_CLIENT_UNSUPPORTED_METHOD);
+        throw new ClientException('不支持的请求类型：' . $method, [], API::ERROR_CLIENT_UNSUPPORTED_METHOD);
     }
 
     /**
@@ -114,7 +114,7 @@ abstract class AbstractFormatter implements FormatterInterface
                 return;
         }
 
-        throw new ClientException('Unsupported signature method.', API::ERROR_CLIENT_UNSUPPORTED_SIGNATURE);
+        throw new ClientException('Unsupported signature method.', ['sign_position' => $signPosition], API::ERROR_CLIENT_UNSUPPORTED_SIGNATURE);
     }
 
     /**

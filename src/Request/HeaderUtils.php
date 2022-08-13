@@ -26,12 +26,11 @@ class HeaderUtils
      *
      * @param string $separators List of characters to split on, ordered by
      *                           precedence, e.g. ",", ";=", or ",;="
-     * @param mixed $header
      *
      * @return array Nested array with as many levels as there are characters in
      *               $separators
      */
-    public static function split($header, string $separators)
+    public static function split(string $header, string $separators): array
     {
         $quotedSeparators = preg_quote($separators, '/');
 
@@ -68,8 +67,12 @@ class HeaderUtils
      *
      *     HeaderUtils::combine([["foo", "abc"], ["bar"]])
      *     // => ["foo" => "abc", "bar" => true]
+     *
+     * @param string[] $parts
+     *
+     * @return array<string, string|true>
      */
-    public static function combine(array $parts)
+    public static function combine(array $parts): array
     {
         $assoc = [];
         foreach ($parts as $part) {
@@ -88,19 +91,20 @@ class HeaderUtils
      * are joined with the specified separator and an additional space (for
      * readability). Values are quoted if necessary.
      *
-     * Example:
-     *
+     * @example
      *     HeaderUtils::toString(["foo" => "abc", "bar" => true, "baz" => "a b c"], ",")
      *     // => 'foo=abc, bar, baz="a b c"'
      *
-     * @param mixed $separator
+     * @param array<string, string|string[]|true> $assoc
      */
-    public static function toString(array $assoc, $separator)
+    public static function toString(array $assoc, string $separator): string
     {
         $parts = [];
         foreach ($assoc as $name => $value) {
             if (true === $value) {
                 $parts[] = $name;
+            } elseif (\is_array($value)) {
+                $parts[] = $name . '=' . self::quote(implode(', ', $value));
             } else {
                 $parts[] = $name . '=' . self::quote($value);
             }
@@ -115,10 +119,8 @@ class HeaderUtils
      * If a string contains characters not allowed by the "token" construct in
      * the HTTP specification, it is backslash-escaped and enclosed in quotes
      * to match the "quoted-string" construct.
-     *
-     * @param mixed $s
      */
-    public static function quote($s)
+    public static function quote(string $s): string
     {
         if (preg_match('/^[a-z0-9!#$%&\'*.^_`|~-]+$/i', $s)) {
             return $s;
@@ -132,12 +134,10 @@ class HeaderUtils
      *
      * If passed an unquoted string that matches the "token" construct (as
      * defined in the HTTP specification), it is passed through verbatimly.
-     *
-     * @param mixed $s
      */
-    public static function unquote($s)
+    public static function unquote(string $s): string
     {
-        return preg_replace('/\\\\(.)|"/', '$1', $s);
+        return (string) preg_replace('/\\\\(.)|"/', '$1', $s);
     }
 
     /**
@@ -155,7 +155,7 @@ class HeaderUtils
      *
      * @see RFC 6266
      */
-    public static function makeDisposition($disposition, $filename, $filenameFallback = '')
+    public static function makeDisposition(string $disposition, string $filename, string $filenameFallback = ''): string
     {
         if (!\in_array($disposition, [self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE], true)) {
             throw new \InvalidArgumentException(sprintf('The disposition must be either "%s" or "%s".', self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE));
@@ -191,11 +191,10 @@ class HeaderUtils
     /**
      * Like parse_str(), but preserves dots in variable names.
      */
-    public static function parseQuery(string $query, bool $ignoreBrackets = false, string $separator = '&')
+    public static function parseQuery(string $query, bool $ignoreBrackets = false, string $separator = '&'): array
     {
         $q = [];
 
-        // phpstan-ignore-next-line
         foreach (explode($separator, $query) as $v) {
             if (false !== $i = strpos($v, "\0")) {
                 $v = substr($v, 0, $i);
@@ -222,9 +221,9 @@ class HeaderUtils
             }
 
             if (false === $i = strpos($k, '[')) {
-                $q[] = bin2hex($k).$v;
+                $q[] = bin2hex($k) . $v;
             } else {
-                $q[] = bin2hex(substr($k, 0, $i)).rawurlencode(substr($k, $i)).$v;
+                $q[] = bin2hex(substr($k, 0, $i)) . rawurlencode(substr($k, $i)) . $v;
             }
         }
 
@@ -238,7 +237,7 @@ class HeaderUtils
 
         foreach ($q as $k => $v) {
             if (false !== $i = strpos($k, '_')) {
-                $query[substr_replace($k, hex2bin(substr($k, 0, $i)).'[', 0, 1 + $i)] = $v;
+                $query[substr_replace($k, hex2bin(substr($k, 0, $i)) . '[', 0, 1 + $i)] = $v;
             } else {
                 $query[hex2bin($k)] = $v;
             }
@@ -247,7 +246,7 @@ class HeaderUtils
         return $query;
     }
 
-    private static function groupParts(array $matches, $separators, $first = true)
+    private static function groupParts(array $matches, $separators, $first = true): array
     {
         $separator = $separators[0];
         $partSeparators = substr($separators, 1);

@@ -61,7 +61,6 @@ class Formatter extends AbstractTokenFormatter
 
     /**
      * @throws ClientException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws ServerException
      *
      * @return array 请求的 token 完整数据
@@ -115,7 +114,7 @@ class Formatter extends AbstractTokenFormatter
         ;
 
         if (0 !== $response->get('err_no')) {
-            throw new ServerException($response->get('message'), $response->getStatusCode());
+            throw new ServerException($response, (string)$response->get('message'), [], $response->getStatusCode());
         }
 
         $tokenInfo = [
@@ -140,7 +139,11 @@ class Formatter extends AbstractTokenFormatter
             return $tokenInfo['access_token'];
         }
 
-        throw new ClientException('无法获取 access token', API::ERROR_CLIENT_FAILED_GET_ACCESS);
+        throw new ClientException(
+            '无法获取 access token',
+            ['appid' => $this->client->config()->client('app_id')],
+            API::ERROR_CLIENT_FAILED_GET_ACCESS
+        );
     }
 
     /**
@@ -155,7 +158,10 @@ class Formatter extends AbstractTokenFormatter
     }
 
     /**
-     * 生成待签名的字符串.
+     * 生成待签名的字符串。
+     *
+     * @param array<string, float|int|string> $query
+     * @param array<string, mixed> $data
      */
     protected function signString(array $query, array $data): string
     {

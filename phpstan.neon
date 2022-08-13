@@ -2,7 +2,7 @@ includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    phpVersion: 70100
+    phpVersion: 70200
     level: max
     bootstrapFiles:
         - vendor/autoload.php
@@ -15,6 +15,7 @@ parameters:
 #        - _ide_helper_models.php
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: true
 #    checkUnionTypes: false # Method Foo::bar() should return int|string but returns bool|int
 #    checkTooWideReturnTypesInProtectedAndPublicMethods: true

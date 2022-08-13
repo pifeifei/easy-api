@@ -18,7 +18,10 @@ use Pff\EasyApiTest\TestCase;
  */
 final class WechatTest extends TestCase
 {
-    public function getConfig()
+    /**
+     * @return array<string, mixed>
+     */
+    public function getConfig(): array
     {
         if (empty(getenv('WECHAT_APP_ID'))) {
             throw new \InvalidArgumentException(

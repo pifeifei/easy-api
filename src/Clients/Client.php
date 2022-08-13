@@ -47,30 +47,19 @@ class Client
      */
     public const TIMEOUT = 10;
 
-    /**
-     * @var ConfigInterface
-     */
-    protected $config;
+    protected ConfigInterface $config;
 
-    /**
-     * @var FormatterInterface
-     */
-    protected $formatter;
+    protected FormatterInterface $formatter;
 
     /**
      * Response format.
-     *
-     * @var string
      */
-    protected $format;
+    protected string $format;
+
+    protected SignConfig $signConfig;
 
     /**
-     * @var SignConfig
-     */
-    protected $signConfig;
-
-    /**
-     * @var array<int|string>
+     * @var array<string, string|true>
      */
     protected $userAgent = [];
 
@@ -102,7 +91,7 @@ class Client
     }
 
     /**
-     * @param array<int|string> $userAgent
+     * @param array<string, string|true> $userAgent
      *
      * @return static
      */
@@ -172,6 +161,7 @@ class Client
             throw new ServerException(
                 $result,
                 sprintf('%d %s', $result->getStatusCode(), $result->getReasonPhrase()),
+                ['options' => $this->getOptions()],
                 API::ERROR_SERVER_UNKNOWN
             );
         }
@@ -200,7 +190,7 @@ class Client
         }
 
         $this->formatter = $formatter;
-        $this->format = $config->requestFormat(API::RESPONSE_FORMAT_JSON);
+        $this->format = $config->requestFormat();
         $this->query = new Parameters();
         $this->data = new Parameters();
         $this->headers = new Headers();
@@ -230,11 +220,13 @@ class Client
 //            if ($this->shouldClientRetry($exception)) {
 //                return $this->response();
 //            }
-            throw new ClientException(
-                $exception->getMessage(),
-                API::ERROR_CLIENT_UNKNOWN,
-                $exception
-            );
+            $context = [
+                'method' => $this->requestMethod(),
+                'uri' => (string) $this->uri,
+                'options' => $this->options,
+            ];
+
+            throw new ClientException($exception->getMessage(), $context, API::ERROR_CLIENT_UNKNOWN, $exception);
         }
     }
 

@@ -11,13 +11,16 @@ trait HistoryTrait
     /**
      * @var array{request: RequestInterface, response: null|object, error: null|object, option: array<int|string>}
      */
-    protected $histories = [];
+    protected array $histories = [];
 
     /**
      * @var bool
      */
-    protected $isRememberHistory = false;
+    protected bool $isRememberHistory = false;
 
+    /**
+     * @return array{request: RequestInterface, response: null|object, error: null|object, option: array<int|string>}
+     */
     public function getHistory(): array
     {
         return $this->histories;
@@ -38,6 +41,9 @@ trait HistoryTrait
         return $this->isRememberHistory;
     }
 
+    /**
+     * @return array{request: RequestInterface, response: null|object, error: null|object, option: array<int|string>}
+     */
     public function &referenceHistory(): array
     {
         return $this->histories;
