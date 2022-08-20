@@ -44,6 +44,12 @@ class Parameters implements IteratorAggregate, Countable
         return $this->parameters;
     }
 
+    public function clean(): self
+    {
+        $this->parameters = [];
+        return $this;
+    }
+
     /**
      * Returns the parameter keys.
      *
@@ -143,5 +149,15 @@ class Parameters implements IteratorAggregate, Countable
     public function count(): int
     {
         return \count($this->parameters);
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->parameters);
+    }
+
+    public function isNotEmpty(): bool
+    {
+        return !$this->isEmpty();
     }
 }

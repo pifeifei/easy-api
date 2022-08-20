@@ -20,15 +20,18 @@ class HeaderUtils
      * Splits an HTTP header by one or more separators.
      *
      * Example:
-     *
+     *     TODO: 待定格式
+     *     HeaderUtils::split("da, en-gb;q=0.8", ",")
+     *     // => ['da', 'en-gb;q=0.8']
      *     HeaderUtils::split("da, en-gb;q=0.8", ",;")
-     *     // => ['da'], ['en-gb', 'q=0.8']]
+     *     // => [['da'], ['en-gb', 'q=0.8']]
+     *     HeaderUtils::split("da, en-gb;q=0.8", ",;=")
+     *     // => [[['da']], [['en-gb'], ['q', '0.8']]]
      *
      * @param string $separators List of characters to split on, ordered by
      *                           precedence, e.g. ",", ";=", or ",;="
      *
-     * @return array Nested array with as many levels as there are characters in
-     *               $separators
+     * @return string[]|string[][]|string[][][] Nested array with as many levels as there are characters in $separators
      */
     public static function split(string $header, string $separators): array
     {
@@ -52,6 +55,7 @@ class HeaderUtils
                 \s*
             /x', trim($header), $matches, PREG_SET_ORDER);
 
+//        dump($matches, $separators, PHP_EOL);
         return self::groupParts($matches, $separators);
     }
 
@@ -68,7 +72,7 @@ class HeaderUtils
      *     HeaderUtils::combine([["foo", "abc"], ["bar"]])
      *     // => ["foo" => "abc", "bar" => true]
      *
-     * @param string[] $parts
+     * @param string[][] $parts
      *
      * @return array<string, string|true>
      */
@@ -95,16 +99,17 @@ class HeaderUtils
      *     HeaderUtils::toString(["foo" => "abc", "bar" => true, "baz" => "a b c"], ",")
      *     // => 'foo=abc, bar, baz="a b c"'
      *
-     * @param array<string, string|string[]|true> $assoc
+     * @param array<string, array<string, string>|array<string, true>|string|true> $assoc
+     * @param string $separator [optional]
      */
-    public static function toString(array $assoc, string $separator): string
+    public static function toString(array $assoc, string $separator = ','): string
     {
         $parts = [];
         foreach ($assoc as $name => $value) {
             if (true === $value) {
                 $parts[] = $name;
             } elseif (\is_array($value)) {
-                $parts[] = $name . '=' . self::quote(implode(', ', $value));
+                $parts[] = $name . '=' . self::quote(static::toString($value, $separator));
             } else {
                 $parts[] = $name . '=' . self::quote($value);
             }
@@ -145,7 +150,7 @@ class HeaderUtils
      *
      * @param string $disposition One of "inline" or "attachment"
      * @param string $filename A unicode string
-     * @param string $filenameFallback A string containing only ASCII characters that
+     * @param string $filenameFallback [optional] A string containing only ASCII characters that
      *                                 is semantically equivalent to $filename. If the filename is already ASCII,
      *                                 it can be omitted, or just copied from $filename
      *
@@ -190,12 +195,20 @@ class HeaderUtils
 
     /**
      * Like parse_str(), but preserves dots in variable names.
+     *
+     * @ return array<int|string, array<string, mixed>|string>
+     *
+     * @return array<int|string, mixed>
      */
     public static function parseQuery(string $query, bool $ignoreBrackets = false, string $separator = '&'): array
     {
         $q = [];
 
-        foreach (explode($separator, $query) as $v) {
+        if (false === $queries = explode($separator, $query)) {
+            return [];
+        }
+
+        foreach ($queries as $v) {
             if (false !== $i = strpos($v, "\0")) {
                 $v = substr($v, 0, $i);
             }
@@ -236,6 +249,7 @@ class HeaderUtils
         $query = [];
 
         foreach ($q as $k => $v) {
+            $k = (string) $k;
             if (false !== $i = strpos($k, '_')) {
                 $query[substr_replace($k, hex2bin(substr($k, 0, $i)) . '[', 0, 1 + $i)] = $v;
             } else {
@@ -246,7 +260,12 @@ class HeaderUtils
         return $query;
     }
 
-    private static function groupParts(array $matches, $separators, $first = true): array
+    /**
+     * @param array<string[]> $matches
+     *
+     * @return string[]|string[][]|string[][][]
+     */
+    private static function groupParts(array $matches, string $separators, bool $first = true): array
     {
         $separator = $separators[0];
         $partSeparators = substr($separators, 1);
@@ -285,6 +304,6 @@ class HeaderUtils
             }
         }
 
-        return $parts;
+        return $parts; // @phpstan-ignore-line
     }
 }

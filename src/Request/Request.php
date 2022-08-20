@@ -12,17 +12,17 @@ class Request
     /**
      * @var ConfigInterface
      */
-    protected $config;
+    protected ConfigInterface $config;
 
     /**
      * @var string
      */
-    protected $method;
+    protected string $method;
 
     /**
      * @var UriInterface
      */
-    protected $uri;
+    protected UriInterface $uri;
 
     /**
      * @var array<string, mixed>

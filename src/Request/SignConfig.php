@@ -12,12 +12,12 @@ class SignConfig
     /**
      * @var string
      */
-    protected $key;
+    protected string $key;
 
     /**
      * @var string
      */
-    protected $position = API::SIGN_POSITION_HEAD;
+    protected string $position = API::SIGN_POSITION_HEAD;
 
     /**
      * @var array<string, string>

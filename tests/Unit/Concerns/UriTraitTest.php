@@ -6,6 +6,7 @@ namespace Pff\EasyApiTest\Unit\Concerns;
 
 use GuzzleHttp\Psr7\Uri;
 use Pff\EasyApi\Clients\Client;
+use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApiTest\TestCase;
 
 /**
@@ -14,19 +15,25 @@ use Pff\EasyApiTest\TestCase;
  */
 final class UriTraitTest extends TestCase
 {
+    /**
+     * @throws ClientException
+     */
     public function testUri(): void
     {
         $config = $this->getConfig();
         $client = new Client($config);
         $uri = $client->uri();
         static::assertInstanceOf(Uri::class, $uri);
-        static::assertSame($config['request']['uri'], $uri->__toString());
+        static::assertSame($config['request']['uri'], $uri->__toString()); // @phpstan-ignore-line
 
         $client->path('test');
         $uri2 = $client->uri();
         static::assertNotSame($uri, $uri2);
     }
 
+    /**
+     * @throws ClientException
+     */
     public function testScheme(): void
     {
         $config = $this->getConfig();
@@ -38,6 +45,9 @@ final class UriTraitTest extends TestCase
         static::assertSame('http', $client->uri()->getScheme());
     }
 
+    /**
+     * @throws ClientException
+     */
     public function testHost(): void
     {
         $config = $this->getConfig();
@@ -49,6 +59,9 @@ final class UriTraitTest extends TestCase
         static::assertSame('pff.sample.cn', $client->uri()->getHost());
     }
 
+    /**
+     * @throws ClientException
+     */
     public function testPath(): void
     {
         $config = $this->getConfig();
@@ -66,6 +79,9 @@ final class UriTraitTest extends TestCase
         static::assertSame('/anything/../path/to', $client->uri()->getPath());
     }
 
+    /**
+     * @throws ClientException
+     */
     public function testPort(): void
     {
         $config = $this->getConfig();

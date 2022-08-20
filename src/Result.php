@@ -32,10 +32,12 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
      *
      * @var Request
      */
-    protected $request;
+    protected Request $request;
 
     /**
      * Result constructor.
+     *
+     * @throws ClientException
      */
     public function __construct(ResponseInterface $response, Request $request)
     {
@@ -71,6 +73,9 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
             && 300 > $this->getStatusCode();
     }
 
+    /**
+     * @throws ClientException
+     */
     private function resolveData(): void
     {
         $content = $this->getBody()->__toString();

@@ -20,12 +20,20 @@ class Headers implements IteratorAggregate, Countable
     public const LOWER = '-abcdefghijklmnopqrstuvwxyz';
 
     /**
-     * @var array<string, string[]|true>
+     * @var array<string, string[]>
+     * @ var array<string, array<string, string>|array<string, true>|string|true>
      */
     protected $headers = [];
 
     /**
-     * @var array<int|string, string[]|true>
+     * @var array<string, string>
+     */
+    protected $headerNames = [];
+
+    /**
+     * @var array<string, string|true>
+     *
+     * @see https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control
      */
     protected $cacheControl = [];
 
@@ -49,7 +57,10 @@ class Headers implements IteratorAggregate, Countable
     public function all(string $key = null): array
     {
         if (null !== $key) {
-            return $this->headers[strtr($key, self::UPPER, self::LOWER)] ?? [];
+            $headerName = strtr($key, self::UPPER, self::LOWER);
+            $this->headerNames[$headerName] = $key;
+
+            return $this->headers[$key] ?? [];
         }
 
         return $this->headers;
@@ -62,8 +73,9 @@ class Headers implements IteratorAggregate, Countable
      */
     public function keys(): array
     {
-        /** @var string[] */
-        return array_keys($this->all());
+//        /** @var string[] */
+//        return array_keys($this->all());
+        return $this->headerNames;
     }
 
     /**
@@ -74,6 +86,7 @@ class Headers implements IteratorAggregate, Countable
     public function replace(array $headers = []): void
     {
         $this->headers = [];
+        $this->headerNames = [];
         $this->add($headers);
     }
 
@@ -92,57 +105,62 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns a header value by name.
      *
-     * @return null|string The first header value or default value
+     * @return string[] The first header value or default value
      */
-    public function get(string $key, string $default = null): ?string
+    public function get(string $header): array
     {
-        /** @var null[]|string[] $headers */
-        $headers = $this->all($key);
+        $header = strtolower($header);
 
-        if (!$headers) {
-            return $default;
+        if (!isset($this->headerNames[$header])) {
+            return [];
         }
 
-        if (null === $headers[0]) {
-            return null;
+        $header = $this->headerNames[$header];
+
+        return $this->headers[$header];
+    }
+
+    public function getLine(string $header): ?string
+    {
+        $value = $this->get($header);
+        if (empty($value)) {
+            return '';
         }
 
-        return (string) $headers[0];
+        $new = [];
+        foreach ($value as $k => $v) {
+            if (is_numeric($k)) {
+                $new[] = $v;
+            } else {
+                $new[] = sprintf('%s: %s', $k, $v);
+            }
+        }
+
+        return implode(', ', $new);
     }
 
     /**
      * Sets a header by name.
      *
-     * @param bool|string|string[] $values The value or an array of values
+     * @param string|string[] $values The value or an array of values
      * @param bool $replace Whether to replace the actual value or not (true by default)
      */
-    public function set(string $key, $values = true, bool $replace = true): void
+    public function set(string $key, $values, bool $replace = true): void
     {
-        $key = strtr($key, self::UPPER, self::LOWER);
+        $headerName = strtr($key, self::UPPER, self::LOWER);
+        $values = \is_string($values) ? [$values] : array_values($values);
 
-        if (\is_array($values)) {
-            $values = array_values($values);
-
-            if (true === $replace || !isset($this->headers[$key])) {
-                $this->headers[$key] = $values;
-            } else {
-                $this->headers[$key] = array_merge((array) $this->headers[$key], $values);
-            }
+        if (true === $replace || !isset($this->headers[$key])) {
+            $this->headers[$key] = $values;
         } else {
-            if (true === $replace || !isset($this->headers[$key])) {
-                $this->headers[$key] = \is_array($values) ? $values : [$values];
-            } else {
-                if (true === $values) {
-                    $this->headers[$key] = true;
-                } else {
-                    $this->headers[$key][] = $values;
-                }
-            }
+            $this->headers[$key] = array_merge($this->headers[$key], $values);
         }
 
-        if ('cache-control' === $key) {
+        if ('cache-control' === $headerName) {
             $this->cacheControl = $this->parseCacheControl(implode(', ', $this->headers[$key]));
         }
+
+        $this->headerNames[$headerName] = $key;
     }
 
     /**
@@ -152,7 +170,7 @@ class Headers implements IteratorAggregate, Countable
      */
     public function has(string $key): bool
     {
-        return \array_key_exists(strtr($key, self::UPPER, self::LOWER), $this->all());
+        return \array_key_exists(strtr($key, self::UPPER, self::LOWER), $this->keys());
     }
 
     /**
@@ -170,9 +188,9 @@ class Headers implements IteratorAggregate, Countable
      */
     public function remove(string $key): void
     {
-        $key = strtr($key, self::UPPER, self::LOWER);
+        $headerName = strtr($key, self::UPPER, self::LOWER);
 
-        unset($this->headers[$key]);
+        unset($this->headers[$key], $this->headerNames[$headerName]);
 
         if ('cache-control' === $key) {
             $this->cacheControl = [];
@@ -192,8 +210,8 @@ class Headers implements IteratorAggregate, Countable
             return $default;
         }
 
-        if (false === $date = DateTime::createFromFormat(DATE_RFC2822, $value)) {
-            throw new RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value));
+        if (false === $date = DateTime::createFromFormat(DATE_RFC2822, $value[0])) {
+            throw new RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value[0]));
         }
 
         return $date;
@@ -206,7 +224,7 @@ class Headers implements IteratorAggregate, Countable
      */
     public function addCacheControlDirective(string $key, $value = true): void
     {
-        $this->cacheControl[$key] = true === $value ? $value : [$value];
+        $this->cacheControl[$key] = $value;
 
         $this->set('Cache-Control', $this->getCacheControlHeader());
     }
@@ -273,12 +291,11 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Parses a Cache-Control HTTP header.
      *
-     * @param mixed $header
-     *
      * @return array<string, string|true> An array representing the attribute values
      */
-    protected function parseCacheControl($header): array
+    protected function parseCacheControl(string $header): array
     {
+        /** @var string[][] $parts */
         $parts = HeaderUtils::split($header, ',=');
 
         return HeaderUtils::combine($parts);

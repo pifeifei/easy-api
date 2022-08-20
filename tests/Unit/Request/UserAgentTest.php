@@ -31,15 +31,36 @@ final class UserAgentTest extends TestCase
         static::assertStringStartsWith('EasyApi', $userAgent);
     }
 
+    public static function testClear(): void
+    {
+        UserAgent::append('test', '1.2.3');
+        static::assertStringContainsString('Test/1.2.3', UserAgent::toString());
+
+        UserAgent::clear();
+        static::assertStringNotContainsString('Test/1.2.3', UserAgent::toString());
+    }
+
+    public static function testClean(): void
+    {
+        UserAgent::append('test', '1.2.3');
+        UserAgent::append('test2', '2.3');
+        static::assertStringContainsString('Test/1.2.3', UserAgent::toString());
+        static::assertStringContainsString('Test2/2.3', UserAgent::toString());
+
+        $arr = UserAgent::clean(['foo' => '1.2', 'PHP' => '7.4']);
+        static::assertSame(['foo' => '1.2'], $arr);
+    }
+
     public static function testUserAgentStringWithAppend(): void
     {
         $userAgent = UserAgent::toString([
-            'Append' => '1.0.0',
-            'Append2' => '2.0.0',
+            'append' => '1.0.0',
+            'append2' => '2.0.0',
             'PHP' => '2.0.0',
         ]);
 
         static::assertStringStartsWith('EasyApi', $userAgent);
+        static::assertStringContainsString('PHP/' . PHP_VERSION, $userAgent);
         static::assertStringEndsWith('Append/1.0.0 Append2/2.0.0', $userAgent);
     }
 
@@ -47,6 +68,13 @@ final class UserAgentTest extends TestCase
     {
         UserAgent::append('Append', '1.0.0');
         static::assertStringEndsWith('Append/1.0.0', UserAgent::toString());
+
+        UserAgent::append('Append', '1.2');
+        static::assertStringEndsWith('Append/1.2', UserAgent::toString());
+        static::assertStringNotContainsString('Append/1.0.0', UserAgent::toString());
+
+        UserAgent::append('APPEND2', '1.2.5');
+        static::assertStringEndsWith('Append2/1.2.5', UserAgent::toString());
     }
 
     public static function testUserAgentWith(): void

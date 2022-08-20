@@ -11,17 +11,17 @@ trait UriTrait
     /**
      * @var UriInterface
      */
-    protected $uri;
+    protected UriInterface $uri;
 
     /**
      * @var string
      */
-    protected $prefixPath;
+    protected string $prefixPath;
 
     /**
      * @return UriInterface
      */
-    public function uri()
+    public function uri(): UriInterface
     {
         return $this->uri;
     }
@@ -29,7 +29,7 @@ trait UriTrait
     /**
      * @return $this
      */
-    public function scheme(string $scheme)
+    public function scheme(string $scheme): self
     {
         $this->uri = $this->uri()->withScheme($scheme);
 
@@ -39,7 +39,7 @@ trait UriTrait
     /**
      * @return $this
      */
-    public function host(string $host)
+    public function host(string $host): self
     {
         $this->uri = $this->uri()->withHost($host);
 
@@ -49,7 +49,7 @@ trait UriTrait
     /**
      * @return $this
      */
-    public function path(string $path)
+    public function path(string $path): self
     {
         if (0 === strpos($path, '/')) {
             $this->uri = $this->uri()->withPath($path);
@@ -63,7 +63,7 @@ trait UriTrait
     /**
      * @return $this
      */
-    public function port(int $port)
+    public function port(int $port): self
     {
         $this->uri = $this->uri()->withPort($port);
 

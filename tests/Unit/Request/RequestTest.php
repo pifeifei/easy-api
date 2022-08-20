@@ -19,7 +19,7 @@ final class RequestTest extends TestCase
 {
     public function testRequest(): void
     {
-        $uri = new Uri('http://pifeifei.com/path/to/index.html');
+        $uri = new Uri('https://pifeifei.com/path/to/index.html');
         $options = [
             'proxy' => 'http://127.0.0.1:8888',
         ];

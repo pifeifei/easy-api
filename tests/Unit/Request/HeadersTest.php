@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pff\EasyApiTest\Unit\Request;
 
+use DateTime;
 use Pff\EasyApi\Request\Headers;
 use Pff\EasyApiTest\TestCase;
 
@@ -21,9 +22,9 @@ final class HeadersTest extends TestCase
 
     public function testKeys(): void
     {
-        $bag = new Headers(['foo' => 'bar']);
+        $bag = new Headers(['Foo' => 'bar']);
         $keys = $bag->keys();
-        static::assertSame('foo', $keys[0]);
+        static::assertSame('Foo', $keys['foo']);
     }
 
     public function testGetDate(): void
@@ -35,9 +36,9 @@ final class HeadersTest extends TestCase
 
     public function testGetDateNull(): void
     {
-        $bag = new Headers(['foo' => null]);
+        $bag = new Headers(['foo' => (new DateTime())->format(DATE_RFC2822)]);
         $headerDate = $bag->getDate('foo');
-        static::assertNull($headerDate);
+        static::assertInstanceOf(\DateTime::class, $headerDate);
     }
 
     public function testGetDateException(): void
@@ -58,47 +59,61 @@ final class HeadersTest extends TestCase
     public function testAll(): void
     {
         $bag = new Headers(['foo' => 'bar']);
-        static::assertSame(['foo' => ['bar']], $bag->all(), '->all() gets all the input');
+        static::assertSame(['foo' => ['bar']], $bag->all());
 
         $bag = new Headers(['FOO' => 'BAR']);
-        static::assertSame(['foo' => ['BAR']], $bag->all(), '->all() gets all the input key are lower case');
+        static::assertSame(['FOO' => ['BAR']], $bag->all());
     }
 
     public function testReplace(): void
     {
-        $bag = new Headers(['foo' => 'bar']);
-
+        $bag = new Headers(['Foo' => 'bar']);
         $bag->replace(['NOPE' => 'BAR']);
-        static::assertSame(['nope' => ['BAR']], $bag->all(), '->replace() replaces the input with the argument');
-        static::assertFalse($bag->has('foo'), '->replace() overrides previously set the input');
+        static::assertSame(['NOPE' => ['BAR']], $bag->all());
+        static::assertFalse($bag->has('Foo'));
+        static::assertTrue($bag->has('NOPE'));
+        static::assertArrayHasKey('nope', $bag->keys());
     }
 
     public function testGet(): void
     {
         $bag = new Headers(['foo' => 'bar', 'fuzz' => 'bizz']);
-        static::assertSame('bar', $bag->get('foo'), '->get return current value');
-        static::assertSame('bar', $bag->get('FoO'), '->get key in case insensitive');
-        static::assertSame(['bar'], $bag->all('foo'), '->get return the value as array');
+
+        static::assertSame(['bar'], $bag->get('foo'));
+        static::assertSame(['bar'], $bag->get('FoO'));
+        static::assertSame(['bar'], $bag->all('foo'));
 
         // defaults
-        static::assertNull($bag->get('none'), '->get unknown values returns null');
-        static::assertSame('default', $bag->get('none', 'default'), '->get unknown values returns default');
-        static::assertSame([], $bag->all('none'), '->get unknown values returns an empty array');
+        static::assertEmpty($bag->get('none'));
+        static::assertSame([], $bag->all('none'));
 
         $bag->set('foo', 'bor', false);
-        static::assertSame('bar', $bag->get('foo'), '->get return first value');
-        static::assertSame(['bar', 'bor'], $bag->all('foo'), '->get return all values as array');
+        static::assertSame(['bar', 'bor'], $bag->get('foo'));
+        static::assertSame(['bar', 'bor'], $bag->all('foo'));
+    }
 
-        $bag->set('baz', null);
-        static::assertNull($bag->get('baz', 'nope'), '->get return null although different default value is given');
+    public function testGetLine(): void
+    {
+        $bag = new Headers(['foo' => 'bar', 'fuzz' => 'bizz']);
+
+        static::assertSame('bar', $bag->getLine('foo'));
+        static::assertSame('bar', $bag->getLine('FoO'));
+
+        $bag->set('foo', 'foo');
+        static::assertSame('foo', $bag->getLine('foo'));
+        static::assertSame('foo', $bag->getLine('FoO'));
+
+        $bag->set('foo', 'bar', false);
+        static::assertSame('foo, bar', $bag->getLine('foo'));
     }
 
     public function testSetAssociativeArray(): void
     {
         $bag = new Headers();
         $bag->set('foo', ['bad-assoc-index' => 'value']);
-        static::assertSame('value', $bag->get('foo'));
-        static::assertSame(['value'], $bag->all('foo'), 'assoc indices of multi-valued headers are ignored');
+
+        static::assertSame(['value'], $bag->get('foo')); // TODO
+        static::assertSame(['value'], $bag->all('foo'));
     }
 
     public function testContains(): void
@@ -123,12 +138,12 @@ final class HeadersTest extends TestCase
 
         static::assertTrue($bag->hasCacheControlDirective('public'));
         static::assertTrue($bag->getCacheControlDirective('public'));
-        static::assertSame('public', $bag->get('cache-control'));
+        static::assertSame(['public'], $bag->get('Cache-Control'));
 
         $bag->addCacheControlDirective('max-age', '10');
         static::assertTrue($bag->hasCacheControlDirective('max-age'));
         static::assertSame('10', $bag->getCacheControlDirective('max-age'));
-        static::assertSame('max-age=10, public', $bag->get('cache-control'));
+        static::assertSame(['max-age=10, public'], $bag->get('Cache-Control')); // TODO
 
         $bag->removeCacheControlDirective('max-age');
         static::assertFalse($bag->hasCacheControlDirective('max-age'));
@@ -136,15 +151,15 @@ final class HeadersTest extends TestCase
 
     public function testCacheControlDirectiveParsing(): void
     {
-        $bag = new Headers(['cache-control' => 'public, max-age=10']);
+        $bag = new Headers(['Cache-Control' => 'public, max-age=10']);
         static::assertTrue($bag->hasCacheControlDirective('public'));
         static::assertTrue($bag->getCacheControlDirective('public'));
 
         static::assertTrue($bag->hasCacheControlDirective('max-age'));
         static::assertSame('10', $bag->getCacheControlDirective('max-age'));
 
-        $bag->addCacheControlDirective('s-maxage', '100');
-        static::assertSame('max-age=10, public, s-maxage=100', $bag->get('cache-control'));
+        $bag->addCacheControlDirective('s-max-age', '100');
+        static::assertSame(['max-age=10, public, s-max-age=100'], $bag->get('Cache-Control'));
     }
 
     public function testCacheControlDirectiveParsingQuotedZero(): void

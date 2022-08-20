@@ -46,17 +46,19 @@ class UserAgent
 
         foreach ($append as $key => $value) {
             if (true === $value) {
-                $newUserAgent[] = $key;
+                $newUserAgent[] = ucfirst($key);
 
                 continue;
             }
-            $newUserAgent[] = "{$key}/{$value}";
+            $newUserAgent[] = ucfirst($key) . "/{$value}";
         }
 
         return $userAgent . implode(' ', $newUserAgent);
     }
 
     /**
+     * 删除私有属性。
+     *
      * @param array<int|string, string|true> $append
      *
      * @return array<string, string|true>
@@ -98,7 +100,7 @@ class UserAgent
     {
         self::defaultFields();
 
-        if (self::isGuarded($name)) {
+        if (self::isGuarded($name = strtolower($name))) {
             return;
         }
 

@@ -13,10 +13,9 @@ use Symfony\Component\Cache\Psr16Cache;
 
 class Cache implements CacheInterface
 {
-    /**
-     * @var null|PsrCacheInterface
-     */
     protected ?PsrCacheInterface $cache;
+
+    protected string $namespace = 'easy-api';
 
     /**
      * {@inheritdoc}
@@ -34,7 +33,7 @@ class Cache implements CacheInterface
         try {
             return $this->getCache()->get($key, $defaultValue);
         } catch (InvalidArgumentException $e) {
-            throw new ClientException('API get cache error: ' . $e->getMessage(), ['cacheKey' => $key], $e->getCode(), $e);
+            throw new ClientException($this->ExceptionMessage($e), $this->ExceptionContext($key), $e->getCode(), $e);
         }
     }
 
@@ -46,7 +45,7 @@ class Cache implements CacheInterface
         try {
             return $this->getCache()->set($key, $value, $ttl);
         } catch (InvalidArgumentException $e) {
-            throw new ClientException('API set cache error: ' . $e->getMessage(), ['cacheKey' => $key], $e->getCode(), $e);
+            throw new ClientException($this->ExceptionMessage($e), $this->ExceptionContext($key), $e->getCode(), $e);
         }
     }
 
@@ -58,7 +57,7 @@ class Cache implements CacheInterface
         try {
             return $this->getCache()->has($key);
         } catch (InvalidArgumentException $e) {
-            throw new ClientException('API has cache error: ' . $e->getMessage(), ['cacheKey' => $key], $e->getCode(), $e);
+            throw new ClientException($this->ExceptionMessage($e), $this->ExceptionContext($key), $e->getCode(), $e);
         }
     }
 
@@ -67,7 +66,7 @@ class Cache implements CacheInterface
      */
     public function getDefaultCache(): PsrCacheInterface
     {
-        return new Psr16Cache(new FilesystemAdapter('easy-api', 1500));
+        return new Psr16Cache(new FilesystemAdapter($this->namespace, 1500));
     }
 
     /**
@@ -79,7 +78,7 @@ class Cache implements CacheInterface
             return $this->cache;
         }
 
-        return $this->cache = new Psr16Cache(new FilesystemAdapter('easy-api', 1500));
+        return $this->cache = $this->getDefaultCache();
     }
 
     /**
@@ -88,5 +87,20 @@ class Cache implements CacheInterface
     public function setCache(PsrCacheInterface $cache): void
     {
         $this->cache = $cache;
+    }
+
+    protected function ExceptionMessage(\Throwable $t): string
+    {
+        return sprintf('API cache error: %s', $t->getMessage());
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return array<string, mixed>
+     */
+    protected function ExceptionContext(string $key): array
+    {
+        return ['cacheKey' => $key];
     }
 }
