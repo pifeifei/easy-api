@@ -15,7 +15,7 @@ class Formatter extends AbstractTokenFormatter
      */
     public function resolve(): void
     {
-        if (false === $this->client->tokenClient()) {
+        if (false === $this->client->isTokenClient()) {
             method_exists($this, 'token') && $this->token();
             $this->sign();
         }
@@ -23,13 +23,14 @@ class Formatter extends AbstractTokenFormatter
         $this->body();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getData(): array
     {
-        $data = $this->client->data();
+        $data = $this->client->getData();
         $data->add([
             'app_id' => $this->client->config()->client('app_key'),
-            'app_secret' => $this->client->config()->client('app_secret'),
-            'token' => $this->client->config()->client('token'),
         ]);
         $data = $data->all();
         ksort($data);
@@ -42,7 +43,7 @@ class Formatter extends AbstractTokenFormatter
      */
     protected function getQuery()
     {
-        if ($queries = $this->client->query()->all()) {
+        if ($queries = $this->client->getQuery()->all()) {
             ksort($queries);
 
             return $queries;
@@ -52,24 +53,27 @@ class Formatter extends AbstractTokenFormatter
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @throws ClientException
      */
     protected function token(): void
     {
-        $this->client->query(['access_token' => $this->getAccessToken()]);
+        $this->client->setQuery(['access_token' => $this->getAccessToken()]);
     }
 
     /**
      * @throws ClientException
      * @throws ServerException
      *
-     * @return array 请求的 token 完整数据
+     * @return array<string, string> 请求的 token 完整数据
      */
     protected function getToken(bool $refresh = false): array
     {
         $key = $this->cacheKey();
         $cache = $this->client->cache();
-        if ($cache->has($key)) {
+        if (false === $refresh && $cache->has($key)) {
+            /** @var array<string, string> $tokenInfo */
             $tokenInfo = $cache->get($key);
             if ($tokenInfo['expired_at'] <= time()) {
                 $config = $this->client->config();
@@ -82,15 +86,16 @@ class Formatter extends AbstractTokenFormatter
                 $authClient = $this->getAuthClient();
                 $response = $authClient
                     ->path('token/refresh')
-                    ->method('GET')
-                    ->query($query)
+                    ->setMethod('GET')
+                    ->setQuery($query)
                     ->request()
                 ;
 
+                /** @var array<string, string> $tokenInfo */
                 $tokenInfo = [
-                    'access_token' => $response['data']['access_token'],
-                    'expired_at' => time() + $response['data']['expires_in'],
-                    'refresh_token' => $response['data']['refresh_token'],
+                    'access_token' => $response->get('access_token'),
+                    'expired_at' => time() + $response->get('expires_in'),
+                    'refresh_token' => $response->get('refresh_token'),
                 ];
                 $cache->set($key, $tokenInfo, 86400 * 14);
             }
@@ -108,19 +113,25 @@ class Formatter extends AbstractTokenFormatter
         $authClient = $this->getAuthClient();
         $response = $authClient
             ->path('create/token')
-            ->method('GET')
-            ->query($query)
+            ->setMethod('GET')
+            ->setQuery($query)
             ->request()
         ;
 
         if (0 !== $response->get('err_no')) {
-            throw new ServerException($response, (string)$response->get('message'), [], $response->getStatusCode());
+            throw new ServerException(
+                $response,
+                'api error: ' . $response->get('message'),
+                ['appid' => $config->client('app_id')],
+                $response->getStatusCode()
+            );
         }
 
+        /** @var array<string, string> $tokenInfo */
         $tokenInfo = [
-            'access_token' => $response['data']['access_token'],
-            'expired_at' => time() + $response['data']['expires_in'],
-            'refresh_token' => $response['data']['refresh_token'],
+            'access_token' => $response->get('access_token'),
+            'expired_at' => time() + $response->get('expires_in'),
+            'refresh_token' => $response->get('refresh_token'),
         ];
         $cache->set($key, $tokenInfo, 86400 * 14);
 
@@ -129,6 +140,7 @@ class Formatter extends AbstractTokenFormatter
 
     /**
      * @throws ClientException
+     * @throws ServerException
      *
      * @return string access token string
      */
@@ -152,15 +164,15 @@ class Formatter extends AbstractTokenFormatter
     protected function signBuild(): string
     {
         return $this->client->getSignature()->sign(
-            $this->signString($this->client->query()->all(), $this->client->data()->all()),
-            $this->client->config()->client('app_secret', '')
+            $this->signString($this->client->getQuery()->all(), $this->client->getData()->all()),
+            $this->client->config()->client('app_secret', '') // @phpstan-ignore-line
         );
     }
 
     /**
      * 生成待签名的字符串。
      *
-     * @param array<string, float|int|string> $query
+     * @param array<string, mixed> $query
      * @param array<string, mixed> $data
      */
     protected function signString(array $query, array $data): string

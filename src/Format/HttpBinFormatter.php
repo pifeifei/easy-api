@@ -22,7 +22,7 @@ class HttpBinFormatter extends AbstractFormatter
      */
     protected function getData(): array
     {
-        return Utils::ksortRecursive(Utils::boolToString($this->client->data()->all()));
+        return Utils::ksortRecursive(Utils::boolToString($this->client->getData()->all()));
     }
 
     /**
@@ -30,6 +30,6 @@ class HttpBinFormatter extends AbstractFormatter
      */
     protected function getQuery()
     {
-        return Utils::valueToJsonString(Utils::ksortRecursive(Utils::boolToString($this->client->query()->all())));
+        return Utils::valueToJsonString(Utils::ksortRecursive(Utils::boolToString($this->client->getQuery()->all())));
     }
 }

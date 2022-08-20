@@ -8,19 +8,10 @@ use Psr\Http\Message\UriInterface;
 
 trait UriTrait
 {
-    /**
-     * @var UriInterface
-     */
     protected UriInterface $uri;
 
-    /**
-     * @var string
-     */
     protected string $prefixPath;
 
-    /**
-     * @return UriInterface
-     */
     public function uri(): UriInterface
     {
         return $this->uri;

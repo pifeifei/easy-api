@@ -4,22 +4,20 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Concerns\Client;
 
+use Pff\EasyApi\Result;
 use Psr\Http\Message\RequestInterface;
 
 trait HistoryTrait
 {
     /**
-     * @var array{request: RequestInterface, response: null|object, error: null|object, option: array<int|string>}
+     * @var array<array{request: RequestInterface, response: null|Result, error: null|object, option: array<int|string>}>
      */
     protected array $histories = [];
 
-    /**
-     * @var bool
-     */
     protected bool $isRememberHistory = false;
 
     /**
-     * @return array{request: RequestInterface, response: null|object, error: null|object, option: array<int|string>}
+     * @return array<array{request: RequestInterface, response: null|Result, error: null|object, option: array<int|string>}>
      */
     public function getHistory(): array
     {
@@ -42,7 +40,7 @@ trait HistoryTrait
     }
 
     /**
-     * @return array{request: RequestInterface, response: null|object, error: null|object, option: array<int|string>}
+     * @return array<array{request: RequestInterface, response: null|Result, error: null|object, option: array<int|string>}>
      */
     public function &referenceHistory(): array
     {

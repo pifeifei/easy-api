@@ -6,7 +6,7 @@ namespace Pff\EasyApi;
 
 class API
 {
-    public const VERSION = '0.1-dev';
+    public const VERSION = '0.1.4';
 
     public const METHOD_GET = 'GET';
 

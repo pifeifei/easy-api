@@ -60,7 +60,7 @@ final class UserAgentTest extends TestCase
         ]);
 
         static::assertStringStartsWith('EasyApi', $userAgent);
-        static::assertStringContainsString('PHP/' . PHP_VERSION, $userAgent);
+        static::assertStringContainsString('PHP/' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION, $userAgent);
         static::assertStringEndsWith('Append/1.0.0 Append2/2.0.0', $userAgent);
     }
 

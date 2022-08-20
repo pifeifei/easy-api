@@ -95,8 +95,6 @@ class Cache implements CacheInterface
     }
 
     /**
-     * @param string $key
-     *
      * @return array<string, mixed>
      */
     protected function ExceptionContext(string $key): array

@@ -20,7 +20,7 @@ class WechatFormatter extends AbstractTokenFormatter
      */
     public function resolve(): void
     {
-        if (false === $this->client->tokenClient()) {
+        if (false === $this->client->isTokenClient()) {
             $this->token();
             $this->sign();
         }
@@ -33,11 +33,9 @@ class WechatFormatter extends AbstractTokenFormatter
      */
     protected function getData(): array
     {
-        $data = $this->client->data();
+        $data = $this->client->getData();
         $data->add([
             'app_id' => $this->client->config()->client('app_id'),
-            //            'app_secret' => $this->client->config()->client('app_secret'),
-            //            'token' => $this->client->config()->client('token'),
         ]);
         $data = $data->all();
         Utils::ksortRecursive($data);
@@ -50,7 +48,7 @@ class WechatFormatter extends AbstractTokenFormatter
      */
     protected function getQuery()
     {
-        return $this->client->query()->all();
+        return $this->client->getQuery()->all();
     }
 
     /**
@@ -58,11 +56,12 @@ class WechatFormatter extends AbstractTokenFormatter
      */
     protected function token(): void
     {
-        $this->client->query(['access_token' => $this->getAccessToken()]);
+        $this->client->setQuery(['access_token' => $this->getAccessToken()]);
     }
 
     /**
      * @throws ClientException
+     * @throws ServerException
      *
      * @return string access token string
      */
@@ -72,25 +71,24 @@ class WechatFormatter extends AbstractTokenFormatter
         if (isset($tokenInfo['access_token'])) {
             return $tokenInfo['access_token'];
         }
-        dump($tokenInfo);
 
-        throw new ClientException('无法获取 access token', API::ERROR_CLIENT_FAILED_GET_ACCESS);
+        throw new ClientException('无法获取 access token', [], API::ERROR_CLIENT_FAILED_GET_ACCESS);
     }
 
     /**
      * 获取 access token.
      *
      * @throws ClientException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws ServerException
      *
-     * @return array 请求的 token 完整数据
+     * @return array<string, string> 请求的 token 完整数据
      */
-    protected function getToken(bool $refresh = false)
+    protected function getToken(bool $refresh = false): array
     {
         $key = $this->cacheKey();
         $cache = $this->client->cache();
-        if ($cache->has($key)) {
+        if (false === $refresh && $cache->has($key)) {
+            /** @var array<string, string> $tokenInfo */
             $tokenInfo = $cache->get($key);
             if ($tokenInfo['expired_at'] <= time()) {
                 $config = $this->client->config();
@@ -102,16 +100,17 @@ class WechatFormatter extends AbstractTokenFormatter
                 $authClient = $this->getAuthClient();
                 $response = $authClient
                     ->path('token')
-                    ->method('GET')
-                    ->query($query)
+                    ->setMethod('GET')
+                    ->setQuery($query)
                     ->request()
                 ;
 
+                /** @var array<string, string> $tokenInfo */
                 $tokenInfo = [
                     'access_token' => $response->get('access_token'),
                     'expired_at' => time() + $response->get('expires_in'),
                 ];
-                $cache->set($key, $tokenInfo, $response->get('expires_in'));
+                $cache->set($key, $tokenInfo, $response->get('expires_in'));  // @phpstan-ignore-line
             }
 
             return $tokenInfo;
@@ -126,20 +125,26 @@ class WechatFormatter extends AbstractTokenFormatter
         $authClient = $this->getAuthClient();
         $response = $authClient
             ->path('token')
-            ->method('GET')
-            ->query($query)
+            ->setMethod('GET')
+            ->setQuery($query)
             ->request()
         ;
 
         if ($response->has('errcode') && 0 !== $response->get('errcode')) {
-            throw new ServerException($response, $response->get('errmsg'), $response->getStatusCode());
+            throw new ServerException(
+                $response,
+                'api error: ' . $response->get('errmsg'),
+                ['appid' => $config->client('app_id')],
+                $response->getStatusCode()
+            );
         }
 
+        /** @var array<string, string> $tokenInfo */
         $tokenInfo = [
             'access_token' => $response->get('access_token'),
             'expired_at' => time() + $response->get('expires_in'),
         ];
-        $cache->set($key, $tokenInfo, $response->get('expires_in'));
+        $cache->set($key, $tokenInfo, $response->get('expires_in')); // @phpstan-ignore-line
 
         return $tokenInfo;
     }

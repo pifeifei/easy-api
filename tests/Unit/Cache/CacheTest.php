@@ -38,7 +38,8 @@ final class CacheTest extends TestCase
     {
         $this->expectException(ClientException::class);
         $this->expectExceptionMessage('API cache error');
-         $this->expectExceptionCode(0);
+        $this->expectExceptionCode(0);
+
         $cache = new Cache();
         $cache->has('xxx/s');
     }

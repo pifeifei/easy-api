@@ -9,14 +9,8 @@ use Pff\EasyApi\API;
 
 class SignConfig
 {
-    /**
-     * @var string
-     */
     protected string $key;
 
-    /**
-     * @var string
-     */
     protected string $position = API::SIGN_POSITION_HEAD;
 
     /**

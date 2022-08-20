@@ -11,38 +11,30 @@ use Illuminate\Support\Arr;
 use Pff\EasyApi\API;
 use Pff\EasyApi\Clients\Client;
 use Pff\EasyApi\Contracts\SignatureInterface;
+use Pff\EasyApi\Exception\InvalidArgumentException;
 use Pff\EasyApi\Request\Request;
 use Pff\EasyApi\Result;
 use Psr\Http\Message\ResponseInterface;
 
 trait ClientTrait
 {
-    protected $methods = [
+    /** @var array|string[] */
+    protected array $methods = [
         API::METHOD_GET => 'GET',
         API::METHOD_JSON => 'POST',
         API::METHOD_POST => 'POST',
         API::METHOD_XML => 'POST',
     ];
 
-    /**
-     * @var string
-     */
-    protected $method;
+    protected string $method;
 
-    /**
-     * @var SignatureInterface
-     */
-    protected $signature;
+    protected SignatureInterface $signature;
 
-    /**
-     * @var bool
-     */
-    protected $isTokenClient = false;
+    protected bool $isTokenClient = false;
 
     public function createClient(Client $client = null): GuzzleClient
     {
         if (self::hasMock()) {
-//            echo __METHOD__ . ':' . __LINE__ . PHP_EOL;
             $stack = HandlerStack::create(self::getMock());
         } else {
             $stack = HandlerStack::create();
@@ -56,14 +48,8 @@ trait ClientTrait
             $this->pushRetryMiddleware($stack);
         }
 
-//        if (API::getLogger()) {
-//            $stack->push(Middleware::log(
-//                API::getLogger(),
-//                new MessageFormatter(API::getLogFormat())
-//            ));
-//        }
-
-        $request = new Request($client->method(), $client->uri(), $client->options, $this->config());
+        /** @phpstan-ignore-next-line to do: dumped type 正常，就是会报错 */
+        $request = new Request($client->getMethod(), $client->uri(), $client->getOptions(), $this->config());
 
         $stack->push(Middleware::mapResponse(static function (ResponseInterface $response) use ($request) {
             return new Result($response, $request);
@@ -71,13 +57,28 @@ trait ClientTrait
 
         $this->options(['handler' => $stack]);
 
-        return new GuzzleClient($this->options);
+        return new GuzzleClient($this->getOptions());
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function setMethod(string $method): self
+    {
+        $this->method = $method;
+
+        return $this;
     }
 
     /**
      * setter or getter method.
      *
      * @return $this|string
+     *
+     * @deprecated 0.1.4 use getMethod() and setMethod()
+     * @removed 1.0
      */
     public function method(string $method = null)
     {
@@ -90,35 +91,30 @@ trait ClientTrait
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function requestMethod()
+    public function requestMethod(): string
     {
-        return Arr::get($this->methods, $this->method(), 'POST');
+        /** @var string */
+        return Arr::get($this->methods, $this->getMethod(), 'POST');
     }
 
-    /**
-     * @return SignatureInterface
-     */
-    public function getSignature()
+    public function getSignature(): SignatureInterface
     {
         return $this->signature;
     }
 
     /**
-     * @param null|SignatureInterface|string $signature
+     * @param null|class-string|SignatureInterface $signature
      *
      * @return $this
      */
-    public function setSignature($signature = null)
+    public function setSignature($signature = null): self
     {
         if (null === $signature) {
             return $this;
         }
 
-        if (\is_string($signature) && class_exists($signature)) {
-            $this->signature = new $signature();
+        if (\is_string($signature) && class_exists($signature) && ($obj = new $signature()) instanceof SignatureInterface) {
+            $this->signature = $obj;
 
             return $this;
         }
@@ -129,20 +125,20 @@ trait ClientTrait
             return $this;
         }
 
-//        throw new ClientException();
-        throw new \UnexpectedValueException(sprintf('%s class does not exist.', $signature));
+        throw new InvalidArgumentException(sprintf('%s class does not exist.', $signature));
+    }
+
+    public function isTokenClient(): bool
+    {
+        return $this->isTokenClient;
     }
 
     /**
-     * @return $this|bool
+     * @return $this
      */
-    public function tokenClient(bool $isTokenClient = null)
+    public function tokenClient(bool $isTokenClient = true): self
     {
-        if (null === $isTokenClient) {
-            return $this->isTokenClient;
-        }
-
-        $this->isTokenClient = (bool) $isTokenClient;
+        $this->isTokenClient = $isTokenClient;
 
         return $this;
     }

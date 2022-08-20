@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pff\EasyApiTest\Unit\Concerns;
 
+use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApiTest\TestCase;
 use Pff\EasyApiTest\Unit\Concerns\stubs\DataTraitStub;
 
@@ -37,6 +38,7 @@ final class DataTraitTest extends TestCase
         unset($data['foo']);
         static::assertFalse($data->has('foo'));
 
+        $iterator = false;
         $data['bar'] = 'bar';
         foreach ($data as $item) {
             $iterator = true;
@@ -90,8 +92,8 @@ final class DataTraitTest extends TestCase
 
         static::assertTrue($data->has('foo'));
         static::assertTrue(isset($data->foo));
-        // phpstan-ignore-next-line
-        $data->foo = null;
+
+        $data->foo = null; // @phpstan-ignore-line
         static::assertFalse($data->has('foo'));
         static::assertFalse(isset($data->foo));
     }
@@ -125,17 +127,20 @@ final class DataTraitTest extends TestCase
         static::assertSame([], $data->all());
     }
 
+    /**
+     * @throws ClientException
+     */
     public function testJson(): void
     {
         $data = new DataTraitStub(['foo' => 'foo', 'bar' => 'bar', 'foobar' => 1]);
         static::assertSame('{"foo":"foo","bar":"bar","foobar":1}', $data->toJson());
         static::assertSame(['foo' => 'foo', 'bar' => 'bar', 'foobar' => 1], $data->jsonSerialize());
 
-        $data->bar = true;
-        $data->foobar = 1.0;
-        static::assertSame('{"foo":"foo","bar":true,"foobar":1}', $data->toJson());
-        static::assertSame(['foo' => 'foo', 'bar' => true, 'foobar' => 1.0], $data->jsonSerialize());
-        static::assertTrue($data->get('bar'));
+        $data->bar = 'true';
+        $data->foobar = '1.0';
+        static::assertSame('{"foo":"foo","bar":"true","foobar":"1.0"}', $data->toJson());
+        static::assertSame(['foo' => 'foo', 'bar' => 'true', 'foobar' => '1.0'], $data->jsonSerialize());
+        static::assertSame('true', $data->get('bar'));
     }
 
     /**
@@ -146,11 +151,14 @@ final class DataTraitTest extends TestCase
      */
     public function testFlatten($arr, $val): void
     {
-        $data = new DataTraitStub($arr);
+        $data = new DataTraitStub($arr); // @phpstan-ignore-line
         static::assertSame($val, $data->flatten());
     }
 
-    public function flattenData()
+    /**
+     * @return array<array<int, mixed>>
+     */
+    public function flattenData(): array
     {
         return [
             [

@@ -6,6 +6,8 @@ namespace Pff\EasyApiTest\Unit\Clients;
 
 use Pff\EasyApi\API;
 use Pff\EasyApi\Clients\Client;
+use Pff\EasyApi\Exception\ClientException;
+use Pff\EasyApi\Exception\ServerException;
 use Pff\EasyApiTest\TestCase;
 
 /**
@@ -14,6 +16,10 @@ use Pff\EasyApiTest\TestCase;
  */
 final class ClientTest extends TestCase
 {
+    /**
+     * @throws ClientException
+     * @throws ServerException
+     */
     public function testClient(): void
     {
         $config = $this->getConfig();
@@ -27,6 +33,9 @@ final class ClientTest extends TestCase
         $client->cancelMock();
     }
 
+    /**
+     * @throws ClientException
+     */
     public function testUriTrait(): void
     {
         $config = $this->getConfig();
@@ -47,8 +56,8 @@ final class ClientTest extends TestCase
         $client->path('../path/to');
         static::assertSame('/anything/../path/to', $client->uri()->getPath());
 
-        $client->method(API::RESPONSE_FORMAT_JSON);
-        static::assertSame(API::RESPONSE_FORMAT_JSON, $client->method());
+        $client->setMethod(API::RESPONSE_FORMAT_JSON);
+        static::assertSame(API::RESPONSE_FORMAT_JSON, $client->getMethod());
 
         $client->port(99);
         static::assertSame(99, $client->uri()->getPort());

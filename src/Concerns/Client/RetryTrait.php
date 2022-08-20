@@ -8,7 +8,6 @@ use Exception;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Str;
-use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Result;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,67 +15,75 @@ use Psr\Http\Message\ResponseInterface;
 trait RetryTrait
 {
     /**
-     * Server Retry Times.
-     *
-     * @var int
+     * @var ?callable 详情请看：\GuzzleHttp\RetryMiddleware::onFulfilled()
      */
-    private $serverRetry = 0;
+    protected $retryDelay;
+
+    /**
+     * Server Retry Times.
+     */
+    private int $serverRetry = 0;
 
     /**
      * Server Retry Strings.
      *
      * @var string[]
      */
-    private $serverRetryStrings = [];
+    private array $serverRetryStrings = [];
 
     /**
      * Server Retry Codes.
      *
      * @var int[]
      */
-    private $serverRetryStatusCodes = [];
+    private array $serverRetryStatusCodes = [];
 
     /**
      * Client Retry Times.
-     *
-     * @var int
      */
-    private $clientRetry = 0;
+    private int $clientRetry = 0;
 
     /**
      * Client Retry Strings.
      *
      * @var string[]
      */
-    private $clientRetryStrings = [];
+    private array $clientRetryStrings = [];
 
     /**
      * Client Retry Codes.
      *
      * @var int[]
      */
-    private $clientRetryStatusCodes = [];
+    private array $clientRetryStatusCodes = [];
 
     /**
-     * @param int $times
-     *
-     * @throws ClientException
+     * @param string[] $strings
+     * @param int[] $statusCodes
      *
      * @return $this
      */
-    public function retryByServer($times, array $strings, array $statusCodes = [])
+    public function retryByServer(int $times, array $strings, array $statusCodes = []): self
     {
-        $this->serverRetry = (int) $times;
+        $this->serverRetry = $times;
         $this->serverRetryStrings = $strings;
         $this->serverRetryStatusCodes = $statusCodes;
 
         return $this;
     }
 
+    public function retryDelay(callable $delay): void
+    {
+        $this->retryDelay = $delay;
+    }
+
     /**
+     * @param string[] $strings
+     * @param int[] $codes
+     *
      * @return $this
      */
-    public function retryByClient(int $times, array $strings, array $codes = [])
+    public function retryByClient(int $times, array $strings, array $codes = []): self
     {
         $this->clientRetry = $times;
         $this->clientRetryStrings = $strings;
@@ -90,10 +97,7 @@ trait RetryTrait
         $stack->push($this->retryMiddleware(), 'retry');
     }
 
-    /**
-     * @return callable
-     */
-    protected function retryMiddleware()
+    protected function retryMiddleware(): callable
     {
         return Middleware::retry(
             function (
@@ -101,6 +105,10 @@ trait RetryTrait
                 RequestInterface $request,
                 ResponseInterface $response = null
             ) {
+                if (null === $response) {
+                    return true;
+                }
+
                 $statusCode = $response->getStatusCode();
                 // Limit the number of retries to 2
                 if ($retries < $this->clientRetry && 400 <= $statusCode && $statusCode < 500) {
@@ -135,19 +143,14 @@ trait RetryTrait
                         }
                     }
                 }
-//                echo ("retry  {$statusCode}  {$this->clientRetry}  : " . __FILE__ . ':' . __LINE__) . PHP_EOL;
+
                 return false;
             },
-            function () {
-                return 500;
-            }
+            $this->retryDelay ?? null
         );
     }
 
-    /**
-     * @return bool
-     */
-    protected function isText(ResponseInterface $response)
+    protected function isText(ResponseInterface $response): bool
     {
         $type = strtolower($response->getHeaderLine('Content-Type')); // json, xml, text, html,
 
@@ -161,10 +164,7 @@ trait RetryTrait
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    protected function shouldRetryMiddleware()
+    protected function shouldRetryMiddleware(): bool
     {
         if ($this->serverRetry > 0 || $this->clientRetry > 0) {
             return true;
@@ -174,9 +174,10 @@ trait RetryTrait
     }
 
     /**
-     * @return bool
+     * @deprecated 0.1.4 貌似没用了，用中间件重试请求
+     * @removed 1.0
      */
-    private function shouldServerRetry(Result $result)
+    private function shouldServerRetry(Result $result): bool
     {
         if ($this->serverRetry <= 0) {
             return false;
@@ -189,7 +190,7 @@ trait RetryTrait
         }
 
         foreach ($this->serverRetryStrings as $message) {
-            if (Str::contains($result->getBody(), $message)) {
+            if (Str::contains($result->getBody()->getContents(), $message)) {
                 --$this->serverRetry;
 
                 return true;
@@ -200,9 +201,10 @@ trait RetryTrait
     }
 
     /**
-     * @return bool
+     * @deprecated 0.1.4 貌似没用了，用中间件重试请求
+     * @removed 1.0
      */
-    private function shouldClientRetry(Exception $exception)
+    private function shouldClientRetry(Exception $exception): bool
     {
         if ($this->clientRetry <= 0) {
             return false;

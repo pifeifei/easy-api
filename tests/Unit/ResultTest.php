@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Pff\EasyApi\API;
 use Pff\EasyApi\Config;
+use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Request\Request;
 use Pff\EasyApi\Result;
 use Pff\EasyApiTest\TestCase;
@@ -18,14 +19,14 @@ use Pff\EasyApiTest\TestCase;
  */
 final class ResultTest extends TestCase
 {
-    /**
-     * @var Result
-     */
-    protected $result;
+    protected Result $result;
 
+    /**
+     * @throws ClientException
+     */
     protected function setUp(): void
     {
-        $uri = new Uri('http://pifeifei.com/path/to/index.html');
+        $uri = new Uri('https://pifeifei.com/path/to/index.html');
         $options = [
             'proxy' => 'http://127.0.0.1:8888',
         ];
@@ -47,11 +48,6 @@ final class ResultTest extends TestCase
         );
         $request = new Request('GET', $uri, $options, $config);
         $this->result = new Result($response, $request);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->result = null;
     }
 
     public function testResult(): void

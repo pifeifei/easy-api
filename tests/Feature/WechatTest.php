@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Pff\EasyApiTest\Feature;
 
-use Pff\EasyApi\API;
-use Pff\EasyApi\Cache\Cache;
-use Pff\EasyApi\Format\WechatFormatter;
-use Pff\EasyApiTest\Feature\Clients\WechatClient;
+use Pff\EasyApi\Exception\ClientException;
+use Pff\EasyApi\Exception\ServerException;
+use Pff\EasyApiTest\Feature\stubs\WechatClient;
 use Pff\EasyApiTest\TestCase;
 
 /**
@@ -45,6 +44,10 @@ final class WechatTest extends TestCase
         ];
     }
 
+    /**
+     * @throws ClientException
+     * @throws ServerException
+     */
     public function testUsers(): void
     {
         $config = $this->getConfig();
@@ -53,9 +56,9 @@ final class WechatTest extends TestCase
         static::assertTrue($response->has('total'));
 
         if ($response->has('data.openid')) {
-            $result = $client->userInfo($response->get('data.openid')[0]);
+            $result = $client->userInfo($response->get('data.openid')[0]); // @phpstan-ignore-line
             static::assertTrue($result->has('openid'));
-            static::assertSame($result->get('openid'), $response->get('data.openid')[0]);
+            static::assertSame($result->get('openid'), $response->get('data.openid')[0]); // @phpstan-ignore-line
         }
     }
 }

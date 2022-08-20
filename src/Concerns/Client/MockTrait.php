@@ -11,49 +11,41 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 trait MockTrait
 {
     /**
-     * @var array
+     * @var RequestException[]|Response[]
      */
-    protected $mockQueue = [];
+    protected array $mockQueue = [];
 
     /**
-     * @var MockHandler
+     * @var ?MockHandler
      */
-    protected $mock;
+    protected ?MockHandler $mock = null;
 
     /**
-     * @param array|object|string $body
+     * @param array<string, string|string[]> $headers
+     * @param null|resource|StreamInterface|string $body
      */
     public function mockResponse(int $status = 200, array $headers = [], $body = null, string $version = '1.1'): void
     {
-        if (\is_array($body) || \is_object($body)) {
-            $body = json_encode($body);
-        }
-
         $this->mockQueue[] = new Response($status, $headers, $body, $version);
         $this->getMock()->append(Arr::last($this->mockQueue));
     }
 
     /**
-     * @param string $message
+     * @param array<string, mixed> $handlerContext
      */
     public function mockRequestException(
-        $message,
+        string $message,
         RequestInterface $request,
         ResponseInterface $response = null,
         Exception $previous = null,
         array $handlerContext = []
     ): void {
-        $this->mockQueue[] = new RequestException(
-            $message,
-            $request,
-            $response,
-            $previous,
-            $handlerContext
-        );
+        $this->mockQueue[] = new RequestException($message, $request, $response, $previous, $handlerContext);
 
         $this->getMock()->append(Arr::last($this->mockQueue));
     }
@@ -71,7 +63,7 @@ trait MockTrait
 
     public function getMock(): MockHandler
     {
-        if (null === $this->mock) {
+        if (\is_null($this->mock)) {
             $this->mock = new MockHandler($this->mockQueue);
         }
 

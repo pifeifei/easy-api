@@ -13,9 +13,6 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 abstract class AbstractFormatter implements FormatterInterface
 {
-    /**
-     * @var Client
-     */
     protected Client $client;
 
     public function __construct(Client $client)
@@ -33,7 +30,7 @@ abstract class AbstractFormatter implements FormatterInterface
     /**
      * query 数据处理。
      *
-     * @return array<float|int|string>|false
+     * @return array<string, mixed>|false
      */
     abstract protected function getQuery();
 
@@ -45,8 +42,8 @@ abstract class AbstractFormatter implements FormatterInterface
     protected function body(): void
     {
         $data = $this->getData();
-        $this->client->options([RequestOptions::HEADERS => $this->client->headers()->all()]);
-        $method = $this->client->method();
+        $this->client->options([RequestOptions::HEADERS => $this->client->getHeaders()->all()]);
+        $method = $this->client->getMethod();
 
         switch ($method) {
             case API::METHOD_POST:
@@ -124,7 +121,7 @@ abstract class AbstractFormatter implements FormatterInterface
      */
     protected function bodyXML()
     {
-        $data = $this->client->data();
+        $data = $this->client->getData();
         $xml = new XmlEncoder();
 
         return $xml->encode($data, 'xml');
@@ -165,7 +162,7 @@ abstract class AbstractFormatter implements FormatterInterface
 
         $queries = $signConfig->getAppends();
         $queries[$signConfig->getKey()] = $this->signBuild();
-        $this->client->query($queries);
+        $this->client->setQuery($queries);
     }
 
     /**
@@ -179,6 +176,6 @@ abstract class AbstractFormatter implements FormatterInterface
 
         $data = $signConfig->getAppends();
         $data[$signConfig->getKey()] = $this->signBuild();
-        $this->client->data($data);
+        $this->client->setData($data);
     }
 }

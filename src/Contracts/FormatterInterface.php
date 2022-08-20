@@ -9,7 +9,7 @@ use Pff\EasyApi\Exception\ClientException;
 interface FormatterInterface
 {
     /**
-     * 解析参数.
+     * 解析参数。
      *
      * @throws ClientException
      */

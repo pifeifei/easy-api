@@ -206,7 +206,7 @@ class Headers implements IteratorAggregate, Countable
      */
     public function getDate(string $key, DateTime $default = null)
     {
-        if (null === $value = $this->get($key)) {
+        if (null === $value = $this->get($key)) { // @phpstan-ignore-line
             return $default;
         }
 

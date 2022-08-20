@@ -29,8 +29,6 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
 
     /**
      * Instance of the request.
-     *
-     * @var Request
      */
     protected Request $request;
 

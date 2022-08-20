@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Pff\EasyApiTest\Feature;
 
 use Pff\EasyApi\Clients\Client;
+use Pff\EasyApi\Exception\ClientException;
+use Pff\EasyApi\Exception\ServerException;
 use Pff\EasyApi\Result;
 use Pff\EasyApiTest\TestCase;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * @internal
@@ -14,6 +17,10 @@ use Pff\EasyApiTest\TestCase;
  */
 final class ClientTest extends TestCase
 {
+    /**
+     * @throws ClientException
+     * @throws ServerException
+     */
     public function testClientSimple(): void
     {
         $config = $this->getConfig();
@@ -29,6 +36,10 @@ final class ClientTest extends TestCase
         $client->cancelMock();
     }
 
+    /**
+     * @throws ClientException
+     * @throws ServerException
+     */
     public function testHistory(): void
     {
         $config = $this->getConfig();
@@ -48,7 +59,9 @@ final class ClientTest extends TestCase
         $client->request();
         static::assertSame(2, $client->countHistory());
 
-        static::assertIsArray($histories = $client->getHistory());
+        /** @var array<array{request: RequestInterface, response: Result}> $histories */
+        $histories = $client->getHistory();
+        static::assertIsArray($histories);
 
         static::assertSame('first', $histories[0]['response']->getBody()->__toString());
         static::assertSame('second', $histories[1]['response']->getBody()->__toString());

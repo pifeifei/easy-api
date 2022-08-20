@@ -20,11 +20,11 @@ final class ClientTraitTest extends TestCase
     {
         $config = $this->getConfig();
         $client = new Client($config);
-        static::assertSame(API::METHOD_JSON, $client->method());
+        static::assertSame(API::METHOD_JSON, $client->getMethod());
         static::assertSame(API::METHOD_POST, $client->requestMethod());
 
-        static::assertInstanceOf(Client::class, $client->method(API::METHOD_XML));
-        static::assertSame(API::METHOD_XML, $client->method());
+        static::assertInstanceOf(Client::class, $client->setMethod(API::METHOD_XML));
+        static::assertSame(API::METHOD_XML, $client->getMethod());
         static::assertSame(API::METHOD_POST, $client->requestMethod());
     }
 
@@ -51,9 +51,9 @@ final class ClientTraitTest extends TestCase
         $config = $this->getConfig();
         $client = new Client($config);
 
-        static::assertFalse($client->tokenClient());
+        static::assertFalse($client->isTokenClient());
         static::assertInstanceOf(Client::class, $client->tokenClient(true));
 
-        static::assertTrue($client->tokenClient());
+        static::assertTrue($client->isTokenClient());
     }
 }

@@ -3,17 +3,19 @@ includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
-    phpVersion: 70200
+    phpVersion: 70400
     level: max
     bootstrapFiles:
         - vendor/autoload.php
     paths:
         - src
     excludePaths:
-        - tests/*/stubs/*
-#    scanFiles:
-#        - _ide_helper.php
-#        - _ide_helper_models.php
+        analyse:
+            - tests/stubs/*
+            - tests/*/stubs/*
+            - tests/*/*/stubs/*
+            - tests/*/*/*/stubs/*
+            - tests/Feature/stubs
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: false

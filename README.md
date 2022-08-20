@@ -4,7 +4,7 @@
 
 ## Requirement
 
-1. PHP >= 7.2
+1. PHP >= 7.4
 2. Composer
 3. openssl 拓展（建议）
 4. fileinfo 拓展（建议）
@@ -12,7 +12,7 @@
 ## Installation
 
 ```shell
-$ composer require "pifeifei/easy-api"
+composer require "pifeifei/easy-api"
 ```
 
 ## Usage
@@ -46,11 +46,11 @@ $response = $client->request();
 // get
 $response = $client->method(Pff\EasyApi\API::METHOD_GET)
     ->path("any/path/to")
-    ->data(['a'=>'foo', 'b'=>'bar'])
+    ->setData(['a'=>'foo', 'b'=>'bar'])
     ->request();
 // json post
 $response = $client->path("any/path/to")
-    ->data(['a'=>'foo', 'b'=>'bar'])
+    ->setData(['a'=>'foo', 'b'=>'bar'])
     ->request();
 ```
 

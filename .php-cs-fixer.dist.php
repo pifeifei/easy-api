@@ -45,6 +45,7 @@ $config
         'use_arrow_functions' => false,
         'concat_space' => ['spacing' => 'one'],
         'general_phpdoc_tag_rename' => ['replacements' => ['inheritDocs' => 'inheritDoc'], 'fix_annotation' => true],
+        'is_null' => false,
         'phpdoc_align' => ['align' => 'left'],
         'phpdoc_order' => true,
         // 'phpdoc_summary' => true, // 中文注释使用中文句号

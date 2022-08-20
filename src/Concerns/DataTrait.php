@@ -6,17 +6,14 @@ namespace Pff\EasyApi\Concerns;
 
 use ArrayIterator;
 use Illuminate\Support\Arr;
+use Pff\EasyApi\Exception\ClientException;
 
 trait DataTrait
 {
-    /**
-     * @var array
-     */
-    protected $collection;
+    /** @var array<string, mixed> */
+    protected array $collection;
 
-    /**
-     * @return null|mixed
-     */
+    /** @return null|mixed */
     public function __get(string $name)
     {
         return $this->get($name);
@@ -45,7 +42,7 @@ trait DataTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      */
     public function __unset($name): void
     {
@@ -55,7 +52,7 @@ trait DataTrait
     /**
      * Delete the contents of a given key or keys.
      *
-     * @param null|array|int|string $keys
+     * @param string|string[] $keys
      */
     public function clear($keys = null): void
     {
@@ -69,6 +66,10 @@ trait DataTrait
 
     /**
      * Flatten an array with the given character as a key delimiter.
+     *
+     * @param array<string, mixed> $items 可以是多维数组
+     *
+     * @return array<string, mixed> 一维数组，键名为点分字符串
      */
     public function flatten(string $delimiter = '.', array $items = null, string $prepend = ''): array
     {
@@ -80,10 +81,8 @@ trait DataTrait
 
         foreach ($items as $key => $value) {
             if (\is_array($value) && !empty($value)) {
-                $flatten = array_merge(
-                    $flatten,
-                    $this->flatten($delimiter, $value, $prepend . $key . $delimiter)
-                );
+                /** @phpstan-ignore-next-line */
+                $flatten = array_merge($flatten, $this->flatten($delimiter, $value, $prepend . $key . $delimiter));
             } else {
                 $flatten[$prepend . $key] = $value;
             }
@@ -108,10 +107,10 @@ trait DataTrait
     /**
      * Set a given key / value pair or pairs.
      *
-     * @param int|string $key 支持批量设置
+     * @param string $key 支持批量设置
      * @param mixed $value
      */
-    public function set($key, $value = null): void
+    public function set(string $key, $value = null): void
     {
         Arr::set($this->collection, $key, $value);
     }
@@ -126,12 +125,22 @@ trait DataTrait
 
     /**
      * Return the value of a given key or all the values as JSON.
+     *
+     * @throws ClientException
      */
     public function toJson(int $options = 0): string
     {
-        return json_encode($this->collection, $options);
+        $result = json_encode($this->collection, $options);
+        if (false === $result) {
+            throw new ClientException('相应数据解析错误。', ['data' => $this->collection]);
+        }
+
+        return $result;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return $this->collection;
@@ -140,7 +149,7 @@ trait DataTrait
     /**
      * Check if a given key exists.
      *
-     * @param int|string $key
+     * @param string $key
      */
     public function offsetExists($key): bool
     {
@@ -162,7 +171,7 @@ trait DataTrait
     /**
      * Set a given value to the given key.
      *
-     * @param null|int|string $key
+     * @param string $key
      * @param mixed $value
      */
     public function offsetSet($key, $value): void
@@ -173,7 +182,7 @@ trait DataTrait
     /**
      * Delete the given key.
      *
-     * @param int|string $key
+     * @param string $key
      */
     public function offsetUnset($key): void
     {
@@ -183,7 +192,7 @@ trait DataTrait
     /**
      * Delete the given key or keys.
      *
-     * @param array|int|string $keys
+     * @param string|string[] $keys
      */
     public function delete($keys): void
     {
@@ -214,6 +223,8 @@ trait DataTrait
 
     /**
      * Return items for JSON serialization.
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -228,6 +239,8 @@ trait DataTrait
 
     /**
      * Return all the stored items.
+     *
+     * @return array<string, mixed>
      */
     public function all(): array
     {
@@ -238,7 +251,7 @@ trait DataTrait
      * Set a given key / value pair or pairs
      * if the key doesn't exist already.
      *
-     * @param array|int|string $keys
+     * @param array<string, mixed>|string $keys
      * @param mixed $value
      */
     public function add($keys, $value = null): void
@@ -265,15 +278,16 @@ trait DataTrait
 
     /**
      * Check if a given key or keys exists.
-     *
-     * @param array|int|string $keys
      */
-    public function has($keys): bool
+    public function has(string $key): bool
     {
-        return Arr::has($this->collection, $keys);
+        return Arr::has($this->collection, $key);
     }
 
-    protected function collection($data = []): void
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function collection(array $data = []): void
     {
         $this->collection = $data;
     }

@@ -10,11 +10,11 @@ use Pff\EasyApi\Exception\ClientException;
 abstract class AbstractTokenFormatter extends AbstractFormatter
 {
     /**
-     * 自动添加 token 参数.
+     * 自动添加 token 参数。
      *
      * @throws ClientException
      */
-    abstract protected function token();
+    abstract protected function token(): void;
 
     protected function getAuthClient(): Client
     {
@@ -29,7 +29,7 @@ abstract class AbstractTokenFormatter extends AbstractFormatter
     }
 
     /**
-     * 获取 token 缓存名.
+     * 获取 token 缓存名。
      */
     protected function cacheKey(): string
     {

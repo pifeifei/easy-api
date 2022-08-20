@@ -43,7 +43,7 @@ final class ParametersTest extends TestCase
     {
         $arr = ['foo' => 'foo'];
         $p = new Parameters($arr);
-        $p->add($arr2 = ['bar' => 'bar']);
+        $p->add(['bar' => 'bar', 'foobar' => 'foobar']); // @phpstan-ignore-line
         static::assertTrue($p->has('bar'));
     }
 
@@ -53,7 +53,7 @@ final class ParametersTest extends TestCase
         $p = new Parameters($arr);
 
         static::assertSame(0, $p->count());
-        $p->replace($arr = ['bar' => 'bar']);
+        $p->replace(['bar' => 'bar']);  // @phpstan-ignore-line
         static::assertSame(1, $p->count());
     }
 }

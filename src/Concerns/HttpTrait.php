@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Concerns;
 
+use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Request\Headers;
 use Pff\EasyApi\Request\Parameters;
 
@@ -23,6 +24,8 @@ trait HttpTrait
 
     /**
      * 请求体（$_POST）。
+     *
+     * @description POST 请求放到到 body 请求体，GET 请求会合并到 uri 的 query string 中。
      */
     protected Parameters $data;
 
@@ -36,18 +39,24 @@ trait HttpTrait
      *
      * @param array<string, mixed>|string $query
      * @param mixed $value
+     *
+     * @throws ClientException
      */
     public function addQuery($query, $value = null): self
     {
-        if (null === $value) {
+        if (\is_array($query)) {
             $this->query->add($query);
 
             return $this;
         }
 
-        $this->query->set($query, $value);
+        if (null !== $value) {
+            $this->query->set($query, $value);
 
-        return $this;
+            return $this;
+        }
+
+        throw new ClientException("GET 参数设置失败：{$query}");
     }
 
     /**
@@ -61,9 +70,9 @@ trait HttpTrait
     /**
      * 设置参数。
      *
-     * @param array<string, mixed>|string $query
+     * @param array<string, mixed> $query
      */
-    public function setQuery($query): self
+    public function setQuery(array $query): self
     {
         $this->query->replace($query);
 
@@ -71,20 +80,28 @@ trait HttpTrait
     }
 
     /**
+     * 添加单个请求数据。
+     *
      * @param array<string, mixed>|string $key
      * @param mixed $value
+     *
+     * @throws ClientException
      */
     public function addData($key, $value = null): self
     {
-        if (null === $value) {
+        if (\is_array($key)) {
             $this->data->add($key);
 
             return $this;
         }
 
-        $this->data->set($key, $value);
+        if (null !== $value) {
+            $this->data->set($key, $value);
 
-        return $this;
+            return $this;
+        }
+
+        throw new ClientException("POST 参数设置失败：{$key}");
     }
 
     public function getData(): Parameters
@@ -93,6 +110,8 @@ trait HttpTrait
     }
 
     /**
+     * 设置请求数据。
+     *
      * @param array<string, mixed> $data
      *
      * @return $this
@@ -104,20 +123,30 @@ trait HttpTrait
         return $this;
     }
 
+    /**
+     * 设置请求头。
+     *
+     * @param string|string[] $values
+     *
+     * @return $this
+     */
+    public function setHeader(string $key, $values, bool $replace = true): self
+    {
+        $this->headers->set($key, $values, $replace);
+
+        return $this;
+    }
 
     /**
-     * @param array<string, mixed>|string $key
-     * @param mixed $value
+     * 批量添加请求头。
+     *
+     * @param array<string, string|string[]> $headers
      */
-    public function addHeaders($key, $value = null): self
+    public function addHeaders(array $headers): self
     {
-        if (null === $value) {
-            $this->headers->add($key);
-
-            return $this;
+        foreach ($headers as $headerName => $header) {
+            $this->setHeader($headerName, $header);
         }
-
-        $this->headers->set($key, $value);
 
         return $this;
     }
@@ -128,7 +157,7 @@ trait HttpTrait
     }
 
     /**
-     * @param array<string, mixed> $headers
+     * @param array<string, string|string[]> $headers
      *
      * @return $this
      */
@@ -142,6 +171,8 @@ trait HttpTrait
     /**
      * @deprecated 0.1.3 addQuery(), setQuery(), getQuery()
      * @removed 1.0
+     *
+     * @param array<string, mixed> $query
      *
      * @return $this|Parameters
      */
@@ -166,6 +197,8 @@ trait HttpTrait
      * @deprecated 0.1.3 addData(), setData(), getData()
      * @removed 1.0
      *
+     * @param array<string, mixed> $post
+     *
      * @return $this|Parameters
      */
     public function data(array $post = null, bool $replace = false)
@@ -186,12 +219,12 @@ trait HttpTrait
     }
 
     /**
-     * @param false $replace
-     *
-     * @return $this|Headers
-     *@deprecated 0.1.3 addHeaders(), setHeaders(), getHeaders()
+     * @deprecated 0.1.3 addHeaders(), setHeaders(), getHeaders()
      * @removed 1.0
      *
+     * @param null|array<string, string|string[]> $headers
+     *
+     * @return $this|Headers
      */
     public function headers(array $headers = null, bool $replace = false)
     {
@@ -275,7 +308,7 @@ trait HttpTrait
     }
 
     /**
-     * @param array|string $proxy
+     * @param array<string, string|string[]>|string $proxy
      *
      * @return $this
      */
@@ -287,7 +320,8 @@ trait HttpTrait
     }
 
     /**
-     * @param mixed $verify
+     * @param bool|string $verify 是否启用证书访问接口。
+     *                            设置成字符串启用验证，并使用该字符串作为自定义证书CA包的路径。
      *
      * @return $this
      */
@@ -299,6 +333,8 @@ trait HttpTrait
     }
 
     /**
+     * @param array<string, mixed> $options
+     *
      * @return $this
      */
     public function options(array $options): self

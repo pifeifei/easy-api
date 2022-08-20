@@ -9,7 +9,6 @@ use function implode;
 use Pff\EasyApi\API;
 
 use const PHP_OS;
-use const PHP_VERSION;
 
 class UserAgent
 {
@@ -137,7 +136,7 @@ class UserAgent
         if ([] === self::$userAgent) {
             self::$userAgent = [
                 'Client' => API::VERSION,
-                'PHP' => PHP_VERSION,
+                'PHP' => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION,
             ];
         }
     }

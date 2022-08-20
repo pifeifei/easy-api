@@ -9,19 +9,10 @@ use Psr\Http\Message\UriInterface;
 
 class Request
 {
-    /**
-     * @var ConfigInterface
-     */
     protected ConfigInterface $config;
 
-    /**
-     * @var string
-     */
     protected string $method;
 
-    /**
-     * @var UriInterface
-     */
     protected UriInterface $uri;
 
     /**

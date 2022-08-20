@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pff\EasyApiTest\Feature\Clients;
+namespace Pff\EasyApiTest\Feature\stubs;
 
+use Doctrine\Common\Annotations\Annotation\IgnoreAnnotation;
 use Pff\EasyApi\API;
 use Pff\EasyApi\Cache\Cache;
 use Pff\EasyApi\Clients\Client;
@@ -13,11 +14,18 @@ use Pff\EasyApi\Format\WechatFormatter;
 use Pff\EasyApi\Result;
 use Pff\EasyApi\Signature\MD5Signature;
 
+/**
+ * @IgnoreAnnotation
+ * @codeCoverageIgnore
+ */
 class WechatClient
 {
-    protected $client;
+    protected Client $client;
 
-    protected $defaultRequest = [
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $defaultRequest = [
         'uri' => 'https://api.weixin.qq.com/cgi-bin/',
         'method' => 'POST', // 默认请求方式，可选：GET, POST, JSON
         'sign' => [
@@ -34,7 +42,10 @@ class WechatClient
     ];
 
     /**
-     * @param ?array $request
+     * @param array<string, mixed> $config
+     * @param ?array<string, mixed> $request
+     *
+     * @throws ClientException
      */
     public function __construct(array $config, array $request = null)
     {
@@ -47,25 +58,23 @@ class WechatClient
         $this->client->proxy('http://127.0.0.1:8888');
     }
 
-    public function client()
+    public function client(): Client
     {
         return $this->client;
     }
 
     /**
-     * 站点绑定.
+     * 站点绑定。
      */
     public function bind(): void
     {
-        echo $_GET['echostr'] ?? '';
+        echo $_GET['echostr'] ?? ''; // @phpstan-ignore-line
     }
 
     /**
-     * @param mixed $refresh
-     *
-     * @return array
+     * @return array<string>
      */
-    public function accessToken($refresh = false)
+    public function accessToken(bool $refresh = false): array
     {
         return ['TODO: format可以从获取token'];
     }
@@ -73,57 +82,44 @@ class WechatClient
     /**
      * 获取用户列表.
      *
-     * @param null|string $nextOpenid
-     *
      * @throws ClientException
      * @throws ServerException
-     *
-     * @return Result
      */
-    public function users($nextOpenid = null)
+    public function users(string $nextOpenid = null): Result
     {
         return $this->client()
-            ->method(API::METHOD_GET)
+            ->setMethod(API::METHOD_GET)
             ->path('user/get')
-//            ->data(['next_openid' => $nextOpenid])
             ->request()
         ;
     }
 
     /**
-     * @param $openid
-     * @param $remark
+     * 更新粉丝备注。
      *
      * @throws ClientException
      * @throws ServerException
-     *
-     * @return Result
      */
-    public function userInfoUpdateRemark($openid, $remark)
+    public function userInfoUpdateRemark(string $openid, string $remark): Result
     {
         return $this->client()
-            ->method(API::METHOD_JSON)
+            ->setMethod(API::METHOD_JSON)
             ->path('user/info/updateremark')
-            ->data(['openid' => $openid, 'remark' => $remark])
+            ->setData(['openid' => $openid, 'remark' => $remark])
             ->request()
         ;
     }
 
     /**
-     * @param $openid
-     * @param null $lang
-     *
      * @throws ClientException
      * @throws ServerException
-     *
-     * @return Result
      */
-    public function userInfo($openid, $lang = null)
+    public function userInfo(string $openid, string $lang = null): Result
     {
         return $this->client()
-            ->method(API::METHOD_GET)
+            ->setMethod(API::METHOD_GET)
             ->path('user/info')
-            ->query(compact('openid', 'lang'))
+            ->setQuery(compact('openid', 'lang'))
             ->request()
         ;
     }

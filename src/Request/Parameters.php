@@ -47,6 +47,7 @@ class Parameters implements IteratorAggregate, Countable
     public function clean(): self
     {
         $this->parameters = [];
+
         return $this;
     }
 

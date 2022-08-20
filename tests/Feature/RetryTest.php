@@ -30,6 +30,10 @@ final class RetryTest extends TestCase
         }
     }
 
+    /**
+     * @throws ClientException
+     * @throws ServerException
+     */
     public function testRetryWithStrings(): void
     {
         $config = $this->getConfig();
@@ -41,6 +45,7 @@ final class RetryTest extends TestCase
         $client->mockResponse(401, $headers, '{"code":401,"message":"error: file not find."}');
         $client->mockResponse(200, $headers, '{"code":200}');
 
+        $client->retryDelay(function () {return 0; });
         $client->retryByClient(10, ['client error', 'not find']);
         $response = $client->request();
 
@@ -48,6 +53,10 @@ final class RetryTest extends TestCase
         static::assertSame(200, $response->getStatusCode());
     }
 
+    /**
+     * @throws ClientException
+     * @throws ServerException
+     */
     public function testRetryWithStatusCode(): void
     {
         $config = $this->getConfig();
@@ -59,6 +68,7 @@ final class RetryTest extends TestCase
         $client->mockResponse(200, [], '{"code":200}');
 
         $client->retryByClient(10, [], [400, 401]);
+        $client->retryDelay(function () {return 0; });
         $response = $client->request();
         static::assertSame(['code' => 200], $response->all());
         static::assertSame(200, $response->getStatusCode());

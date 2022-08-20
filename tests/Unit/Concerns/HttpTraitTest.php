@@ -134,7 +134,7 @@ final class HttpTraitTest extends TestCase
         static::assertInstanceOf(Client::class, $client->addHeaders(['bar' => 'bar']));
         static::assertSame(['foo' => ['foo'], 'bar' => ['bar']], $headers->all());
 
-        static::assertInstanceOf(Client::class, $client->addHeaders('bar', 'foo'));
+        static::assertInstanceOf(Client::class, $client->setHeader('bar', 'foo'));
         static::assertSame(['foo' => ['foo'], 'bar' => ['foo']], $headers->all());
 
         static::assertInstanceOf(Client::class, $client->setHeaders(['foo' => 'foo']));
