@@ -196,17 +196,14 @@ class HeaderUtils
     /**
      * Like parse_str(), but preserves dots in variable names.
      *
-     * @ return array<int|string, array<string, mixed>|string>
+     * @param non-empty-string $separator
      *
      * @return array<int|string, mixed>
      */
     public static function parseQuery(string $query, bool $ignoreBrackets = false, string $separator = '&'): array
     {
         $q = [];
-
-        if (false === $queries = explode($separator, $query)) {
-            return [];
-        }
+        $queries = explode($separator, $query);
 
         foreach ($queries as $v) {
             if (false !== $i = strpos($v, "\0")) {

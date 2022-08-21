@@ -37,11 +37,17 @@ final class CacheTest extends TestCase
     public function testException(): void
     {
         $this->expectException(ClientException::class);
-        $this->expectExceptionMessage('API cache error');
+        $this->expectExceptionMessage('cache has');
         $this->expectExceptionCode(0);
 
-        $cache = new Cache();
-        $cache->has('xxx/s');
+        $cache = $this->createMock(Cache::class);
+        $cache->expects(static::once())
+            ->method('has')
+            ->with('xxx')
+            ->willThrowException(new ClientException('cache has exception.'))
+        ;
+
+        $cache->has('xxx');
     }
 
     public function testInstance(): void

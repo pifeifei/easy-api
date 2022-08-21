@@ -32,7 +32,7 @@ jobs:
         run: php -v
 
       - name: Run PHPStan
-        run: compsoer phpstan
+        run: composer phpstan
 
       - name: Run php cs fixer
         run: composer check-style
