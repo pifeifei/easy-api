@@ -9,6 +9,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class SignatureConfigTest extends TestCase
@@ -24,13 +25,13 @@ final class SignatureConfigTest extends TestCase
             ],
         ];
         $s = SignConfig::create($config);
-        static::assertInstanceOf(SignConfig::class, $s);
-        static::assertSame($config['key'], $s->getKey());
-        static::assertSame($config['position'], $s->getPosition());
-        static::assertSame($config['appends'], $s->getAppends());
+        $this->assertInstanceOf(SignConfig::class, $s);
+        $this->assertSame($config['key'], $s->getKey());
+        $this->assertSame($config['position'], $s->getPosition());
+        $this->assertSame($config['appends'], $s->getAppends());
         $s->setKey($k = 'abc def');
-        static::assertSame($k, $s->getKey());
+        $this->assertSame($k, $s->getKey());
         $s->setPosition($k = 'abc def');
-        static::assertSame($k, $s->getPosition());
+        $this->assertSame($k, $s->getPosition());
     }
 }

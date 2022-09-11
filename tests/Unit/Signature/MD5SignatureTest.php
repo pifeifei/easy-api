@@ -10,6 +10,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class MD5SignatureTest extends TestCase
@@ -25,12 +26,12 @@ final class MD5SignatureTest extends TestCase
         $signature = new MD5Signature();
 
         // Assert
-        static::assertInstanceOf(SignatureInterface::class, $signature);
-        static::assertInstanceOf(MD5Signature::class, $signature);
-        static::assertSame('MD5', $signature->getMethod());
-        static::assertSame('1.0', $signature->getVersion());
-        static::assertSame('', $signature->getType());
-        static::assertSame(
+        $this->assertInstanceOf(SignatureInterface::class, $signature);
+        $this->assertInstanceOf(MD5Signature::class, $signature);
+        $this->assertSame('MD5', $signature->getMethod());
+        $this->assertSame('1.0', $signature->getVersion());
+        $this->assertSame('', $signature->getType());
+        $this->assertSame(
             $expected,
             $signature->sign($string, $accessKeySecret)
         );

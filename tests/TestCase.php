@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 abstract class TestCase extends BaseTestCase

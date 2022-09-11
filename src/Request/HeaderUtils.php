@@ -225,7 +225,7 @@ class HeaderUtils
             $k = ltrim($k, ' ');
 
             if ($ignoreBrackets) {
-                $q[$k][] = urldecode(substr($v, 1));
+                $q[$k][] = urldecode(substr($v, 1)); // @phpstan-ignore-line $v is always string
 
                 continue;
             }
@@ -241,6 +241,7 @@ class HeaderUtils
             return $q;
         }
 
+        // @phpstan-ignore-next-line $ignoreBrackets 已经返回
         parse_str(implode('&', $q), $q);
 
         $query = [];

@@ -13,6 +13,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class RequestTest extends TestCase
@@ -33,10 +34,10 @@ final class RequestTest extends TestCase
             ],
         ]);
         $request = new Request('GET', $uri, $options, $config);
-        static::assertSame('GET', $request->getMethod());
-        static::assertSame(API::RESPONSE_FORMAT_JSON, $request->format());
-        static::assertInstanceOf(Uri::class, $request->getUri());
-        static::assertInstanceOf(ConfigInterface::class, $request->getConfig());
-        static::assertSame($options, $request->getOptions());
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertSame(API::RESPONSE_FORMAT_JSON, $request->format());
+        $this->assertInstanceOf(Uri::class, $request->getUri());
+        $this->assertInstanceOf(ConfigInterface::class, $request->getConfig());
+        $this->assertSame($options, $request->getOptions());
     }
 }

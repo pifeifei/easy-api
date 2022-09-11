@@ -10,6 +10,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class ConfigTest extends TestCase
@@ -22,14 +23,14 @@ final class ConfigTest extends TestCase
         ];
         $config = Config::create($configure);
 
-        static::assertInstanceOf(ConfigInterface::class, $config);
-        static::assertSame($configure['access_key'], $config->get('access_key'));
-        static::assertInstanceOf(ConfigInterface::class, $config->set('test', 123));
-        static::assertSame(123, $config->get('test'));
-        static::assertInstanceOf(ConfigInterface::class, $config->remove('test'));
-        static::assertNull($config->get('test'));
-        static::assertSame($configure, $config->all());
+        $this->assertInstanceOf(ConfigInterface::class, $config);
+        $this->assertSame($configure['access_key'], $config->get('access_key'));
+        $this->assertInstanceOf(ConfigInterface::class, $config->set('test', 123));
+        $this->assertSame(123, $config->get('test'));
+        $this->assertInstanceOf(ConfigInterface::class, $config->remove('test'));
+        $this->assertNull($config->get('test'));
+        $this->assertSame($configure, $config->all());
         $config->set('a.b.c', 1234);
-        static::assertSame(1234, $config->get('a.b.c'));
+        $this->assertSame(1234, $config->get('a.b.c'));
     }
 }

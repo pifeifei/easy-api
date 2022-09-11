@@ -11,6 +11,7 @@ use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class CacheTest extends TestCase
@@ -18,20 +19,20 @@ final class CacheTest extends TestCase
     public function testCache(): void
     {
         $cache = new Cache();
-        static::assertTrue($cache->set('foo', 'foo'));
-        static::assertSame('foo', $cache->get('foo'));
-        static::assertTrue($cache->has('foo'));
-        static::assertNull($cache->get('none'));
-        static::assertFalse($cache->has('none'));
+        $this->assertTrue($cache->set('foo', 'foo'));
+        $this->assertSame('foo', $cache->get('foo'));
+        $this->assertTrue($cache->has('foo'));
+        $this->assertNull($cache->get('none'));
+        $this->assertFalse($cache->has('none'));
     }
 
     public function testCacheClear(): void
     {
         $cache = new Cache();
         $cache->set('foo', 'bb');
-        static::assertSame('bb', $cache->get('foo'));
+        $this->assertSame('bb', $cache->get('foo'));
         $cache->clear();
-        static::assertNull($cache->get('foo'));
+        $this->assertNull($cache->get('foo'));
     }
 
     public function testException(): void
@@ -41,7 +42,7 @@ final class CacheTest extends TestCase
         $this->expectExceptionCode(0);
 
         $cache = $this->createMock(Cache::class);
-        $cache->expects(static::once())
+        $cache->expects($this->once())
             ->method('has')
             ->with('xxx')
             ->willThrowException(new ClientException('cache has exception.'))
@@ -53,7 +54,7 @@ final class CacheTest extends TestCase
     public function testInstance(): void
     {
         $cache = new Cache();
-        static::assertInstanceOf(PsrCacheInterface::class, $cache->getDefaultCache());
-        static::assertInstanceOf(PsrCacheInterface::class, $cache->getCache());
+        $this->assertInstanceOf(PsrCacheInterface::class, $cache->getDefaultCache());
+        $this->assertInstanceOf(PsrCacheInterface::class, $cache->getCache());
     }
 }

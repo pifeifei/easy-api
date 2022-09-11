@@ -13,6 +13,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class HttpTraitTest extends TestCase
@@ -25,7 +26,7 @@ final class HttpTraitTest extends TestCase
         $config = $this->getConfig();
         $client = new Client($config);
 
-        static::assertSame($this->defaultOptions(), $client->getOptions());
+        $this->assertSame($this->defaultOptions(), $client->getOptions());
     }
 
     /**
@@ -38,37 +39,37 @@ final class HttpTraitTest extends TestCase
 
         $query = $client->getQuery();
 
-        static::assertInstanceOf(Parameters::class, $query);
-        static::assertEmpty($query->all());
+        $this->assertInstanceOf(Parameters::class, $query);
+        $this->assertEmpty($query->all());
 
-        static::assertInstanceOf(Client::class, $client->addQuery(['foo' => 'foo']));
-        static::assertSame(['foo' => 'foo'], $query->all());
+        $this->assertInstanceOf(Client::class, $client->addQuery(['foo' => 'foo']));
+        $this->assertSame(['foo' => 'foo'], $query->all());
 
-        static::assertInstanceOf(Client::class, $client->addQuery(['bar' => 'bar']));
-        static::assertSame(['foo' => 'foo', 'bar' => 'bar'], $query->all());
+        $this->assertInstanceOf(Client::class, $client->addQuery(['bar' => 'bar']));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'bar'], $query->all());
 
-        static::assertInstanceOf(Client::class, $client->addQuery('bar', 'foo'));
-        static::assertSame(['foo' => 'foo', 'bar' => 'foo'], $query->all());
+        $this->assertInstanceOf(Client::class, $client->addQuery('bar', 'foo'));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'foo'], $query->all());
 
-        static::assertInstanceOf(Client::class, $client->setQuery(['foo' => 'foo']));
-        static::assertSame(['foo' => 'foo'], $query->all());
+        $this->assertInstanceOf(Client::class, $client->setQuery(['foo' => 'foo']));
+        $this->assertSame(['foo' => 'foo'], $query->all());
         $query->clean();
 
         // delete start
         $query = $client->query();
-        static::assertEmpty($query->all()); // @phpstan-ignore-line
+        $this->assertEmpty($query->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->query(['foo' => 'foo']));
-        static::assertSame(['foo' => 'foo'], $query->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->query(['foo' => 'foo']));
+        $this->assertSame(['foo' => 'foo'], $query->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->query(['bar' => 'bar']));
-        static::assertSame(['foo' => 'foo', 'bar' => 'bar'], $query->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->query(['bar' => 'bar']));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'bar'], $query->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->query(['bar' => 'foo']));
-        static::assertSame(['foo' => 'foo', 'bar' => 'foo'], $query->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->query(['bar' => 'foo']));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'foo'], $query->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->query(['foo' => 'foo'], true));
-        static::assertSame(['foo' => 'foo'], $query->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->query(['foo' => 'foo'], true));
+        $this->assertSame(['foo' => 'foo'], $query->all()); // @phpstan-ignore-line
         // delete end
     }
 
@@ -82,37 +83,37 @@ final class HttpTraitTest extends TestCase
 
         $data = $client->getData();
 
-        static::assertInstanceOf(Parameters::class, $data);
-        static::assertEmpty($data->all());
+        $this->assertInstanceOf(Parameters::class, $data);
+        $this->assertEmpty($data->all());
 
-        static::assertInstanceOf(Client::class, $client->addData(['foo' => 'foo']));
-        static::assertSame(['foo' => 'foo'], $data->all());
+        $this->assertInstanceOf(Client::class, $client->addData(['foo' => 'foo']));
+        $this->assertSame(['foo' => 'foo'], $data->all());
 
-        static::assertInstanceOf(Client::class, $client->addData(['bar' => 'bar']));
-        static::assertSame(['foo' => 'foo', 'bar' => 'bar'], $data->all());
+        $this->assertInstanceOf(Client::class, $client->addData(['bar' => 'bar']));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'bar'], $data->all());
 
-        static::assertInstanceOf(Client::class, $client->addData('bar', 'foo'));
-        static::assertSame(['foo' => 'foo', 'bar' => 'foo'], $data->all());
+        $this->assertInstanceOf(Client::class, $client->addData('bar', 'foo'));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'foo'], $data->all());
 
-        static::assertInstanceOf(Client::class, $client->setData(['foo' => 'foo']));
-        static::assertSame(['foo' => 'foo'], $data->all());
+        $this->assertInstanceOf(Client::class, $client->setData(['foo' => 'foo']));
+        $this->assertSame(['foo' => 'foo'], $data->all());
         $data->clean();
 
         // delete start
         $data = $client->data();
-        static::assertEmpty($data->all()); // @phpstan-ignore-line
+        $this->assertEmpty($data->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->data(['foo' => 'foo']));
-        static::assertSame(['foo' => 'foo'], $data->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->data(['foo' => 'foo']));
+        $this->assertSame(['foo' => 'foo'], $data->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->data(['bar' => 'bar']));
-        static::assertSame(['foo' => 'foo', 'bar' => 'bar'], $data->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->data(['bar' => 'bar']));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'bar'], $data->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->data(['bar' => 'foo']));
-        static::assertSame(['foo' => 'foo', 'bar' => 'foo'], $data->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->data(['bar' => 'foo']));
+        $this->assertSame(['foo' => 'foo', 'bar' => 'foo'], $data->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->data(['foo' => 'foo'], true));
-        static::assertSame(['foo' => 'foo'], $data->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->data(['foo' => 'foo'], true));
+        $this->assertSame(['foo' => 'foo'], $data->all()); // @phpstan-ignore-line
         // delete end
     }
 
@@ -125,37 +126,37 @@ final class HttpTraitTest extends TestCase
         $client = new Client($config);
         $headers = $client->getHeaders();
 
-        static::assertInstanceOf(Headers::class, $headers);
-        static::assertEmpty($headers->all());
+        $this->assertInstanceOf(Headers::class, $headers);
+        $this->assertEmpty($headers->all());
 
-        static::assertInstanceOf(Client::class, $client->addHeaders(['foo' => 'foo']));
-        static::assertSame(['foo' => ['foo']], $headers->all());
+        $this->assertInstanceOf(Client::class, $client->addHeaders(['foo' => 'foo']));
+        $this->assertSame(['foo' => ['foo']], $headers->all());
 
-        static::assertInstanceOf(Client::class, $client->addHeaders(['bar' => 'bar']));
-        static::assertSame(['foo' => ['foo'], 'bar' => ['bar']], $headers->all());
+        $this->assertInstanceOf(Client::class, $client->addHeaders(['bar' => 'bar']));
+        $this->assertSame(['foo' => ['foo'], 'bar' => ['bar']], $headers->all());
 
-        static::assertInstanceOf(Client::class, $client->setHeader('bar', 'foo'));
-        static::assertSame(['foo' => ['foo'], 'bar' => ['foo']], $headers->all());
+        $this->assertInstanceOf(Client::class, $client->setHeader('bar', 'foo'));
+        $this->assertSame(['foo' => ['foo'], 'bar' => ['foo']], $headers->all());
 
-        static::assertInstanceOf(Client::class, $client->setHeaders(['foo' => 'foo']));
-        static::assertSame(['foo' => ['foo']], $headers->all());
+        $this->assertInstanceOf(Client::class, $client->setHeaders(['foo' => 'foo']));
+        $this->assertSame(['foo' => ['foo']], $headers->all());
         $headers->remove('foo');
 
         // delete start
         $headers = $client->headers();
-        static::assertEmpty($headers->all()); // @phpstan-ignore-line
+        $this->assertEmpty($headers->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->headers(['foo' => 'foo']));
-        static::assertSame(['foo' => ['foo']], $headers->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->headers(['foo' => 'foo']));
+        $this->assertSame(['foo' => ['foo']], $headers->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->headers(['bar' => 'bar']));
-        static::assertSame(['foo' => ['foo'], 'bar' => ['bar']], $headers->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->headers(['bar' => 'bar']));
+        $this->assertSame(['foo' => ['foo'], 'bar' => ['bar']], $headers->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->headers(['bar' => 'foo']));
-        static::assertSame(['foo' => ['foo'], 'bar' => ['foo']], $headers->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->headers(['bar' => 'foo']));
+        $this->assertSame(['foo' => ['foo'], 'bar' => ['foo']], $headers->all()); // @phpstan-ignore-line
 
-        static::assertInstanceOf(Client::class, $client->headers(['foo' => 'foo'], true)); // @phpstan-ignore-line
-        static::assertSame(['foo' => ['foo']], $headers->all()); // @phpstan-ignore-line
+        $this->assertInstanceOf(Client::class, $client->headers(['foo' => 'foo'], true)); // @phpstan-ignore-line
+        $this->assertSame(['foo' => ['foo']], $headers->all()); // @phpstan-ignore-line
         // delete end
     }
 
@@ -167,17 +168,17 @@ final class HttpTraitTest extends TestCase
         $config = $this->getConfig();
         $client = new Client($config);
 
-        static::assertInstanceOf(Client::class, $client->timeout(20));
-        static::assertSame(20.0, $client->getOptions()[RequestOptions::TIMEOUT]);
+        $this->assertInstanceOf(Client::class, $client->timeout(20));
+        $this->assertSame(20.0, $client->getOptions()[RequestOptions::TIMEOUT]);
 
-        static::assertInstanceOf(Client::class, $client->timeoutMilliseconds(3500));
-        static::assertSame(3.5, $client->getOptions()[RequestOptions::TIMEOUT]);
+        $this->assertInstanceOf(Client::class, $client->timeoutMilliseconds(3500));
+        $this->assertSame(3.5, $client->getOptions()[RequestOptions::TIMEOUT]);
 
-        static::assertInstanceOf(Client::class, $client->connectTimeout(15));
-        static::assertSame(15.0, $client->getOptions()[RequestOptions::CONNECT_TIMEOUT]);
+        $this->assertInstanceOf(Client::class, $client->connectTimeout(15));
+        $this->assertSame(15.0, $client->getOptions()[RequestOptions::CONNECT_TIMEOUT]);
 
-        static::assertInstanceOf(Client::class, $client->connectTimeoutMilliseconds(500));
-        static::assertSame(0.5, $client->getOptions()[RequestOptions::CONNECT_TIMEOUT]);
+        $this->assertInstanceOf(Client::class, $client->connectTimeoutMilliseconds(500));
+        $this->assertSame(0.5, $client->getOptions()[RequestOptions::CONNECT_TIMEOUT]);
     }
 
     /**

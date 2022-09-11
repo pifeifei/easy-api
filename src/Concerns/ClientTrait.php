@@ -78,6 +78,7 @@ trait ClientTrait
      * @return $this|string
      *
      * @deprecated 0.1.4 use getMethod() and setMethod()
+     *
      * @removed 1.0
      */
     public function method(string $method = null)

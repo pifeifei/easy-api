@@ -163,6 +163,7 @@ trait DataTrait
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return Arr::get($this->collection, $key);

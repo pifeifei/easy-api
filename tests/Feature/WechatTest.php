@@ -13,6 +13,7 @@ use Pff\EasyApiTest\TestCase;
  * @group wechat
  *
  * @internal
+ *
  * @coversNothing
  */
 final class WechatTest extends TestCase
@@ -53,12 +54,12 @@ final class WechatTest extends TestCase
         $config = $this->getConfig();
         $client = new WechatClient($config);
         $response = $client->users();
-        static::assertTrue($response->has('total'));
+        $this->assertTrue($response->has('total'));
 
         if ($response->has('data.openid')) {
             $result = $client->userInfo($response->get('data.openid')[0]); // @phpstan-ignore-line
-            static::assertTrue($result->has('openid'));
-            static::assertSame($result->get('openid'), $response->get('data.openid')[0]); // @phpstan-ignore-line
+            $this->assertTrue($result->has('openid'));
+            $this->assertSame($result->get('openid'), $response->get('data.openid')[0]); // @phpstan-ignore-line
         }
     }
 }

@@ -9,6 +9,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class ParametersTest extends TestCase
@@ -24,19 +25,19 @@ final class ParametersTest extends TestCase
             ],
         ];
         $p = new Parameters($arr);
-        static::assertSame(array_keys($arr), $p->keys());
-        static::assertSame(3, $p->count());
+        $this->assertSame(array_keys($arr), $p->keys());
+        $this->assertSame(3, $p->count());
 
-        static::assertSame(123, $p->get('abc'));
+        $this->assertSame(123, $p->get('abc'));
 
-        static::assertSame('def', $p->get('none', 'def'));
-        static::assertFalse($p->has('none'));
+        $this->assertSame('def', $p->get('none', 'def'));
+        $this->assertFalse($p->has('none'));
 
-        static::assertInstanceOf(Parameters::class, $p->set('none', $v = 'def string'));
-        static::assertSame($v, $p->get('none', 'def'));
-        static::assertTrue($p->has('none'));
-        static::assertInstanceOf(Parameters::class, $p->remove('none'));
-        static::assertFalse($p->has('none'));
+        $this->assertInstanceOf(Parameters::class, $p->set('none', $v = 'def string'));
+        $this->assertSame($v, $p->get('none', 'def'));
+        $this->assertTrue($p->has('none'));
+        $this->assertInstanceOf(Parameters::class, $p->remove('none'));
+        $this->assertFalse($p->has('none'));
     }
 
     public function testParametersAdd(): void
@@ -44,7 +45,7 @@ final class ParametersTest extends TestCase
         $arr = ['foo' => 'foo'];
         $p = new Parameters($arr);
         $p->add(['bar' => 'bar', 'foobar' => 'foobar']); // @phpstan-ignore-line
-        static::assertTrue($p->has('bar'));
+        $this->assertTrue($p->has('bar'));
     }
 
     public function testParametersCount(): void
@@ -52,8 +53,8 @@ final class ParametersTest extends TestCase
         $arr = [];
         $p = new Parameters($arr);
 
-        static::assertSame(0, $p->count());
+        $this->assertSame(0, $p->count());
         $p->replace(['bar' => 'bar']);  // @phpstan-ignore-line
-        static::assertSame(1, $p->count());
+        $this->assertSame(1, $p->count());
     }
 }

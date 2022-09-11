@@ -9,6 +9,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class UserAgentTest extends TestCase

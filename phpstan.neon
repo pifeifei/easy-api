@@ -3,7 +3,6 @@ includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
-    # phpVersion: 70400
     level: max
     bootstrapFiles:
         - vendor/autoload.php

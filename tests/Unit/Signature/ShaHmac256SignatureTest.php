@@ -10,6 +10,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class ShaHmac256SignatureTest extends TestCase
@@ -25,11 +26,11 @@ final class ShaHmac256SignatureTest extends TestCase
         $signature = new ShaHmac256Signature();
 
         // Assert
-        static::assertInstanceOf(SignatureInterface::class, $signature);
-        static::assertInstanceOf(ShaHmac256Signature::class, $signature);
-        static::assertSame('HMAC-SHA256', $signature->getMethod());
-        static::assertSame('1.0', $signature->getVersion());
-        static::assertSame('', $signature->getType());
+        $this->assertInstanceOf(SignatureInterface::class, $signature);
+        $this->assertInstanceOf(ShaHmac256Signature::class, $signature);
+        $this->assertSame('HMAC-SHA256', $signature->getMethod());
+        $this->assertSame('1.0', $signature->getVersion());
+        $this->assertSame('', $signature->getType());
 //        static::assertEquals(
 //            $expected,
 //            $signature->sign($string, $accessKeySecret)

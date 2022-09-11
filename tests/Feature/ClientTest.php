@@ -13,6 +13,7 @@ use Psr\Http\Message\RequestInterface;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class ClientTest extends TestCase
@@ -27,11 +28,11 @@ final class ClientTest extends TestCase
         $client = new Client($config);
         $client->mockResponse(200, [], 'testClientSimple');
         $result = $client->request();
-        static::assertInstanceOf(Result::class, $result);
-        static::assertSame('testClientSimple', $result->getBody()->__toString());
-        static::assertSame(200, $result->getStatusCode());
-        static::assertSame('OK', $result->getReasonPhrase());
-        static::assertInstanceOf(\Pff\EasyApi\Request\Request::class, $result->getRequest());
+        $this->assertInstanceOf(Result::class, $result);
+        $this->assertSame('testClientSimple', $result->getBody()->__toString());
+        $this->assertSame(200, $result->getStatusCode());
+        $this->assertSame('OK', $result->getReasonPhrase());
+        $this->assertInstanceOf(\Pff\EasyApi\Request\Request::class, $result->getRequest());
         $client->forgetHistory();
         $client->cancelMock();
     }
@@ -46,25 +47,25 @@ final class ClientTest extends TestCase
         $client = new Client($config);
         $client->cancelMock();
 
-        static::assertFalse($client->isRememberHistory());
+        $this->assertFalse($client->isRememberHistory());
         $client->rememberHistory();
-        static::assertTrue($client->isRememberHistory());
+        $this->assertTrue($client->isRememberHistory());
 
-        static::assertSame(0, $client->countHistory());
+        $this->assertSame(0, $client->countHistory());
 
         $client->mockResponse(200, [], 'first');
         $client->mockResponse(200, [], 'second');
 
         $client->request();
         $client->request();
-        static::assertSame(2, $client->countHistory());
+        $this->assertSame(2, $client->countHistory());
 
         /** @var array<array{request: RequestInterface, response: Result}> $histories */
         $histories = $client->getHistory();
-        static::assertIsArray($histories);
+        $this->assertIsArray($histories);
 
-        static::assertSame('first', $histories[0]['response']->getBody()->__toString());
-        static::assertSame('second', $histories[1]['response']->getBody()->__toString());
+        $this->assertSame('first', $histories[0]['response']->getBody()->__toString());
+        $this->assertSame('second', $histories[1]['response']->getBody()->__toString());
         $client->forgetHistory();
     }
 }

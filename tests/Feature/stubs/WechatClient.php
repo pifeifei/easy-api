@@ -16,6 +16,7 @@ use Pff\EasyApi\Signature\MD5Signature;
 
 /**
  * @IgnoreAnnotation
+ *
  * @codeCoverageIgnore
  */
 class WechatClient

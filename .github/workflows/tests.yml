@@ -28,11 +28,11 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           coverage: none
 
-      - name: Install Composer dependencies
-        run: composer update --prefer-dist --no-interaction --no-suggest --prefer-${{ matrix.perfer }}
-
       - name: PHP version
         run: php -v
+
+      - name: Install Composer dependencies
+        run: composer update --prefer-dist --no-interaction --no-suggest --prefer-${{ matrix.perfer }}
 
       - name: Run PHPUnit
         run: ./vendor/bin/phpunit

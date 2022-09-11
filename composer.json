@@ -15,18 +15,18 @@
         "ext-simplexml": "*",
         "composer/ca-bundle": "^1.2",
         "guzzlehttp/guzzle": "^6.5|^7.3",
-        "illuminate/support": "^6.0|^7.0|^8.0",
-        "symfony/cache": "^4.3|^5.0",
+        "illuminate/support": "^6.0|^7.0|^8.0|^9.0",
+        "symfony/cache": "^4.3|^5.0|^6.0",
         "symfony/polyfill": "^1.26",
-        "symfony/serializer": "^4.3|^5.0"
+        "symfony/serializer": "^4.3|^5.0|^6.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.9",
         "phpstan/phpstan": "^1.8",
         "phpstan/phpstan-phpunit": "^1.1",
         "phpunit/phpunit": "^8.5|^9.5",
-        "symfony/var-dumper": "^3.4|^4.0|^5.0",
-        "vlucas/phpdotenv": "^4.2"
+        "symfony/var-dumper": "^3.4|^4.0|^5.0|^6.0",
+        "vlucas/phpdotenv": "^4.2|^5.0"
     },
     "autoload": {
         "psr-4": {
@@ -50,8 +50,8 @@
     },
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyse",
-        "check-style": "php-cs-fixer fix --using-cache=no --diff --dry-run --ansi",
-        "fix-style": "php-cs-fixer fix --using-cache=no --ansi",
+        "check-style": "vendor/bin/php-cs-fixer fix --using-cache=no --diff --dry-run --ansi",
+        "fix-style": "vendor/bin/php-cs-fixer fix --using-cache=no --ansi",
         "test": "vendor/bin/phpunit --colors=always --testdox"
     }
 }

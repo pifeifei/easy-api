@@ -175,6 +175,7 @@ trait RetryTrait
 
     /**
      * @deprecated 0.1.4 貌似没用了，用中间件重试请求
+     *
      * @removed 1.0
      */
     private function shouldServerRetry(Result $result): bool
@@ -202,6 +203,7 @@ trait RetryTrait
 
     /**
      * @deprecated 0.1.4 貌似没用了，用中间件重试请求
+     *
      * @removed 1.0
      */
     private function shouldClientRetry(Exception $exception): bool

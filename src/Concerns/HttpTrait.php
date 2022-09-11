@@ -170,6 +170,7 @@ trait HttpTrait
 
     /**
      * @deprecated 0.1.3 addQuery(), setQuery(), getQuery()
+     *
      * @removed 1.0
      *
      * @param array<string, mixed> $query
@@ -195,6 +196,7 @@ trait HttpTrait
 
     /**
      * @deprecated 0.1.3 addData(), setData(), getData()
+     *
      * @removed 1.0
      *
      * @param array<string, mixed> $post
@@ -220,6 +222,7 @@ trait HttpTrait
 
     /**
      * @deprecated 0.1.3 addHeaders(), setHeaders(), getHeaders()
+     *
      * @removed 1.0
      *
      * @param null|array<string, string|string[]> $headers

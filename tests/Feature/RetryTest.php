@@ -11,6 +11,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class RetryTest extends TestCase
@@ -26,7 +27,7 @@ final class RetryTest extends TestCase
 
             $client->request();
         } catch (ServerException|ClientException $e) {
-            static::assertGreaterThan(0, $e->getCode());
+            $this->assertGreaterThan(0, $e->getCode());
         }
     }
 
@@ -49,8 +50,8 @@ final class RetryTest extends TestCase
         $client->retryByClient(10, ['client error', 'not find']);
         $response = $client->request();
 
-        static::assertSame(['code' => 200], $response->all());
-        static::assertSame(200, $response->getStatusCode());
+        $this->assertSame(['code' => 200], $response->all());
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     /**
@@ -70,7 +71,7 @@ final class RetryTest extends TestCase
         $client->retryByClient(10, [], [400, 401]);
         $client->retryDelay(function () {return 0; });
         $response = $client->request();
-        static::assertSame(['code' => 200], $response->all());
-        static::assertSame(200, $response->getStatusCode());
+        $this->assertSame(['code' => 200], $response->all());
+        $this->assertSame(200, $response->getStatusCode());
     }
 }

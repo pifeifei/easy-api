@@ -15,6 +15,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class ResultTest extends TestCase
@@ -52,16 +53,16 @@ final class ResultTest extends TestCase
 
     public function testResult(): void
     {
-        static::assertTrue($this->result->isSuccess());
-        static::assertInstanceOf(Request::class, $this->result->getRequest());
-        static::assertSame(200, $this->result->getStatusCode());
-        static::assertSame('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->toJson());
-        static::assertSame('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->getBody()->__toString());
-        static::assertSame('v1', $this->result->get('arr.a1'));
-        static::assertFalse($this->result->isEmpty());
-        static::assertTrue($this->result->has('foo'));
-        static::assertSame(3, $this->result->count());
+        $this->assertTrue($this->result->isSuccess());
+        $this->assertInstanceOf(Request::class, $this->result->getRequest());
+        $this->assertSame(200, $this->result->getStatusCode());
+        $this->assertSame('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->toJson());
+        $this->assertSame('{"foo":"foo","bar":true,"arr":{"a1":"v1","a2":"v2"}}', $this->result->getBody()->__toString());
+        $this->assertSame('v1', $this->result->get('arr.a1'));
+        $this->assertFalse($this->result->isEmpty());
+        $this->assertTrue($this->result->has('foo'));
+        $this->assertSame(3, $this->result->count());
         $this->result->clear(['bar', 'none']);
-        static::assertSame(2, $this->result->count());
+        $this->assertSame(2, $this->result->count());
     }
 }

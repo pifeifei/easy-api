@@ -9,6 +9,7 @@ use Pff\EasyApiTest\Unit\Exception\Contracts\stubs\ContextException;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class ContextTraitTest extends TestCase

@@ -21,6 +21,7 @@ class Headers implements IteratorAggregate, Countable
 
     /**
      * @var array<string, string[]>
+     *
      * @ var array<string, array<string, string>|array<string, true>|string|true>
      */
     protected $headers = [];

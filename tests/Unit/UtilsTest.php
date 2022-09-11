@@ -9,6 +9,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class UtilsTest extends TestCase
@@ -27,7 +28,7 @@ final class UtilsTest extends TestCase
             'foobar' => 'foobar',
             'int' => 123,
         ];
-        static::assertSame($arr2, Utils::boolToString($arr1));
+        $this->assertSame($arr2, Utils::boolToString($arr1));
     }
 
     public function testValueToJsonString(): void
@@ -45,7 +46,7 @@ final class UtilsTest extends TestCase
             'a' => 10,
             'foo' => '{"bar":"bar","abc":123}',
         ];
-        static::assertSame($arr2, Utils::valueToJsonString($arr1));
+        $this->assertSame($arr2, Utils::valueToJsonString($arr1));
     }
 
     public function testKSortRecursive(): void
@@ -71,6 +72,6 @@ final class UtilsTest extends TestCase
                 'bar' => 'bar',
             ],
         ];
-        static::assertSame($arr2, Utils::ksortRecursive($arr1));
+        $this->assertSame($arr2, Utils::ksortRecursive($arr1));
     }
 }

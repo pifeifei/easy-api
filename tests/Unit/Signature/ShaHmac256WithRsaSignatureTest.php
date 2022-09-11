@@ -10,6 +10,7 @@ use Pff\EasyApiTest\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 final class ShaHmac256WithRsaSignatureTest extends TestCase
@@ -25,11 +26,11 @@ final class ShaHmac256WithRsaSignatureTest extends TestCase
         $signature = new ShaHmac256WithRsaSignature();
 
         // Assert
-        static::assertInstanceOf(SignatureInterface::class, $signature);
-        static::assertInstanceOf(ShaHmac256WithRsaSignature::class, $signature);
-        static::assertSame('SHA256withRSA', $signature->getMethod());
-        static::assertSame('1.0', $signature->getVersion());
-        static::assertSame('PRIVATEKEY', $signature->getType());
+        $this->assertInstanceOf(SignatureInterface::class, $signature);
+        $this->assertInstanceOf(ShaHmac256WithRsaSignature::class, $signature);
+        $this->assertSame('SHA256withRSA', $signature->getMethod());
+        $this->assertSame('1.0', $signature->getVersion());
+        $this->assertSame('PRIVATEKEY', $signature->getType());
 //        TODO: 需要一个 openssl 证书
 //        static::assertEquals(
 //            $expected,

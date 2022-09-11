@@ -94,6 +94,7 @@ interface ConfigInterface
      * @param bool|float|int|string $newValue
      *
      * @deprecated 0.1.1 创建实例后配置将为只读。
+     *
      * @removed 1.0
      */
     public function set(string $name, $newValue): self;
