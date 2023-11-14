@@ -176,6 +176,6 @@ abstract class AbstractFormatter implements FormatterInterface
 
         $data = $signConfig->getAppends();
         $data[$signConfig->getKey()] = $this->signBuild();
-        $this->client->setData($data);
+        $this->client->addData($data);
     }
 }
