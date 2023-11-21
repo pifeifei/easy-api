@@ -1,35 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         backupGlobals="false"
-         backupStaticAttributes="false"
-         beStrictAboutTestsThatDoNotTestAnything="false"
-         bootstrap="tests/bootstrap.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnError="false"
-         stopOnFailure="false"
-         verbose="true"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
->
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">./app</directory>
-        </include>
-    </coverage>
-    <testsuites>
-        <testsuite name="Unit">
-            <directory>./tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Feature">
-            <directory>./tests/Feature</directory>
-        </testsuite>
-    </testsuites>
-    <groups>
-        <exclude>
-            <group>wechat</group>
-        </exclude>
-    </groups>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" beStrictAboutTestsThatDoNotTestAnything="false" bootstrap="tests/bootstrap.php" colors="true" processIsolation="false" stopOnError="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
+  <testsuites>
+    <testsuite name="Unit">
+      <directory>tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Feature">
+      <directory>tests/Feature</directory>
+    </testsuite>
+  </testsuites>
+  <groups>
+    <exclude>
+      <group>wechat</group>
+    </exclude>
+  </groups>
+  <source>
+    <include>
+      <directory suffix=".php">app</directory>
+    </include>
+  </source>
 </phpunit>

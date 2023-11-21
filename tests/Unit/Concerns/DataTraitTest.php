@@ -145,7 +145,7 @@ final class DataTraitTest extends TestCase
     }
 
     /**
-     * @dataProvider flattenData
+     * @dataProvider provideFlattenCases
      *
      * @param mixed $arr
      * @param mixed $val
@@ -159,7 +159,7 @@ final class DataTraitTest extends TestCase
     /**
      * @return array<array<int, mixed>>
      */
-    public function flattenData(): array
+    public static function provideFlattenCases(): iterable
     {
         return [
             [
