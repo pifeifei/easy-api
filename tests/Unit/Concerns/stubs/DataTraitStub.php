@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Pff\EasyApiTest\Unit\Concerns\stubs;
 
-use ArrayAccess;
-use Countable;
-use IteratorAggregate;
 use Pff\EasyApi\Concerns\DataTrait;
 
 /**
@@ -14,7 +11,7 @@ use Pff\EasyApi\Concerns\DataTrait;
  * @property string $foo
  * @property string $foobar
  */
-class DataTraitStub implements ArrayAccess, IteratorAggregate, Countable
+class DataTraitStub implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     use DataTrait;
 

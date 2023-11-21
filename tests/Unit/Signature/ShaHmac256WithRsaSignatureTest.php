@@ -31,10 +31,10 @@ final class ShaHmac256WithRsaSignatureTest extends TestCase
         $this->assertSame('SHA256withRSA', $signature->getMethod());
         $this->assertSame('1.0', $signature->getVersion());
         $this->assertSame('PRIVATEKEY', $signature->getType());
-//        TODO: 需要一个 openssl 证书
-//        static::assertEquals(
-//            $expected,
-//            $signature->sign($string, $accessKeySecret)
-//        );
+        // TODO: 需要一个 openssl 证书
+        // static::assertEquals(
+        //     $expected,
+        //     $signature->sign($string, $accessKeySecret)
+        // );
     }
 }

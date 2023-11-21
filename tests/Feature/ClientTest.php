@@ -7,6 +7,7 @@ namespace Pff\EasyApiTest\Feature;
 use Pff\EasyApi\Clients\Client;
 use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Exception\ServerException;
+use Pff\EasyApi\Request\Request;
 use Pff\EasyApi\Result;
 use Pff\EasyApiTest\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -32,7 +33,7 @@ final class ClientTest extends TestCase
         $this->assertSame('testClientSimple', $result->getBody()->__toString());
         $this->assertSame(200, $result->getStatusCode());
         $this->assertSame('OK', $result->getReasonPhrase());
-        $this->assertInstanceOf(\Pff\EasyApi\Request\Request::class, $result->getRequest());
+        $this->assertInstanceOf(Request::class, $result->getRequest());
         $client->forgetHistory();
         $client->cancelMock();
     }

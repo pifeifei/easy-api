@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pff\EasyApi;
 
 use Pff\EasyApi\Exception\InvalidArgumentException;
-use stdClass;
 
 class Utils
 {
@@ -26,12 +25,12 @@ class Utils
             }
 
             if (\is_array($item)) {
-                $item = static::boolToString($item);
+                $item = static::boolToString($item); // @phpstan-ignore-line
 
                 continue;
             }
 
-            if ($item instanceof stdClass) {
+            if ($item instanceof \stdClass) {
                 $item = static::boolToString((array) $item);
             }
         }
@@ -63,7 +62,7 @@ class Utils
         }
 
         if (\is_array($data)) {
-            return $data;
+            return $data; // @phpstan-ignore-line
         }
 
         throw new InvalidArgumentException('json_decode error: must be json string of array.', ['source' => $json]);
@@ -80,9 +79,8 @@ class Utils
      *
      * @see https://www.php.net/manual/en/function.json-encode.php
      */
-    public static function jsonEncode($value, int $options = 0, int $depth = 512): string
+    public static function jsonEncode($value, int $options = JSON_THROW_ON_ERROR, int $depth = 512): string
     {
-        /** @var string $json */
         $json = json_encode($value, $options, $depth);
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new InvalidArgumentException(
@@ -91,7 +89,7 @@ class Utils
             );
         }
 
-        return $json;
+        return (string) $json;
     }
 
     /**
@@ -109,12 +107,12 @@ class Utils
                 continue;
             }
             if (\is_array($item)) {
-                $item = static::ksortRecursive($item);
+                $item = static::ksortRecursive($item); // @phpstan-ignore-line
 
                 continue;
             }
 
-            if ($item instanceof stdClass) {
+            if ($item instanceof \stdClass) {
                 $item = static::ksortRecursive((array) $item);
             }
         }

@@ -4,17 +4,9 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Request;
 
-use ArrayIterator;
-use Countable;
-
-use const DATE_RFC2822;
-
 use DateTime;
-use DateTimeInterface;
-use IteratorAggregate;
-use RuntimeException;
 
-class Headers implements IteratorAggregate, Countable
+class Headers implements \IteratorAggregate, \Countable
 {
     public const UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     public const LOWER = '-abcdefghijklmnopqrstuvwxyz';
@@ -74,8 +66,8 @@ class Headers implements IteratorAggregate, Countable
      */
     public function keys(): array
     {
-//        /** @var string[] */
-//        return array_keys($this->all());
+        //        /** @var string[] */
+        //        return array_keys($this->all());
         return $this->headerNames;
     }
 
@@ -201,18 +193,18 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns the HTTP header value converted to a date.
      *
-     * @throws RuntimeException When the HTTP header is not parseable
+     * @throws \RuntimeException When the HTTP header is not parseable
      *
-     * @return null|DateTimeInterface The parsed DateTime or the default value if the header does not exist
+     * @return null|\DateTimeInterface The parsed DateTime or the default value if the header does not exist
      */
-    public function getDate(string $key, DateTime $default = null)
+    public function getDate(string $key, \DateTime $default = null)
     {
         if (null === $value = $this->get($key)) { // @phpstan-ignore-line
             return $default;
         }
 
-        if (false === $date = DateTime::createFromFormat(DATE_RFC2822, $value[0])) {
-            throw new RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value[0]));
+        if (false === $date = \DateTime::createFromFormat(DATE_RFC2822, $value[0])) {
+            throw new \RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value[0]));
         }
 
         return $date;
@@ -265,11 +257,11 @@ class Headers implements IteratorAggregate, Countable
     /**
      * Returns an iterator for headers.
      *
-     * @return ArrayIterator An \ArrayIterator instance
+     * @return \ArrayIterator An \ArrayIterator instance
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->headers);
+        return new \ArrayIterator($this->headers);
     }
 
     /**

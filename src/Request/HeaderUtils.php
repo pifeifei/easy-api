@@ -12,9 +12,7 @@ class HeaderUtils
     /**
      * This class should not be instantiated.
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Splits an HTTP header by one or more separators.
@@ -55,7 +53,7 @@ class HeaderUtils
                 \s*
             /x', trim($header), $matches, PREG_SET_ORDER);
 
-//        dump($matches, $separators, PHP_EOL);
+        //        dump($matches, $separators, PHP_EOL);
         return self::groupParts($matches, $separators);
     }
 

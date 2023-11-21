@@ -17,17 +17,11 @@ class Cache implements CacheInterface
 
     protected string $namespace = 'easy-api';
 
-    /**
-     * {@inheritdoc}
-     */
     public function clear(): bool
     {
         return $this->getCache()->clear();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function get(string $key, $defaultValue = null)
     {
         try {
@@ -37,9 +31,6 @@ class Cache implements CacheInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function set(string $key, $value, $ttl = null): bool
     {
         try {
@@ -49,9 +40,6 @@ class Cache implements CacheInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function has(string $key): bool
     {
         try {
@@ -69,9 +57,6 @@ class Cache implements CacheInterface
         return new Psr16Cache(new FilesystemAdapter($this->namespace, 1500));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getCache(): PsrCacheInterface
     {
         if (isset($this->cache)) {
@@ -81,9 +66,6 @@ class Cache implements CacheInterface
         return $this->cache = $this->getDefaultCache();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setCache(PsrCacheInterface $cache): void
     {
         $this->cache = $cache;

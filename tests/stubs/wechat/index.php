@@ -1,12 +1,14 @@
 <?php
 
 declare(strict_types=1);
+use Pff\EasyApiTest\Feature\stubs\WechatClient;
+use Pff\EasyApiTest\Feature\WechatTest;
 
 include_once __DIR__ . '/../../bootstrap.php';
 
-$config = (new \Pff\EasyApiTest\Feature\WechatTest())->getConfig();
+$config = (new WechatTest())->getConfig();
 
-$client = new \Pff\EasyApiTest\Feature\stubs\WechatClient($config['config']);
+$client = new WechatClient($config['config']);
 
 if ('GET' === $_SERVER['REQUEST_METHOD']) {
     $client->bind();

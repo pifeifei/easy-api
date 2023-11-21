@@ -6,7 +6,6 @@ namespace Pff\EasyApi\Exception;
 
 use Pff\EasyApi\Request\Request;
 use Pff\EasyApi\Result;
-use Throwable;
 
 class ServerException extends ApiException
 {
@@ -16,11 +15,9 @@ class ServerException extends ApiException
     protected $result;
 
     /**
-     * {@inheritDoc}
-     *
      * @param array<string, mixed> $context
      */
-    public function __construct(Result $result, string $message = '', array $context = [], int $code = 0, Throwable $previous = null)
+    public function __construct(Result $result, string $message = '', array $context = [], int $code = 0, \Throwable $previous = null)
     {
         parent::__construct($message, $context, $code, $previous);
         $this->result = $result;

@@ -10,22 +10,16 @@ use Pff\EasyApi\Exception\ServerException;
 
 class Formatter extends AbstractTokenFormatter
 {
-    /**
-     * {@inheritDoc}
-     */
     public function resolve(): void
     {
         if (false === $this->client->isTokenClient()) {
-            method_exists($this, 'token') && $this->token();
+            $this->token();
             $this->sign();
         }
         $this->query();
         $this->body();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function getData(): array
     {
         $data = $this->client->getData();
@@ -38,9 +32,6 @@ class Formatter extends AbstractTokenFormatter
         return $data;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function getQuery()
     {
         if ($queries = $this->client->getQuery()->all()) {
@@ -53,9 +44,7 @@ class Formatter extends AbstractTokenFormatter
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @throws ClientException
+     * @throws ClientException|ServerException
      */
     protected function token(): void
     {
@@ -158,9 +147,6 @@ class Formatter extends AbstractTokenFormatter
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function signBuild(): string
     {
         return $this->client->getSignature()->sign(

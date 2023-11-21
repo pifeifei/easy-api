@@ -26,7 +26,7 @@ final class RetryTest extends TestCase
             $client->mockResponse(400, [], '{"code":400}');
 
             $client->request();
-        } catch (ServerException|ClientException $e) {
+        } catch (ClientException|ServerException $e) {
             $this->assertGreaterThan(0, $e->getCode());
         }
     }
@@ -46,7 +46,7 @@ final class RetryTest extends TestCase
         $client->mockResponse(401, $headers, '{"code":401,"message":"error: file not find."}');
         $client->mockResponse(200, $headers, '{"code":200}');
 
-        $client->retryDelay(function () {return 0; });
+        $client->retryDelay(static function () {return 0; });
         $client->retryByClient(10, ['client error', 'not find']);
         $response = $client->request();
 
@@ -69,7 +69,7 @@ final class RetryTest extends TestCase
         $client->mockResponse(200, [], '{"code":200}');
 
         $client->retryByClient(10, [], [400, 401]);
-        $client->retryDelay(function () {return 0; });
+        $client->retryDelay(static function () {return 0; });
         $response = $client->request();
         $this->assertSame(['code' => 200], $response->all());
         $this->assertSame(200, $response->getStatusCode());

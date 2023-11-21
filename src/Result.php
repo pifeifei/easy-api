@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace Pff\EasyApi;
 
 use ArrayAccess;
-use Countable;
 use GuzzleHttp\Psr7\Response;
-use InvalidArgumentException;
 use IteratorAggregate;
 use Pff\EasyApi\Concerns\DataTrait;
 use Pff\EasyApi\Exception\ClientException;
 use Pff\EasyApi\Request\Request;
 use Psr\Http\Message\ResponseInterface;
-
-use function strtoupper;
 
 /**
  * @template TKey as array-key
@@ -23,7 +19,7 @@ use function strtoupper;
  * @implements IteratorAggregate<TKey, TValue>
  * @implements ArrayAccess<TKey, TValue>
  */
-class Result extends Response implements ArrayAccess, IteratorAggregate, Countable
+class Result extends Response implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     use DataTrait;
 
@@ -103,10 +99,8 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
 
     private function getRequestFormat(): string
     {
-        if ($this->request instanceof Request) {
-            if ($format = $this->request->format()) {
-                return strtoupper($format);
-            }
+        if ($format = $this->request->format()) {
+            return strtoupper($format);
         }
 
         return API::RESPONSE_FORMAT_JSON;
@@ -119,7 +113,7 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
     {
         try {
             return Utils::jsonDecode($jsonString, true);
-        } catch (InvalidArgumentException $exception) {
+        } catch (\InvalidArgumentException $exception) {
             return [];
         }
     }
@@ -131,7 +125,6 @@ class Result extends Response implements ArrayAccess, IteratorAggregate, Countab
      */
     private function xmlToArray(string $string): array
     {
-        /** @var array<string, mixed>|false $json */
         $json = simplexml_load_string($string);
         if (false === $json) {
             throw new ClientException('API xml parse error: ' . $string);

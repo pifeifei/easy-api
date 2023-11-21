@@ -15,9 +15,6 @@ use Pff\EasyApi\Utils;
  */
 class WechatFormatter extends AbstractTokenFormatter
 {
-    /**
-     * {@inheritDoc}
-     */
     public function resolve(): void
     {
         if (false === $this->client->isTokenClient()) {
@@ -28,9 +25,6 @@ class WechatFormatter extends AbstractTokenFormatter
         $this->body();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function getData(): array
     {
         $data = $this->client->getData();
@@ -43,17 +37,11 @@ class WechatFormatter extends AbstractTokenFormatter
         return $data;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function getQuery()
     {
         return $this->client->getQuery()->all();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function token(): void
     {
         $this->client->setQuery(['access_token' => $this->getAccessToken()]);
@@ -149,9 +137,6 @@ class WechatFormatter extends AbstractTokenFormatter
         return $tokenInfo;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function signBuild(): string
     {
         return '';

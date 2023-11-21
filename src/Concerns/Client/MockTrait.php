@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Concerns\Client;
 
-use Exception;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
@@ -42,7 +41,7 @@ trait MockTrait
         string $message,
         RequestInterface $request,
         ResponseInterface $response = null,
-        Exception $previous = null,
+        \Exception $previous = null,
         array $handlerContext = []
     ): void {
         $this->mockQueue[] = new RequestException($message, $request, $response, $previous, $handlerContext);

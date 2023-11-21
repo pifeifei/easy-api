@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Concerns;
 
-use ArrayIterator;
 use Illuminate\Support\Arr;
 use Pff\EasyApi\Exception\ClientException;
 
@@ -217,9 +216,9 @@ trait DataTrait
     /**
      * Get an iterator for the stored items.
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->collection);
+        return new \ArrayIterator($this->collection);
     }
 
     /**
@@ -272,9 +271,7 @@ trait DataTrait
             return;
         }
 
-        if (null === $value) {
-            Arr::forget($this->collection, $keys);
-        }
+        Arr::forget($this->collection, $keys);
     }
 
     /**
