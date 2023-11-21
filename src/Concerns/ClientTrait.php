@@ -55,9 +55,7 @@ trait ClientTrait
             return new Result($response, $request);
         }));
 
-        $this->options(['handler' => $stack]);
-
-        return new GuzzleClient($this->getOptions());
+        return new GuzzleClient(array_merge($this->getOptions(), ['handler' => $stack]));
     }
 
     public function getMethod(): string
