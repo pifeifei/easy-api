@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pff\EasyApiTest\Unit\Request;
 
-use DateTime;
 use Pff\EasyApi\Request\Headers;
 use Pff\EasyApiTest\TestCase;
 
@@ -37,7 +36,7 @@ final class HeadersTest extends TestCase
 
     public function testGetDateNull(): void
     {
-        $bag = new Headers(['foo' => (new DateTime())->format(DATE_RFC2822)]);
+        $bag = new Headers(['foo' => (new \DateTime())->format(DATE_RFC2822)]);
         $headerDate = $bag->getDate('foo');
         $this->assertInstanceOf(\DateTime::class, $headerDate);
     }

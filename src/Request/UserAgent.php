@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Request;
 
-use function implode;
-
 use Pff\EasyApi\API;
-
-use const PHP_OS;
 
 class UserAgent
 {

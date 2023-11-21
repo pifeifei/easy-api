@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Request;
 
-use ArrayIterator;
-use Countable;
 use Illuminate\Support\Arr;
 use IteratorAggregate;
 
@@ -17,7 +15,7 @@ use IteratorAggregate;
  *
  * @implements IteratorAggregate<TKey, TValue>
  */
-class Parameters implements IteratorAggregate, Countable
+class Parameters implements \IteratorAggregate, \Countable
 {
     /**
      * Parameter storage.
@@ -135,11 +133,11 @@ class Parameters implements IteratorAggregate, Countable
     /**
      * Returns an iterator for parameters.
      *
-     * @return ArrayIterator<TKey, TValue> An \ArrayIterator instance
+     * @return \ArrayIterator<TKey, TValue> An \ArrayIterator instance
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->parameters);
+        return new \ArrayIterator($this->parameters);
     }
 
     /**

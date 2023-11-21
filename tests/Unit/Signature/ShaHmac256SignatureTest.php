@@ -31,9 +31,5 @@ final class ShaHmac256SignatureTest extends TestCase
         $this->assertSame('HMAC-SHA256', $signature->getMethod());
         $this->assertSame('1.0', $signature->getVersion());
         $this->assertSame('', $signature->getType());
-//        static::assertEquals(
-//            $expected,
-//            $signature->sign($string, $accessKeySecret)
-//        );
     }
 }

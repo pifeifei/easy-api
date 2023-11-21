@@ -21,15 +21,15 @@ final class ContextTraitTest extends TestCase
             'foo' => 'foo',
         ];
         $e = new ContextException($context);
-        static::assertSame($context, $e->context());
+        self::assertSame($context, $e->context());
 
         $e->mergeContext(['bar' => 'bar']);
         $context['bar'] = 'bar';
-        static::assertSame($context, $e->context());
+        self::assertSame($context, $e->context());
 
         $e->setContext(['foobar' => 'foobar']);
-        static::assertSame(['foobar' => 'foobar'], $e->context());
-        static::assertArrayNotHasKey('bar', $e->context());
+        self::assertSame(['foobar' => 'foobar'], $e->context());
+        self::assertArrayNotHasKey('bar', $e->context());
     }
 
     public static function testContextWithException(): void
@@ -39,15 +39,15 @@ final class ContextTraitTest extends TestCase
             'foo' => 'foo',
         ];
         $e = new ContextException($context, new \Exception('exception message.'));
-        static::assertArrayHasKey('uuid', $e->context());
-        static::assertArrayHasKey('foo', $e->context());
-        static::assertArrayHasKey('exception', $e->context());
+        self::assertArrayHasKey('uuid', $e->context());
+        self::assertArrayHasKey('foo', $e->context());
+        self::assertArrayHasKey('exception', $e->context());
 
         $e->mergeContext(['bar' => 'bar']);
-        static::assertArrayHasKey('bar', $e->context());
+        self::assertArrayHasKey('bar', $e->context());
 
         $e->setContext(['foobar' => 'foobar']);
-        static::assertArrayHasKey('foobar', $e->context());
-        static::assertArrayNotHasKey('uuid', $e->context());
+        self::assertArrayHasKey('foobar', $e->context());
+        self::assertArrayNotHasKey('uuid', $e->context());
     }
 }

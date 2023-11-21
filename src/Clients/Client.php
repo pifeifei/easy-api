@@ -25,7 +25,6 @@ use Pff\EasyApi\Request\Parameters;
 use Pff\EasyApi\Request\SignConfig;
 use Pff\EasyApi\Request\UserAgent;
 use Pff\EasyApi\Result;
-use UnexpectedValueException;
 
 class Client
 {
@@ -153,9 +152,9 @@ class Client
         $this->resolveOption();
         $result = $this->response();
 
-//        if ($this->shouldServerRetry($result)) {
-//            return $this->request();
-//        }
+        //        if ($this->shouldServerRetry($result)) {
+        //            return $this->request();
+        //        }
 
         if (!$result->isSuccess()) {
             throw new ServerException(
@@ -181,12 +180,12 @@ class Client
 
         $formatter = $config->requestFormatter();
         if (!class_exists($formatter)) {
-            throw new UnexpectedValueException(sprintf('%s class does not exist.', $formatter));
+            throw new \UnexpectedValueException(sprintf('%s class does not exist.', $formatter));
         }
 
         $formatter = new $formatter($this);
         if (!$formatter instanceof FormatterInterface) {
-            throw new UnexpectedValueException(sprintf('Formatter must implement %s interface.', FormatterInterface::class));
+            throw new \UnexpectedValueException(sprintf('Formatter must implement %s interface.', FormatterInterface::class));
         }
 
         $this->formatter = $formatter;
@@ -217,9 +216,9 @@ class Client
             /** @var Result */
             return value($result);
         } catch (GuzzleException $exception) {
-//            if ($this->shouldClientRetry($exception)) {
-//                return $this->response();
-//            }
+            //            if ($this->shouldClientRetry($exception)) {
+            //                return $this->response();
+            //            }
             $context = [
                 'method' => $this->requestMethod(),
                 'uri' => (string) $this->uri,

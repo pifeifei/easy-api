@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pff\EasyApi\Concerns\Client;
 
-use Exception;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Str;
@@ -206,7 +205,7 @@ trait RetryTrait
      *
      * @removed 1.0
      */
-    private function shouldClientRetry(Exception $exception): bool
+    private function shouldClientRetry(\Exception $exception): bool
     {
         if ($this->clientRetry <= 0) {
             return false;
