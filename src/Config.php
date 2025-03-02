@@ -39,7 +39,7 @@ class Config implements ConfigInterface
         return $this->get('request.' . $name, $defaultValue);
     }
 
-    public function requestMethod(string $default = null): string
+    public function requestMethod(?string $default = null): string
     {
         /** @var string */
         return $this->request('method', $default);

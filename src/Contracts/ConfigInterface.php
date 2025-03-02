@@ -36,7 +36,7 @@ interface ConfigInterface
     /**
      * 获取请求方式。
      */
-    public function requestMethod(string $default = null): string;
+    public function requestMethod(?string $default = null): string;
 
     /**
      * 获取请求链接。

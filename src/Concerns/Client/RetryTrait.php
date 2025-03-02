@@ -102,7 +102,7 @@ trait RetryTrait
             function (
                 $retries,
                 RequestInterface $request,
-                ResponseInterface $response = null
+                ?ResponseInterface $response = null
             ) {
                 if (null === $response) {
                     return true;

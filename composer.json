@@ -49,7 +49,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "phpstan": "phpstan analyse",
+        "phpstan": "phpstan analyse --memory-limit=-1",
         "check-style": "vendor/bin/php-cs-fixer fix --using-cache=no --diff --dry-run --ansi",
         "fix-style": "vendor/bin/php-cs-fixer fix --using-cache=no --ansi",
         "test": "phpunit --colors=always --testdox"

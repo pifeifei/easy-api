@@ -17,7 +17,7 @@ class ServerException extends ApiException
     /**
      * @param array<string, mixed> $context
      */
-    public function __construct(Result $result, string $message = '', array $context = [], int $code = 0, \Throwable $previous = null)
+    public function __construct(Result $result, string $message = '', array $context = [], int $code = 0, ?\Throwable $previous = null)
     {
         parent::__construct($message, $context, $code, $previous);
         $this->result = $result;

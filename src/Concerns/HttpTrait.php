@@ -177,7 +177,7 @@ trait HttpTrait
      *
      * @return $this|Parameters
      */
-    public function query(array $query = null, bool $replace = false)
+    public function query(?array $query = null, bool $replace = false)
     {
         if (null === $query) {
             return $this->query;
@@ -203,7 +203,7 @@ trait HttpTrait
      *
      * @return $this|Parameters
      */
-    public function data(array $post = null, bool $replace = false)
+    public function data(?array $post = null, bool $replace = false)
     {
         if (null === $post) {
             return $this->data;
@@ -229,7 +229,7 @@ trait HttpTrait
      *
      * @return $this|Headers
      */
-    public function headers(array $headers = null, bool $replace = false)
+    public function headers(?array $headers = null, bool $replace = false)
     {
         if (null === $headers) {
             return $this->headers;

@@ -32,7 +32,7 @@ trait ClientTrait
 
     protected bool $isTokenClient = false;
 
-    public function createClient(Client $client = null): GuzzleClient
+    public function createClient(?Client $client = null): GuzzleClient
     {
         if (self::hasMock()) {
             $stack = HandlerStack::create(self::getMock());
@@ -79,7 +79,7 @@ trait ClientTrait
      *
      * @removed 1.0
      */
-    public function method(string $method = null)
+    public function method(?string $method = null)
     {
         if (null === $method) {
             return $this->method;
@@ -124,7 +124,7 @@ trait ClientTrait
             return $this;
         }
 
-        throw new InvalidArgumentException(sprintf('%s class does not exist.', $signature));
+        throw new InvalidArgumentException(\sprintf('%s class does not exist.', $signature));
     }
 
     public function isTokenClient(): bool

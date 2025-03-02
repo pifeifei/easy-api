@@ -40,7 +40,7 @@ class HeaderUtils
                 (?!\s)
                     (?:
                         # quoted-string
-                        "(?:[^"\\\\]|\\\\.)*(?:"|\\\\|$)
+                        "(?:[^"\\\]|\\\.)*(?:"|\\\|$)
                     |
                         # token
                         [^"' . $quotedSeparators . ']+
@@ -129,7 +129,7 @@ class HeaderUtils
             return $s;
         }
 
-        return '"' . addcslashes($s, '"\\"') . '"';
+        return '"' . addcslashes($s, '"\"') . '"';
     }
 
     /**
@@ -140,7 +140,7 @@ class HeaderUtils
      */
     public static function unquote(string $s): string
     {
-        return (string) preg_replace('/\\\\(.)|"/', '$1', $s);
+        return (string) preg_replace('/\\\(.)|"/', '$1', $s);
     }
 
     /**
@@ -161,7 +161,7 @@ class HeaderUtils
     public static function makeDisposition(string $disposition, string $filename, string $filenameFallback = ''): string
     {
         if (!\in_array($disposition, [self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE], true)) {
-            throw new \InvalidArgumentException(sprintf('The disposition must be either "%s" or "%s".', self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE));
+            throw new \InvalidArgumentException(\sprintf('The disposition must be either "%s" or "%s".', self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE));
         }
 
         if ('' === $filenameFallback) {
@@ -180,7 +180,7 @@ class HeaderUtils
 
         // path separators aren't allowed in either.
         if (str_contains($filename, '/') || str_contains($filename, '\\') || str_contains($filenameFallback, '/') || str_contains($filenameFallback, '\\')) {
-            throw new \InvalidArgumentException('The filename and the fallback cannot contain the "/" and "\\" characters.');
+            throw new \InvalidArgumentException('The filename and the fallback cannot contain the "/" and "\" characters.');
         }
 
         $params = ['filename' => $filenameFallback];

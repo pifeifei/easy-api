@@ -41,7 +41,7 @@ trait CacheTrait
         }
 
         if (!class_exists($cache)) {
-            throw new ClientException(sprintf('%s class does not exist.', $cache));
+            throw new ClientException(\sprintf('%s class does not exist.', $cache));
         }
 
         $obj = new $cache();
@@ -51,6 +51,6 @@ trait CacheTrait
             return;
         }
 
-        throw new ClientException(sprintf('Cache must implement %s interface.', CacheInterface::class));
+        throw new ClientException(\sprintf('Cache must implement %s interface.', CacheInterface::class));
     }
 }

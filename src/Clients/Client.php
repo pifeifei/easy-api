@@ -159,7 +159,7 @@ class Client
         if (!$result->isSuccess()) {
             throw new ServerException(
                 $result,
-                sprintf('%d %s', $result->getStatusCode(), $result->getReasonPhrase()),
+                \sprintf('%d %s', $result->getStatusCode(), $result->getReasonPhrase()),
                 ['options' => $this->getOptions()],
                 API::ERROR_SERVER_UNKNOWN
             );
@@ -180,12 +180,12 @@ class Client
 
         $formatter = $config->requestFormatter();
         if (!class_exists($formatter)) {
-            throw new \UnexpectedValueException(sprintf('%s class does not exist.', $formatter));
+            throw new \UnexpectedValueException(\sprintf('%s class does not exist.', $formatter));
         }
 
         $formatter = new $formatter($this);
         if (!$formatter instanceof FormatterInterface) {
-            throw new \UnexpectedValueException(sprintf('Formatter must implement %s interface.', FormatterInterface::class));
+            throw new \UnexpectedValueException(\sprintf('Formatter must implement %s interface.', FormatterInterface::class));
         }
 
         $this->formatter = $formatter;

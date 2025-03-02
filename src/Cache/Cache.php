@@ -73,7 +73,7 @@ class Cache implements CacheInterface
 
     protected function ExceptionMessage(\Throwable $t): string
     {
-        return sprintf('API cache error: %s', $t->getMessage());
+        return \sprintf('API cache error: %s', $t->getMessage());
     }
 
     /**

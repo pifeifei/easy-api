@@ -70,7 +70,7 @@ trait DataTrait
      *
      * @return array<string, mixed> 一维数组，键名为点分字符串
      */
-    public function flatten(string $delimiter = '.', array $items = null, string $prepend = ''): array
+    public function flatten(string $delimiter = '.', ?array $items = null, string $prepend = ''): array
     {
         $flatten = [];
 

@@ -47,7 +47,7 @@ class Headers implements \IteratorAggregate, \Countable
      *
      * @return array<string|string[]> An array of headers
      */
-    public function all(string $key = null): array
+    public function all(?string $key = null): array
     {
         if (null !== $key) {
             $headerName = strtr($key, self::UPPER, self::LOWER);
@@ -125,7 +125,7 @@ class Headers implements \IteratorAggregate, \Countable
             if (is_numeric($k)) {
                 $new[] = $v;
             } else {
-                $new[] = sprintf('%s: %s', $k, $v);
+                $new[] = \sprintf('%s: %s', $k, $v);
             }
         }
 
@@ -197,14 +197,14 @@ class Headers implements \IteratorAggregate, \Countable
      *
      * @return null|\DateTimeInterface The parsed DateTime or the default value if the header does not exist
      */
-    public function getDate(string $key, \DateTime $default = null)
+    public function getDate(string $key, ?\DateTime $default = null)
     {
         if (null === $value = $this->get($key)) { // @phpstan-ignore-line
             return $default;
         }
 
         if (false === $date = \DateTime::createFromFormat(DATE_RFC2822, $value[0])) {
-            throw new \RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value[0]));
+            throw new \RuntimeException(\sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value[0]));
         }
 
         return $date;

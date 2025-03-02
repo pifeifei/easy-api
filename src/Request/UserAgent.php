@@ -91,7 +91,7 @@ class UserAgent
      *
      * @ throws ClientException
      */
-    public static function append(string $name, string $value = null): void
+    public static function append(string $name, ?string $value = null): void
     {
         self::defaultFields();
 

@@ -48,7 +48,7 @@ class WechatClient
      *
      * @throws ClientException
      */
-    public function __construct(array $config, array $request = null)
+    public function __construct(array $config, ?array $request = null)
     {
         if (null === $request) {
             $this->client = new Client(['config' => $config, 'request' => $this->defaultRequest]);
@@ -86,7 +86,7 @@ class WechatClient
      * @throws ClientException
      * @throws ServerException
      */
-    public function users(string $nextOpenid = null): Result
+    public function users(?string $nextOpenid = null): Result
     {
         return $this->client()
             ->setMethod(API::METHOD_GET)
@@ -115,7 +115,7 @@ class WechatClient
      * @throws ClientException
      * @throws ServerException
      */
-    public function userInfo(string $openid, string $lang = null): Result
+    public function userInfo(string $openid, ?string $lang = null): Result
     {
         return $this->client()
             ->setMethod(API::METHOD_GET)

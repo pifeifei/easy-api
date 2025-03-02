@@ -19,9 +19,6 @@ trait MockTrait
      */
     protected array $mockQueue = [];
 
-    /**
-     * @var ?MockHandler
-     */
     protected ?MockHandler $mock = null;
 
     /**
@@ -40,8 +37,8 @@ trait MockTrait
     public function mockRequestException(
         string $message,
         RequestInterface $request,
-        ResponseInterface $response = null,
-        \Exception $previous = null,
+        ?ResponseInterface $response = null,
+        ?\Exception $previous = null,
         array $handlerContext = []
     ): void {
         $this->mockQueue[] = new RequestException($message, $request, $response, $previous, $handlerContext);

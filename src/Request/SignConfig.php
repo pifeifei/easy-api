@@ -21,7 +21,7 @@ class SignConfig
     /**
      * @param array<string, string> $appends
      */
-    final public function __construct(string $key, string $position = null, array $appends = [])
+    final public function __construct(string $key, ?string $position = null, array $appends = [])
     {
         $this->key = $key;
         if (null !== $position) {

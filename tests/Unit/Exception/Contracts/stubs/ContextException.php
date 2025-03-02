@@ -14,7 +14,7 @@ class ContextException extends \Exception implements ApiExceptionInterface
     /**
      * @param array<string, mixed> $context
      */
-    public function __construct(array $context = [], \Throwable $previous = null)
+    public function __construct(array $context = [], ?\Throwable $previous = null)
     {
         parent::__construct('text exception.', 0, $previous);
         $this->setContext($context);
